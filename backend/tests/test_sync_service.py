@@ -128,9 +128,7 @@ async def test_sync_plan_happy_path(db: AsyncSession, verified_authenticated_cli
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
     # No existing playlist by this name on Spotify
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     # Mock Spotify create playlist
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
@@ -140,9 +138,7 @@ async def test_sync_plan_happy_path(db: AsyncSession, verified_authenticated_cli
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
 
-    result = await sync_plan(
-        db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service"
-    )
+    result = await sync_plan(db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service")
 
     assert result.sync_status == "synced"
     assert result.songs_total == 2
@@ -194,9 +190,7 @@ async def test_sync_plan_partial_match(db: AsyncSession, verified_authenticated_
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
     )
@@ -242,9 +236,7 @@ async def test_sync_plan_no_matches(db: AsyncSession, verified_authenticated_cli
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
     # No existing playlist by this name on Spotify
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     # Playlist still gets created even with no matched tracks
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
@@ -296,9 +288,7 @@ async def test_sync_plan_existing_playlist(db: AsyncSession, verified_authentica
     )
     # Do NOT mock POST create playlist — should NOT be called
     # Mock update_playlist_details (shared mode calls PUT /playlists/{id})
-    respx.put(f"{SPOTIFY_BASE}/playlists/existing_pl").mock(
-        return_value=Response(200, json={})
-    )
+    respx.put(f"{SPOTIFY_BASE}/playlists/existing_pl").mock(return_value=Response(200, json={}))
     # Mock replace tracks on existing playlist
     respx.put(f"{SPOTIFY_BASE}/playlists/existing_pl/tracks").mock(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
@@ -365,9 +355,7 @@ async def test_sync_plan_streaming_failure(db: AsyncSession, verified_authentica
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
     )
@@ -461,9 +449,7 @@ async def test_sync_church_calls_sync_plan_for_each_plan(db: AsyncSession, verif
     # In shared mode: plan 1001 creates the shared playlist, plan 1002 updates it in place.
     # Only 1 GET /me/playlists (for plan 1001 new-playlist check), 1 POST to create,
     # then 1 PUT to update_playlist_details, then 2 PUT to replace tracks.
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     create_playlist_response_shared = {
         "id": "playlist_shared",
         "name": "Verified Church Worship",
@@ -473,9 +459,7 @@ async def test_sync_church_calls_sync_plan_for_each_plan(db: AsyncSession, verif
         return_value=Response(201, json=create_playlist_response_shared)
     )
     # update_playlist_details called for plan 1002 (existing shared playlist)
-    respx.put(f"{SPOTIFY_BASE}/playlists/playlist_shared").mock(
-        return_value=Response(200, json={})
-    )
+    respx.put(f"{SPOTIFY_BASE}/playlists/playlist_shared").mock(return_value=Response(200, json={}))
     respx.put(f"{SPOTIFY_BASE}/playlists/playlist_shared/tracks").mock(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
@@ -503,9 +487,7 @@ async def test_sync_church_calls_sync_plan_for_each_plan(db: AsyncSession, verif
 
 
 @respx.mock
-async def test_sync_plan_shared_mode_second_sync_updates_details(
-    db: AsyncSession, verified_authenticated_client
-):
+async def test_sync_plan_shared_mode_second_sync_updates_details(db: AsyncSession, verified_authenticated_client):
     """In shared mode, the second sync reuses the existing playlist and calls update_playlist_details."""
     church_id = await get_verified_church_id(db)
     await setup_full_church(db, church_id)
@@ -515,9 +497,7 @@ async def test_sync_plan_shared_mode_second_sync_updates_details(
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
     )
@@ -525,9 +505,7 @@ async def test_sync_plan_shared_mode_second_sync_updates_details(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
 
-    result1 = await sync_plan(
-        db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service"
-    )
+    result1 = await sync_plan(db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service")
     assert result1.sync_status == "synced"
 
     # Verify shared playlist was created
@@ -546,22 +524,16 @@ async def test_sync_plan_shared_mode_second_sync_updates_details(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
     # update_playlist_details: PUT /playlists/{id} (no /tracks suffix)
-    respx.put(f"{SPOTIFY_BASE}/playlists/playlist123").mock(
-        return_value=Response(200, json={})
-    )
+    respx.put(f"{SPOTIFY_BASE}/playlists/playlist123").mock(return_value=Response(200, json={}))
     respx.put(f"{SPOTIFY_BASE}/playlists/playlist123/tracks").mock(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
 
-    result2 = await sync_plan(
-        db, church_id, "1002", "manual", plan_date=date(2026, 4, 5), plan_title="Easter Sunday"
-    )
+    result2 = await sync_plan(db, church_id, "1002", "manual", plan_date=date(2026, 4, 5), plan_title="Easter Sunday")
     assert result2.sync_status == "synced"
 
     # Still only 1 shared playlist row
-    all_playlists_result = await db.execute(
-        select(Playlist).where(Playlist.church_id == church_id)
-    )
+    all_playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
     all_playlists = all_playlists_result.scalars().all()
     assert len(all_playlists) == 1
     assert all_playlists[0].pco_plan_id == "__shared__"
@@ -573,9 +545,7 @@ async def test_sync_plan_shared_mode_second_sync_updates_details(
 
 
 @respx.mock
-async def test_sync_plan_per_plan_mode_uses_real_plan_id(
-    db: AsyncSession, verified_authenticated_client
-):
+async def test_sync_plan_per_plan_mode_uses_real_plan_id(db: AsyncSession, verified_authenticated_client):
     """In per_plan mode, each plan gets its own playlist and update_playlist_details is not called."""
     church_id = await get_verified_church_id(db)
     await setup_full_church(db, church_id)
@@ -596,16 +566,12 @@ async def test_sync_plan_per_plan_mode_uses_real_plan_id(
         "name": "Sunday Service - 2026-03-22",
         "external_urls": {"spotify": "https://open.spotify.com/playlist/playlist_1001"},
     }
-    respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
-        return_value=Response(201, json=create_1001)
-    )
+    respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(return_value=Response(201, json=create_1001))
     respx.put(f"{SPOTIFY_BASE}/playlists/playlist_1001/tracks").mock(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
 
-    result = await sync_plan(
-        db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service"
-    )
+    result = await sync_plan(db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service")
     assert result.sync_status == "synced"
 
     # Verify playlist stored under real plan_id "1001" (not "__shared__")
@@ -628,24 +594,18 @@ async def test_sync_plan_per_plan_mode_uses_real_plan_id(
         "name": "Easter Sunday - 2026-04-05",
         "external_urls": {"spotify": "https://open.spotify.com/playlist/playlist_1002"},
     }
-    respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
-        return_value=Response(201, json=create_1002)
-    )
+    respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(return_value=Response(201, json=create_1002))
     respx.put(f"{SPOTIFY_BASE}/playlists/playlist_1002/tracks").mock(
         return_value=Response(201, json=SPOTIFY_REPLACE_TRACKS_RESPONSE)
     )
     # NOTE: Do NOT mock PUT /playlists/{id} (without /tracks) — update_playlist_details
     # should NOT be called in per_plan mode.
 
-    result2 = await sync_plan(
-        db, church_id, "1002", "manual", plan_date=date(2026, 4, 5), plan_title="Easter Sunday"
-    )
+    result2 = await sync_plan(db, church_id, "1002", "manual", plan_date=date(2026, 4, 5), plan_title="Easter Sunday")
     assert result2.sync_status == "synced"
 
     # 2 separate playlist rows
-    all_playlists_result = await db.execute(
-        select(Playlist).where(Playlist.church_id == church_id)
-    )
+    all_playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
     all_playlists = all_playlists_result.scalars().all()
     assert len(all_playlists) == 2
     plan_ids = {p.pco_plan_id for p in all_playlists}

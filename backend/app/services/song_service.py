@@ -34,9 +34,7 @@ async def get_unmatched_songs(
         PcoApiError subclasses if the PCO API call fails.
     """
     # Check PCO connection exists before attempting to fetch plans
-    conn_result = await db.execute(
-        select(PcoConnection).where(PcoConnection.church_id == church_id)
-    )
+    conn_result = await db.execute(select(PcoConnection).where(PcoConnection.church_id == church_id))
     if conn_result.scalar_one_or_none() is None:
         raise ValueError("pco_not_connected")
 

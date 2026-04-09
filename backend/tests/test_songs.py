@@ -76,9 +76,7 @@ async def setup_church_connections(db: AsyncSession, church_id: uuid.UUID) -> No
 
 
 @respx.mock
-async def test_unmatched_songs_returns_unmatched_only(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_unmatched_songs_returns_unmatched_only(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_connections(db, church_id)
 
@@ -124,16 +122,12 @@ async def test_unmatched_songs_returns_unmatched_only(
 
 
 @respx.mock
-async def test_unmatched_songs_empty_when_all_matched(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_unmatched_songs_empty_when_all_matched(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_connections(db, church_id)
 
     # Mock PCO: 1 plan with 2 songs
-    single_plan_response = {
-        "data": [UPCOMING_PLANS_RESPONSE["data"][0]]
-    }
+    single_plan_response = {"data": [UPCOMING_PLANS_RESPONSE["data"][0]]}
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans").mock(
         return_value=Response(200, json=single_plan_response)
     )
@@ -184,19 +178,13 @@ async def test_unmatched_songs_no_pco_connection(verified_authenticated_client: 
 
 
 @respx.mock
-async def test_search_cache_miss_calls_spotify(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_search_cache_miss_calls_spotify(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_connections(db, church_id)
 
-    respx.get(f"{SPOTIFY_BASE}/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE)
-    )
+    respx.get(f"{SPOTIFY_BASE}/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE))
 
-    response = await verified_authenticated_client.get(
-        "/api/songs/search?platform=spotify&q=How+Great"
-    )
+    response = await verified_authenticated_client.get("/api/songs/search?platform=spotify&q=How+Great")
 
     assert response.status_code == 200
     body = response.json()
@@ -219,9 +207,7 @@ async def test_search_cache_miss_calls_spotify(
 # ---------------------------------------------------------------------------
 
 
-async def test_search_cache_hit_does_not_call_spotify(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_search_cache_hit_does_not_call_spotify(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_connections(db, church_id)
 
@@ -245,9 +231,7 @@ async def test_search_cache_hit_does_not_call_spotify(
     await db.flush()
 
     # No respx mock — if Spotify is called, respx will raise an error
-    response = await verified_authenticated_client.get(
-        "/api/songs/search?platform=spotify&q=How+Great"
-    )
+    response = await verified_authenticated_client.get("/api/songs/search?platform=spotify&q=How+Great")
 
     assert response.status_code == 200
     body = response.json()
@@ -261,9 +245,7 @@ async def test_search_cache_hit_does_not_call_spotify(
 
 
 @respx.mock
-async def test_search_stale_cache_refreshed(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_search_stale_cache_refreshed(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_connections(db, church_id)
 
@@ -288,13 +270,9 @@ async def test_search_stale_cache_refreshed(
     db.add(cache_row)
     await db.flush()
 
-    respx.get(f"{SPOTIFY_BASE}/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE)
-    )
+    respx.get(f"{SPOTIFY_BASE}/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE))
 
-    response = await verified_authenticated_client.get(
-        "/api/songs/search?platform=spotify&q=How+Great"
-    )
+    response = await verified_authenticated_client.get("/api/songs/search?platform=spotify&q=How+Great")
 
     assert response.status_code == 200
     body = response.json()
@@ -306,7 +284,7 @@ async def test_search_stale_cache_refreshed(
     # Verify the cache row was updated
     await db.refresh(cache_row)
     assert len(cache_row.results) == 2
-    assert cache_row.created_at > stale_created_at
+    assert cache_row.created_at.replace(tzinfo=None) > stale_created_at
 
 
 # ---------------------------------------------------------------------------
@@ -315,9 +293,7 @@ async def test_search_stale_cache_refreshed(
 
 
 async def test_search_no_streaming_connection(verified_authenticated_client: AsyncClient):
-    response = await verified_authenticated_client.get(
-        "/api/songs/search?platform=spotify&q=test"
-    )
+    response = await verified_authenticated_client.get("/api/songs/search?platform=spotify&q=test")
 
     assert response.status_code == 400
     assert response.json()["detail"] == "streaming_not_connected"
@@ -328,9 +304,7 @@ async def test_search_no_streaming_connection(verified_authenticated_client: Asy
 # ---------------------------------------------------------------------------
 
 
-async def test_match_creates_mapping(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_match_creates_mapping(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     csrf = verified_authenticated_client.cookies.get("csrf_token", "")
@@ -373,9 +347,7 @@ async def test_match_creates_mapping(
 # ---------------------------------------------------------------------------
 
 
-async def test_match_upsert_updates_existing(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_match_upsert_updates_existing(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     # Insert an existing mapping with old track
@@ -428,9 +400,7 @@ async def test_match_upsert_updates_existing(
 # ---------------------------------------------------------------------------
 
 
-async def test_list_mappings(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_list_mappings(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     for song_id, title in [("song-1", "Song One"), ("song-2", "Song Two")]:
@@ -458,9 +428,7 @@ async def test_list_mappings(
 # ---------------------------------------------------------------------------
 
 
-async def test_list_mappings_filtered_by_platform(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_list_mappings_filtered_by_platform(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     db.add(
@@ -498,9 +466,7 @@ async def test_list_mappings_filtered_by_platform(
 # ---------------------------------------------------------------------------
 
 
-async def test_delete_mapping_success(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_delete_mapping_success(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     mapping = SongMapping(
@@ -549,9 +515,7 @@ async def test_delete_mapping_not_found(verified_authenticated_client: AsyncClie
 # ---------------------------------------------------------------------------
 
 
-async def test_delete_mapping_tenant_isolation(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_delete_mapping_tenant_isolation(verified_authenticated_client: AsyncClient, db: AsyncSession):
     # Create a second church and mapping
     other_church = Church(name="Other Church", slug="other-church")
     db.add(other_church)
@@ -587,9 +551,7 @@ async def test_delete_mapping_tenant_isolation(
 # ---------------------------------------------------------------------------
 
 
-async def test_list_mappings_tenant_isolation(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_list_mappings_tenant_isolation(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
 
     # Church A mapping

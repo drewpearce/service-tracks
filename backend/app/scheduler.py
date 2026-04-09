@@ -6,10 +6,7 @@ import uuid
 import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-from app.models.church import Church
 
 logger = structlog.get_logger(__name__)
 
@@ -61,17 +58,23 @@ async def sync_church_with_timeout(church_id: str) -> None:
 
 
 async def start_scheduler(session_factory: async_sessionmaker[AsyncSession]) -> None:
-    """Query sync-enabled churches and start the scheduler with a job per church."""
+    """Query sync-enabled churches and start the scheduler with a job per church.
+
+    NOTE: Scheduled auto-sync is currently disabled pending PCO webhook
+    implementation. The scheduler starts but no jobs are registered.
+    To re-enable, uncomment the job registration block below.
+    """
     init_scheduler(session_factory)
 
-    async with session_factory() as db:
-        result = await db.execute(
-            select(Church).where(Church.sync_enabled == True)  # noqa: E712
-        )
-        churches = result.scalars().all()
-
-    for church in churches:
-        add_church_sync_job(church.id)
+    # --- DISABLED: auto-sync via polling (backlogged for PCO webhook epic) ---
+    # async with session_factory() as db:
+    #     result = await db.execute(
+    #         select(Church).where(Church.sync_enabled == True)  # noqa: E712
+    #     )
+    #     churches = result.scalars().all()
+    # for church in churches:
+    #     add_church_sync_job(church.id)
+    # -------------------------------------------------------------------------
 
     scheduler.start()
     logger.info("scheduler_started", job_count=len(scheduler.get_jobs()))

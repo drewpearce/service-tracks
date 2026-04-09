@@ -32,18 +32,12 @@ SPOTIFY_SEARCH_RESPONSE = {
     }
 }
 
-SPOTIFY_SEARCH_EMPTY_RESPONSE = {
-    "tracks": {
-        "items": []
-    }
-}
+SPOTIFY_SEARCH_EMPTY_RESPONSE = {"tracks": {"items": []}}
 
 SPOTIFY_CREATE_PLAYLIST_RESPONSE = {
     "id": "playlist123",
     "name": "Sunday Morning Worship",
-    "external_urls": {
-        "spotify": "https://open.spotify.com/playlist/playlist123"
-    },
+    "external_urls": {"spotify": "https://open.spotify.com/playlist/playlist123"},
 }
 
 SPOTIFY_PLAYLIST_TRACKS_RESPONSE = {
@@ -85,6 +79,4 @@ SPOTIFY_TOKEN_REFRESH_WITHOUT_NEW_REFRESH = {
 }
 
 # replace_playlist_tracks returns 201 with a snapshot_id
-SPOTIFY_REPLACE_TRACKS_RESPONSE = {
-    "snapshot_id": "abc123"
-}
+SPOTIFY_REPLACE_TRACKS_RESPONSE = {"snapshot_id": "abc123"}

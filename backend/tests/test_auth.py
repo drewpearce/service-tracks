@@ -1,4 +1,5 @@
 """Auth endpoint tests — Epic 3, Task 3.5."""
+
 import hashlib
 import re
 from datetime import datetime, timedelta, timezone
@@ -212,9 +213,7 @@ async def test_verify_email_success(client, db: AsyncSession):
     await _register(client)
 
     # Read verification token from DB
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user = result.scalar_one()
     token = user.email_verification_token
     assert token is not None
@@ -226,9 +225,7 @@ async def test_verify_email_success(client, db: AsyncSession):
     # Confirm DB state — endpoint modified the same session object in-memory;
     # flush to ensure writes are visible then re-query.
     await db.flush()
-    result2 = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result2 = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user2 = result2.scalar_one()
     assert user2.email_verified is True
     assert user2.email_verification_token is None
@@ -237,9 +234,7 @@ async def test_verify_email_success(client, db: AsyncSession):
 async def test_verify_email_expired_token(client, db: AsyncSession):
     await _register(client)
 
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user = result.scalar_one()
     user.email_verification_sent_at = datetime.now(timezone.utc) - timedelta(hours=25)
     await db.flush()
@@ -257,9 +252,7 @@ async def test_resend_verification(client, db: AsyncSession):
     await _register(client)
 
     # Clear the cooldown left by registration's verification email
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user = result.scalar_one()
     user.email_verification_sent_at = datetime.now(timezone.utc) - timedelta(minutes=5)
     await db.flush()
@@ -276,9 +269,7 @@ async def test_resend_verification_rate_limit(client, db: AsyncSession):
     await _register(client)
 
     # Clear the cooldown so first resend is accepted
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user = result.scalar_one()
     user.email_verification_sent_at = datetime.now(timezone.utc) - timedelta(minutes=5)
     await db.flush()
@@ -314,9 +305,7 @@ async def test_forgot_password_existing_email(client, db: AsyncSession):
         )
     assert response.status_code == 200
 
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "user@example.com")
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "user@example.com"))
     user = result.scalar_one()
     assert user.password_reset_token is not None
 
@@ -383,9 +372,7 @@ async def test_reset_password_expired_token(client, db: AsyncSession):
 
     # Expire the token
     hashed = hashlib.sha256(raw_token.encode()).hexdigest()
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.password_reset_token == hashed)
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.password_reset_token == hashed))
     user = result.scalar_one()
     user.password_reset_sent_at = datetime.now(timezone.utc) - timedelta(hours=2)
     await db.flush()

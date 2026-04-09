@@ -89,9 +89,7 @@ async def test_spotify_authorize_creates_pending_connection(
 
 
 @respx.mock
-async def test_spotify_callback_success(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_spotify_callback_success(verified_authenticated_client: AsyncClient, db: AsyncSession):
     # Step 1: Get the state by calling authorize
     auth_response = await verified_authenticated_client.get("/api/streaming/spotify/authorize")
     auth_url = auth_response.json()["authorization_url"]
@@ -99,12 +97,8 @@ async def test_spotify_callback_success(
     state = parse_qs(parsed.query)["state"][0]
 
     # Step 2: Mock Spotify outbound HTTP calls
-    respx.post("https://accounts.spotify.com/api/token").mock(
-        return_value=Response(200, json=SPOTIFY_TOKEN_RESPONSE)
-    )
-    respx.get("https://api.spotify.com/v1/me").mock(
-        return_value=Response(200, json=SPOTIFY_USER_PROFILE_RESPONSE)
-    )
+    respx.post("https://accounts.spotify.com/api/token").mock(return_value=Response(200, json=SPOTIFY_TOKEN_RESPONSE))
+    respx.get("https://api.spotify.com/v1/me").mock(return_value=Response(200, json=SPOTIFY_USER_PROFILE_RESPONSE))
 
     # Step 3: Call the callback
     response = await verified_authenticated_client.get(
@@ -185,9 +179,7 @@ async def test_spotify_status_no_connections(verified_authenticated_client: Asyn
     assert body["connections"] == []
 
 
-async def test_spotify_status_with_active_connection(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_spotify_status_with_active_connection(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_user_church_id(db)
 
     # Insert an active connection directly
@@ -215,9 +207,7 @@ async def test_spotify_status_with_active_connection(
     assert connection["external_user_id"] == "spotify_user_999"
 
 
-async def test_spotify_status_excludes_pending(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_spotify_status_excludes_pending(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_user_church_id(db)
 
     # Insert a pending connection

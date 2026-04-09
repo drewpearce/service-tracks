@@ -107,9 +107,7 @@ async def setup_church_for_sync(db: AsyncSession, church_id: uuid.UUID) -> None:
 
 
 @respx.mock
-async def test_sync_endpoint_returns_result(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_sync_endpoint_returns_result(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_for_sync(db, church_id)
 
@@ -119,9 +117,7 @@ async def test_sync_endpoint_returns_result(
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
     )
@@ -151,9 +147,7 @@ async def test_sync_endpoint_returns_result(
 
 
 @respx.mock
-async def test_sync_endpoint_rate_limited(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_sync_endpoint_rate_limited(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
     await setup_church_for_sync(db, church_id)
 
@@ -164,9 +158,7 @@ async def test_sync_endpoint_rate_limited(
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(
-        return_value=Response(200, json={"items": [], "total": 0})
-    )
+    respx.get(f"{SPOTIFY_BASE}/me/playlists").mock(return_value=Response(200, json={"items": [], "total": 0}))
     respx.post(f"{SPOTIFY_BASE}/users/spotify_user_123/playlists").mock(
         return_value=Response(201, json=SPOTIFY_CREATE_PLAYLIST_RESPONSE)
     )

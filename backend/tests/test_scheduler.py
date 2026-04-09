@@ -127,14 +127,13 @@ def test_get_scheduler_status_stopped():
 
 
 async def test_start_scheduler_loads_churches(db_session):
-    """Integration test: start_scheduler queries sync-enabled churches and adds jobs.
+    """Scheduled auto-sync is currently disabled (backlogged for PCO webhook epic).
 
-    Uses db_session (which gives the AsyncConnection) so the session factory
-    can be bound to the same connection (and thus see the same uncommitted data).
+    start_scheduler should start the scheduler with no jobs registered,
+    regardless of how many sync-enabled churches exist.
     """
     db, connection = db_session
 
-    # Create 2 churches with sync_enabled=True and 1 with sync_enabled=False
     church1 = Church(name="Church 1", slug="church-sync-1", sync_enabled=True)
     church2 = Church(name="Church 2", slug="church-sync-2", sync_enabled=True)
     church3 = Church(name="Church 3", slug="church-sync-3", sync_enabled=False)
@@ -143,7 +142,6 @@ async def test_start_scheduler_loads_churches(db_session):
     db.add(church3)
     await db.flush()
 
-    # Bind session factory to same connection so it can see uncommitted rows
     test_session_factory = async_sessionmaker(bind=connection, class_=AsyncSession, expire_on_commit=False)
 
     await start_scheduler(test_session_factory)
@@ -151,7 +149,7 @@ async def test_start_scheduler_loads_churches(db_session):
     try:
         jobs = scheduler.get_jobs()
         sync_jobs = [j for j in jobs if j.id.startswith("sync_")]
-        assert len(sync_jobs) == 2
+        assert len(sync_jobs) == 0
     finally:
         stop_scheduler()
 

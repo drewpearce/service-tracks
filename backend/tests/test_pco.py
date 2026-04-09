@@ -328,9 +328,7 @@ async def test_pco_status_with_service_type(verified_authenticated_client: Async
 
 
 @respx.mock
-async def test_pco_status_service_type_pco_api_failure(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_pco_status_service_type_pco_api_failure(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """When PCO API fails for service type name, service_type_id is set but name is None."""
     user_result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
     user = user_result.scalar_one()

@@ -1,0 +1,30 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff lint (backend)
+        language: system
+        entry: bash -c 'cd backend && uv run ruff check .'
+        types: [python]
+        pass_filenames: false
+
+      - id: ruff-format
+        name: ruff format (backend)
+        language: system
+        entry: bash -c 'cd backend && uv run ruff format --check .'
+        types: [python]
+        pass_filenames: false
+
+      - id: tsc
+        name: TypeScript type-check (frontend)
+        language: system
+        entry: bash -c 'cd frontend && npm run build -- --noEmit 2>/dev/null || cd frontend && npx tsc --noEmit'
+        types_or: [ts, tsx]
+        pass_filenames: false
+
+      - id: eslint
+        name: ESLint (frontend)
+        language: system
+        entry: bash -c 'cd frontend && npm run lint'
+        types_or: [ts, tsx]
+        pass_filenames: false

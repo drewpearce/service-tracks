@@ -76,9 +76,7 @@ class SpotifyAdapter(StreamingAdapter):
         now = datetime.now(timezone.utc)
         if now + self.TOKEN_REFRESH_BUFFER >= token_expires_at:
             if self._db is None:
-                raise RuntimeError(
-                    "SpotifyAdapter requires a db session for token refresh but none was provided."
-                )
+                raise RuntimeError("SpotifyAdapter requires a db session for token refresh but none was provided.")
             new_access_token = await refresh_spotify_token(self._db, self._connection)
             self._access_token = new_access_token
 
@@ -171,11 +169,7 @@ class SpotifyAdapter(StreamingAdapter):
             params={"fields": "items(track(uri))"},
         )
         data = response.json()
-        return [
-            item["track"]["uri"]
-            for item in data["items"]
-            if item.get("track")
-        ]
+        return [item["track"]["uri"] for item in data["items"] if item.get("track")]
 
     async def replace_playlist_tracks(self, playlist_id: str, track_ids: list[str]) -> None:
         """Replace all tracks in a Spotify playlist."""
