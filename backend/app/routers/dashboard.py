@@ -103,6 +103,8 @@ async def dashboard(
                     unmatched_in_plan = sum(1 for s in plan_songs if not s.matched)
                     unmatched_song_count += unmatched_in_plan
 
+                    # Include both per-plan playlists and shared playlists ("__shared__")
+                    plan_playlist_rows = playlists_by_plan.get(plan.id, []) + playlists_by_plan.get("__shared__", [])
                     plan_playlists = [
                         PlanPlaylist(
                             platform=pl.platform,
@@ -110,7 +112,7 @@ async def dashboard(
                             url=pl.external_playlist_url,
                             last_synced_at=(pl.last_synced_at.isoformat() if pl.last_synced_at else None),
                         )
-                        for pl in playlists_by_plan.get(plan.id, [])
+                        for pl in plan_playlist_rows
                     ]
 
                     upcoming_plans.append(
