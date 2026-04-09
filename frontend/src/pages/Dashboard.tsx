@@ -14,28 +14,36 @@ export default function Dashboard() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Spotify OAuth callback banner
+  // Spotify OAuth callback banner — derive initial state from URL to avoid setState-in-effect
+  const initialSpotifyParam = searchParams.get("spotify");
+  const computeInitialBanner = (): {
+    type: "success" | "error";
+    message: string;
+  } | null => {
+    if (initialSpotifyParam === "connected") {
+      return { type: "success", message: "Spotify connected successfully!" };
+    }
+    if (initialSpotifyParam === "error" || initialSpotifyParam === "denied") {
+      return {
+        type: "error",
+        message:
+          initialSpotifyParam === "denied"
+            ? "Spotify connection was denied."
+            : "Failed to connect Spotify. Please try again.",
+      };
+    }
+    return null;
+  };
   const [spotifyBanner, setSpotifyBanner] = useState<{
     type: "success" | "error";
     message: string;
-  } | null>(null);
+  } | null>(computeInitialBanner);
 
   useEffect(() => {
-    const spotify = searchParams.get("spotify");
-    if (spotify === "connected") {
-      setSpotifyBanner({ type: "success", message: "Spotify connected successfully!" });
-      navigate("/dashboard", { replace: true });
-    } else if (spotify === "error" || spotify === "denied") {
-      setSpotifyBanner({
-        type: "error",
-        message:
-          spotify === "denied"
-            ? "Spotify connection was denied."
-            : "Failed to connect Spotify. Please try again.",
-      });
+    if (initialSpotifyParam) {
       navigate("/dashboard", { replace: true });
     }
-  }, [searchParams, navigate]);
+  }, [initialSpotifyParam, navigate]);
 
   // Auto-dismiss banner after 5 seconds
   useEffect(() => {

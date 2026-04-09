@@ -20,22 +20,38 @@ export default function SongMatch() {
   const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     if (!debouncedQuery.trim()) {
-      setResults(null);
-      return;
+      // Schedule clear asynchronously to avoid synchronous setState in effect body
+      queueMicrotask(() => {
+        if (!cancelled) setResults(null);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
-    setSearching(true);
-    setSearchError(null);
-    apiClient<SearchResponse>(
-      `/api/songs/search?platform=spotify&q=${encodeURIComponent(debouncedQuery)}`
-    )
-      .then((data) => setResults(data))
-      .catch((err) => {
-        if (err instanceof ApiClientError) {
-          setSearchError("Search failed. Please try again.");
-        }
-      })
-      .finally(() => setSearching(false));
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setSearching(true);
+      setSearchError(null);
+      apiClient<SearchResponse>(
+        `/api/songs/search?platform=spotify&q=${encodeURIComponent(debouncedQuery)}`
+      )
+        .then((data) => {
+          if (!cancelled) setResults(data);
+        })
+        .catch((err) => {
+          if (!cancelled && err instanceof ApiClientError) {
+            setSearchError("Search failed. Please try again.");
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setSearching(false);
+        });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedQuery]);
 
   return (
