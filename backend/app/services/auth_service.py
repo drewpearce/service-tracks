@@ -97,9 +97,7 @@ async def delete_all_user_sessions(db: AsyncSession, user_id: uuid.UUID) -> None
 # ---------------------------------------------------------------------------
 
 
-async def register_user(
-    db: AsyncSession, email: str, password: str, church_name: str
-) -> tuple[ChurchUser, Church]:
+async def register_user(db: AsyncSession, email: str, password: str, church_name: str) -> tuple[ChurchUser, Church]:
     # Check duplicate email
     result = await db.execute(select(ChurchUser).where(ChurchUser.email == email))
     if result.scalar_one_or_none() is not None:

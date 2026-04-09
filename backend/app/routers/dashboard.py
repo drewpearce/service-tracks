@@ -42,17 +42,13 @@ async def dashboard(
     church = church_result.scalar_one()
 
     # Fetch PCO connection
-    pco_conn_result = await db.execute(
-        select(PcoConnection).where(PcoConnection.church_id == church_id)
-    )
+    pco_conn_result = await db.execute(select(PcoConnection).where(PcoConnection.church_id == church_id))
     pco_conn = pco_conn_result.scalar_one_or_none()
     pco_connected = pco_conn is not None and pco_conn.status == "active"
     service_type_selected = church.pco_service_type_id is not None
 
     # Fetch streaming connections
-    streaming_result = await db.execute(
-        select(StreamingConnection).where(StreamingConnection.church_id == church_id)
-    )
+    streaming_result = await db.execute(select(StreamingConnection).where(StreamingConnection.church_id == church_id))
     streaming_conns = streaming_result.scalars().all()
     streaming_connections = [
         StreamingConnectionStatus(
@@ -77,25 +73,19 @@ async def dashboard(
 
                 async def fetch_songs(plan_id: str):
                     try:
-                        return await pco_client.get_plan_songs(
-                            church.pco_service_type_id, plan_id
-                        )
+                        return await pco_client.get_plan_songs(church.pco_service_type_id, plan_id)
                     except PcoApiError:
                         return []
 
                 all_songs = await asyncio.gather(*[fetch_songs(p.id) for p in plans])
 
                 # Song mappings for match checking
-                mappings_result = await db.execute(
-                    select(SongMapping).where(SongMapping.church_id == church_id)
-                )
+                mappings_result = await db.execute(select(SongMapping).where(SongMapping.church_id == church_id))
                 all_mappings = mappings_result.scalars().all()
                 mapped_song_ids = {m.pco_song_id for m in all_mappings}
 
                 # Playlists indexed by plan id
-                playlists_result = await db.execute(
-                    select(Playlist).where(Playlist.church_id == church_id)
-                )
+                playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
                 all_playlists = playlists_result.scalars().all()
                 playlists_by_plan: dict[str, list[Playlist]] = {}
                 for pl in all_playlists:
@@ -118,9 +108,7 @@ async def dashboard(
                             platform=pl.platform,
                             status=pl.sync_status,
                             url=pl.external_playlist_url,
-                            last_synced_at=(
-                                pl.last_synced_at.isoformat() if pl.last_synced_at else None
-                            ),
+                            last_synced_at=(pl.last_synced_at.isoformat() if pl.last_synced_at else None),
                         )
                         for pl in playlists_by_plan.get(plan.id, [])
                     ]
@@ -141,10 +129,7 @@ async def dashboard(
 
     # Fetch recent syncs (last 5, ordered by most recent first)
     sync_log_result = await db.execute(
-        select(SyncLog)
-        .where(SyncLog.church_id == church_id)
-        .order_by(SyncLog.started_at.desc())
-        .limit(5)
+        select(SyncLog).where(SyncLog.church_id == church_id).order_by(SyncLog.started_at.desc()).limit(5)
     )
     sync_logs = sync_log_result.scalars().all()
     recent_syncs = [

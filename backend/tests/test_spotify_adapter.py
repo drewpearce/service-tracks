@@ -80,9 +80,7 @@ async def test_search_tracks_success(db: AsyncSession, church_id: uuid.UUID):
     conn = await make_streaming_connection(db, church_id)
     adapter = SpotifyAdapter(conn, db)
 
-    respx.get("https://api.spotify.com/v1/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_RESPONSE))
 
     results = await adapter.search_tracks("How Great Is Our God")
 
@@ -105,9 +103,7 @@ async def test_search_tracks_empty(db: AsyncSession, church_id: uuid.UUID):
     conn = await make_streaming_connection(db, church_id)
     adapter = SpotifyAdapter(conn, db)
 
-    respx.get("https://api.spotify.com/v1/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE))
 
     results = await adapter.search_tracks("nonexistent track xyz")
     assert results == []
@@ -170,6 +166,7 @@ async def test_replace_playlist_tracks_success(db: AsyncSession, church_id: uuid
 
     assert put_mock.called
     import json
+
     request_body = json.loads(put_mock.calls[0].request.content)
     assert request_body["uris"] == track_ids
 
@@ -189,9 +186,7 @@ async def test_validate_connection_success(db: AsyncSession, church_id: uuid.UUI
     conn = await make_streaming_connection(db, church_id)
     adapter = SpotifyAdapter(conn, db)
 
-    respx.get("https://api.spotify.com/v1/me").mock(
-        return_value=Response(200, json=SPOTIFY_USER_PROFILE_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/me").mock(return_value=Response(200, json=SPOTIFY_USER_PROFILE_RESPONSE))
 
     result = await adapter.validate_connection()
     assert result is True
@@ -290,9 +285,7 @@ async def test_token_refresh_with_new_refresh_token(db: AsyncSession, church_id:
         return_value=Response(200, json=SPOTIFY_TOKEN_REFRESH_WITH_NEW_REFRESH)
     )
     # Mock the actual API call
-    respx.get("https://api.spotify.com/v1/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE))
 
     await adapter.search_tracks("test")
 
@@ -322,9 +315,7 @@ async def test_token_refresh_without_new_refresh_token(db: AsyncSession, church_
         return_value=Response(200, json=SPOTIFY_TOKEN_REFRESH_WITHOUT_NEW_REFRESH)
     )
     # Mock the actual API call
-    respx.get("https://api.spotify.com/v1/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE))
 
     await adapter.search_tracks("test")
 
@@ -347,9 +338,7 @@ async def test_no_refresh_when_token_not_expiring(db: AsyncSession, church_id: u
     adapter = SpotifyAdapter(conn, db)
 
     token_route = respx.post("https://accounts.spotify.com/api/token")
-    respx.get("https://api.spotify.com/v1/search").mock(
-        return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE)
-    )
+    respx.get("https://api.spotify.com/v1/search").mock(return_value=Response(200, json=SPOTIFY_SEARCH_EMPTY_RESPONSE))
 
     await adapter.search_tracks("test")
 

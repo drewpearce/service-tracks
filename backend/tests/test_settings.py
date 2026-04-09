@@ -51,9 +51,7 @@ async def test_patch_settings_unauthenticated(client: AsyncClient):
     assert response.status_code == 401
 
 
-async def test_patch_settings_updates_playlist_mode(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_patch_settings_updates_playlist_mode(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """PATCH updates playlist_mode and returns the new value."""
     csrf = ""
     # Get a CSRF token first

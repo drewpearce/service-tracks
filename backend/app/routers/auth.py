@@ -178,9 +178,7 @@ async def me(request: Request, db: AsyncSession = Depends(get_db)):
 
 @router.post("/verify-email")
 async def verify_email(body: VerifyEmailRequest, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email_verification_token == body.token)
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email_verification_token == body.token))
     user = result.scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=400, detail="invalid_or_expired_token")
@@ -212,8 +210,7 @@ async def resend_verification(request: Request, db: AsyncSession = Depends(get_d
         return MessageResponse(message="Email already verified.")
     if (
         user.email_verification_sent_at is not None
-        and datetime.now(timezone.utc) - user.email_verification_sent_at.replace(tzinfo=timezone.utc)
-        < RESEND_COOLDOWN
+        and datetime.now(timezone.utc) - user.email_verification_sent_at.replace(tzinfo=timezone.utc) < RESEND_COOLDOWN
     ):
         raise HTTPException(
             status_code=429,
@@ -254,16 +251,13 @@ async def forgot_password(body: ForgotPasswordRequest, db: AsyncSession = Depend
 @router.post("/reset-password")
 async def reset_password(body: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
     hashed = hashlib.sha256(body.token.encode()).hexdigest()
-    result = await db.execute(
-        select(ChurchUser).where(ChurchUser.password_reset_token == hashed)
-    )
+    result = await db.execute(select(ChurchUser).where(ChurchUser.password_reset_token == hashed))
     user = result.scalar_one_or_none()
     if user is None:
         raise HTTPException(status_code=400, detail="invalid_or_expired_token")
     if (
         user.password_reset_sent_at is None
-        or datetime.now(timezone.utc) - user.password_reset_sent_at.replace(tzinfo=timezone.utc)
-        > RESET_TOKEN_EXPIRY
+        or datetime.now(timezone.utc) - user.password_reset_sent_at.replace(tzinfo=timezone.utc) > RESET_TOKEN_EXPIRY
     ):
         raise HTTPException(status_code=400, detail="invalid_or_expired_token")
 

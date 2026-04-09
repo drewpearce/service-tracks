@@ -62,13 +62,9 @@ async def test_get_plans_no_pco_connection(verified_authenticated_client: AsyncC
 
 
 @respx.mock
-async def test_get_plans_returns_plans_with_match_status(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_get_plans_returns_plans_with_match_status(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """Returns plans with song match status when PCO is connected."""
-    user_result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "verified@example.com")
-    )
+    user_result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
     user = user_result.scalar_one()
     await setup_pco_connection(db, user.church_id)
 

@@ -144,9 +144,7 @@ async def _find_church_by_pco_org(
     FUTURE OPTIMIZATION: Add a `pco_organization_id` (plaintext or hashed) column
     to pco_connection for direct SQL lookup. This avoids loading and decrypting all rows.
     """
-    result = await db.execute(
-        select(PcoConnection).where(PcoConnection.status == "active")
-    )
+    result = await db.execute(select(PcoConnection).where(PcoConnection.status == "active"))
     connections = result.scalars().all()
 
     for conn in connections:

@@ -46,9 +46,7 @@ async def test_require_auth_authenticated_verified(
 # ---------------------------------------------------------------------------
 
 
-async def test_dashboard_returns_church_name(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_dashboard_returns_church_name(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """Dashboard response includes the correct church name."""
     response = await verified_authenticated_client.get("/api/dashboard")
     assert response.status_code == 200
@@ -69,13 +67,9 @@ async def test_dashboard_pco_not_connected(
     assert body["upcoming_plans"] == []
 
 
-async def test_dashboard_pco_connected(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_dashboard_pco_connected(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """When PCO connection exists, pco_connected should be True."""
-    user_result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "verified@example.com")
-    )
+    user_result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
     user = user_result.scalar_one()
 
     conn = PcoConnection(
@@ -94,13 +88,9 @@ async def test_dashboard_pco_connected(
     assert body["pco_connected"] is True
 
 
-async def test_dashboard_service_type_selected(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_dashboard_service_type_selected(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """When service_type_id is set on church, service_type_selected is True."""
-    user_result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "verified@example.com")
-    )
+    user_result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
     user = user_result.scalar_one()
 
     church_result = await db.execute(select(Church).where(Church.id == user.church_id))
@@ -114,13 +104,9 @@ async def test_dashboard_service_type_selected(
     assert body["service_type_selected"] is True
 
 
-async def test_dashboard_recent_syncs_max_5(
-    verified_authenticated_client: AsyncClient, db: AsyncSession
-):
+async def test_dashboard_recent_syncs_max_5(verified_authenticated_client: AsyncClient, db: AsyncSession):
     """Recent syncs returns at most 5 entries, ordered by most recent first."""
-    user_result = await db.execute(
-        select(ChurchUser).where(ChurchUser.email == "verified@example.com")
-    )
+    user_result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
     user = user_result.scalar_one()
 
     now = datetime.now(timezone.utc)

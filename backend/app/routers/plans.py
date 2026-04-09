@@ -60,16 +60,12 @@ async def get_plans(
     all_songs = await asyncio.gather(*[fetch_songs(p.id) for p in plans])
 
     # Fetch all song mappings for this church (for match checking)
-    mappings_result = await db.execute(
-        select(SongMapping).where(SongMapping.church_id == church_id)
-    )
+    mappings_result = await db.execute(select(SongMapping).where(SongMapping.church_id == church_id))
     all_mappings = mappings_result.scalars().all()
     mapped_song_ids = {m.pco_song_id for m in all_mappings}
 
     # Fetch all playlists for this church
-    playlists_result = await db.execute(
-        select(Playlist).where(Playlist.church_id == church_id)
-    )
+    playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
     all_playlists = playlists_result.scalars().all()
     # Index by pco_plan_id
     playlists_by_plan: dict[str, list[Playlist]] = {}
