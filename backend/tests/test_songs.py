@@ -284,7 +284,7 @@ async def test_search_stale_cache_refreshed(verified_authenticated_client: Async
     # Verify the cache row was updated
     await db.refresh(cache_row)
     assert len(cache_row.results) == 2
-    assert cache_row.created_at > stale_created_at
+    assert cache_row.created_at.replace(tzinfo=None) > stale_created_at
 
 
 # ---------------------------------------------------------------------------
