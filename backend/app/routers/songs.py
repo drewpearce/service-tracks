@@ -8,6 +8,7 @@ from starlette.responses import Response
 
 from app.adapters.pco_client import PcoAuthError, PcoRateLimitError, PcoServerError
 from app.adapters.spotify_adapter import SpotifyApiError, SpotifyAuthError, SpotifyRateLimitError
+from app.adapters.youtube_adapter import YouTubeApiError, YouTubeAuthError, YouTubeRateLimitError
 from app.database import get_db
 from app.dependencies import require_verified_email
 from app.rate_limit import limiter
@@ -23,7 +24,7 @@ from app.services import song_service
 
 router = APIRouter(prefix="/api/songs", tags=["songs"])
 
-SUPPORTED_PLATFORMS = {"spotify"}
+SUPPORTED_PLATFORMS = {"spotify", "youtube"}
 
 
 # ---------------------------------------------------------------------------
@@ -91,15 +92,20 @@ async def search_songs(
         if str(e) == "streaming_not_connected":
             raise HTTPException(status_code=400, detail="streaming_not_connected") from e
         raise
-    except SpotifyAuthError as exc:
+    except (SpotifyAuthError, YouTubeAuthError) as exc:
         raise HTTPException(status_code=502, detail="streaming_auth_error") from exc
     except SpotifyRateLimitError as exc:
         raise HTTPException(
             status_code=503,
             detail=f"Spotify rate limit exceeded. Retry after {exc.retry_after} seconds.",
         ) from exc
-    except SpotifyApiError as exc:
-        raise HTTPException(status_code=502, detail=f"Spotify API error: {exc.message}") from exc
+    except YouTubeRateLimitError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"YouTube rate limit exceeded. Retry after {exc.retry_after} seconds.",
+        ) from exc
+    except (SpotifyApiError, YouTubeApiError) as exc:
+        raise HTTPException(status_code=502, detail=f"Streaming API error: {exc.message}") from exc
 
     return SearchResponse(results=results)
 

@@ -1,24 +1,52 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { apiClient, ApiClientError } from "../api/client";
 import SongMappingTable from "../components/SongMappingTable";
-import type { MappingsResponse, UnmatchedSongsResponse } from "../types/api";
+import type { MappingsResponse, StreamingStatusResponse, UnmatchedSongsResponse } from "../types/api";
 
 type Tab = "unmatched" | "mappings";
 
+const PLATFORM_LABELS: Record<string, string> = {
+  spotify: "Spotify",
+  youtube: "YouTube Music",
+};
+
 export default function Songs() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const platform = searchParams.get("platform") ?? "spotify";
+
   const [tab, setTab] = useState<Tab>("unmatched");
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([]);
+  const initialPlatform = useRef(platform);
   const [unmatchedData, setUnmatchedData] = useState<UnmatchedSongsResponse | null>(null);
   const [mappingsData, setMappingsData] = useState<MappingsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadUnmatched() {
+  // Load connected platforms once on mount to populate the platform selector
+  useEffect(() => {
+    apiClient<StreamingStatusResponse>("/api/streaming/status")
+      .then((s) => {
+        const active = s.connections
+          .filter((c) => c.connected)
+          .map((c) => c.platform);
+        setConnectedPlatforms(active);
+        // If the URL platform isn't connected, default to first connected platform
+        if (active.length > 0 && !active.includes(initialPlatform.current)) {
+          setSearchParams({ platform: active[0] }, { replace: true });
+        }
+      })
+      .catch(() => {
+        // Non-fatal — fall back to default platform
+      });
+  }, [setSearchParams]);
+
+  async function loadUnmatched(p: string) {
     setLoading(true);
     setError(null);
     try {
       const data = await apiClient<UnmatchedSongsResponse>(
-        "/api/songs/unmatched?platform=spotify"
+        `/api/songs/unmatched?platform=${p}`
       );
       setUnmatchedData(data);
     } catch (err) {
@@ -32,12 +60,12 @@ export default function Songs() {
     }
   }
 
-  async function loadMappings() {
+  async function loadMappings(p: string) {
     setLoading(true);
     setError(null);
     try {
       const data = await apiClient<MappingsResponse>(
-        "/api/songs/mappings?platform=spotify"
+        `/api/songs/mappings?platform=${p}`
       );
       setMappingsData(data);
     } catch (err) {
@@ -53,20 +81,47 @@ export default function Songs() {
 
   useEffect(() => {
     if (tab === "unmatched") {
-      void loadUnmatched();
+      void loadUnmatched(platform);
     } else {
-      void loadMappings();
+      void loadMappings(platform);
     }
-  }, [tab]);
+  }, [tab, platform]);
 
   function handleTabChange(newTab: Tab) {
     setError(null);
     setTab(newTab);
   }
 
+  function handlePlatformChange(p: string) {
+    setError(null);
+    setUnmatchedData(null);
+    setMappingsData(null);
+    setSearchParams({ platform: p });
+  }
+
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">Songs</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">Songs</h1>
+
+        {/* Platform selector — only show when more than one platform is connected */}
+        {connectedPlatforms.length > 1 && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Platform:</span>
+            <select
+              value={platform}
+              onChange={(e) => handlePlatformChange(e.target.value)}
+              className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
+            >
+              {connectedPlatforms.map((p) => (
+                <option key={p} value={p}>
+                  {PLATFORM_LABELS[p] ?? p}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-4 border-b border-gray-200">
@@ -129,7 +184,7 @@ export default function Songs() {
                   )}
                 </div>
                 <Link
-                  to={`/songs/match/${song.pco_song_id}?title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist ?? "")}`}
+                  to={`/songs/match/${song.pco_song_id}?title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist ?? "")}&platform=${platform}`}
                   className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
                 >
                   Match
@@ -145,7 +200,7 @@ export default function Songs() {
         <div className="rounded-lg bg-white p-4 shadow">
           <SongMappingTable
             mappings={mappingsData.mappings}
-            onRefresh={() => void loadMappings()}
+            onRefresh={() => void loadMappings(platform)}
           />
         </div>
       )}

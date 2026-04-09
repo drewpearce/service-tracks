@@ -113,14 +113,14 @@ async def spotify_callback(
     matching state against all pending connections.
     """
     error_redirect = RedirectResponse(
-        url=f"{settings.FRONTEND_URL}/dashboard?spotify=error",
+        url=f"{settings.FRONTEND_URL}/setup/streaming?spotify=error",
         status_code=302,
     )
 
     # User denied authorization
     if error:
         return RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/dashboard?spotify=denied",
+            url=f"{settings.FRONTEND_URL}/setup/streaming?spotify=denied",
             status_code=302,
         )
 
@@ -219,7 +219,7 @@ async def spotify_callback(
     logger.info("spotify_connected", church_id=str(church_id), spotify_user_id=spotify_user_id)
 
     return RedirectResponse(
-        url=f"{settings.FRONTEND_URL}/dashboard?spotify=connected",
+        url=f"{settings.FRONTEND_URL}/setup/streaming?spotify=connected",
         status_code=302,
     )
 
@@ -303,13 +303,13 @@ async def youtube_callback(
     Exempt from session auth — matched to a pending connection via OAuth state.
     """
     error_redirect = RedirectResponse(
-        url=f"{settings.FRONTEND_URL}/dashboard?youtube=error",
+        url=f"{settings.FRONTEND_URL}/setup/streaming?youtube=error",
         status_code=302,
     )
 
     if error:
         return RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/dashboard?youtube=denied",
+            url=f"{settings.FRONTEND_URL}/setup/streaming?youtube=denied",
             status_code=302,
         )
 
@@ -366,6 +366,7 @@ async def youtube_callback(
         logger.error(
             "youtube_token_exchange_failed",
             status_code=token_response.status_code,
+            response_body=token_response.text,
             church_id=str(church_id),
         )
         return error_redirect
@@ -387,13 +388,14 @@ async def youtube_callback(
         logger.error(
             "youtube_channel_fetch_failed",
             status_code=channel_response.status_code,
+            response_body=channel_response.text,
             church_id=str(church_id),
         )
         return error_redirect
 
     channel_items = channel_response.json().get("items", [])
     if not channel_items:
-        logger.error("youtube_channel_empty", church_id=str(church_id))
+        logger.error("youtube_channel_empty", church_id=str(church_id), response_body=channel_response.text)
         return error_redirect
 
     youtube_channel_id = channel_items[0]["id"]
@@ -409,7 +411,7 @@ async def youtube_callback(
     logger.info("youtube_connected", church_id=str(church_id), youtube_channel_id=youtube_channel_id)
 
     return RedirectResponse(
-        url=f"{settings.FRONTEND_URL}/dashboard?youtube=connected",
+        url=f"{settings.FRONTEND_URL}/setup/streaming?youtube=connected",
         status_code=302,
     )
 

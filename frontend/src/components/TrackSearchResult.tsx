@@ -8,6 +8,7 @@ interface TrackSearchResultProps {
   pcoSongId: string;
   pcoSongTitle: string;
   pcoSongArtist: string | null;
+  platform: string;
 }
 
 export default function TrackSearchResult({
@@ -15,6 +16,7 @@ export default function TrackSearchResult({
   pcoSongId,
   pcoSongTitle,
   pcoSongArtist,
+  platform,
 }: TrackSearchResultProps) {
   const navigate = useNavigate();
   const [selecting, setSelecting] = useState(false);
@@ -30,7 +32,7 @@ export default function TrackSearchResult({
         pco_song_id: pcoSongId,
         pco_song_title: pcoSongTitle,
         pco_song_artist: pcoSongArtist,
-        platform: "spotify",
+        platform: platform,
         track_id: track.track_id,
         track_title: track.title,
         track_artist: track.artist,
@@ -41,7 +43,7 @@ export default function TrackSearchResult({
         body: JSON.stringify(body),
       });
       setDone(true);
-      setTimeout(() => navigate("/songs"), 800);
+      setTimeout(() => navigate(`/songs?platform=${platform}`), 800);
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError("Failed to save match. Please try again.");
