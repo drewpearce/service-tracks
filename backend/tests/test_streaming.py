@@ -107,7 +107,7 @@ async def test_spotify_callback_success(verified_authenticated_client: AsyncClie
     )
 
     assert response.status_code == 302
-    assert "dashboard" in response.headers["location"]
+    assert "setup/streaming" in response.headers["location"]
     assert "spotify=connected" in response.headers["location"]
 
     # Verify DB was updated
