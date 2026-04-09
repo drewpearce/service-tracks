@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/authContext";
 import VerificationBanner from "./VerificationBanner";
 
 const NAV_LINKS = [

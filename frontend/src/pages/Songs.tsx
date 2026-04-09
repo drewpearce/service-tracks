@@ -57,7 +57,6 @@ export default function Songs() {
     } else {
       void loadMappings();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
 
   function handleTabChange(newTab: Tab) {

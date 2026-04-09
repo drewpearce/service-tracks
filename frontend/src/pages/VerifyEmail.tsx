@@ -6,12 +6,12 @@ type Status = "loading" | "success" | "error";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<Status>("loading");
+  const initialToken = searchParams.get("token");
+  const [status, setStatus] = useState<Status>(initialToken ? "loading" : "error");
 
   useEffect(() => {
     const token = searchParams.get("token");
     if (!token) {
-      setStatus("error");
       return;
     }
 

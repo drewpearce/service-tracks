@@ -18,7 +18,7 @@ repos:
       - id: tsc
         name: TypeScript type-check (frontend)
         language: system
-        entry: bash -c 'cd frontend && npm run build -- --noEmit 2>/dev/null || cd frontend && npx tsc --noEmit'
+        entry: bash -c 'cd frontend && npx tsc --noEmit'
         types_or: [ts, tsx]
         pass_filenames: false
 
