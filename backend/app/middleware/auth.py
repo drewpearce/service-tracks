@@ -15,6 +15,7 @@ EXEMPT_PATTERNS = [
     re.compile(r"^/api/auth/verify-email$"),
     re.compile(r"^/api/webhooks"),
     re.compile(r"^/api/streaming/spotify/callback$"),
+    re.compile(r"^/api/streaming/youtube/callback$"),
 ]
 
 

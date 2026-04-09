@@ -5,11 +5,17 @@ import TrackSearchResult from "../components/TrackSearchResult";
 import { useDebounce } from "../hooks/useDebounce";
 import type { SearchResponse } from "../types/api";
 
+const PLATFORM_LABELS: Record<string, string> = {
+  spotify: "Spotify",
+  youtube: "YouTube Music",
+};
+
 export default function SongMatch() {
   const { pcoSongId } = useParams<{ pcoSongId: string }>();
   const [searchParams] = useSearchParams();
   const title = searchParams.get("title") ?? "";
   const artist = searchParams.get("artist") ?? "";
+  const platform = searchParams.get("platform") ?? "spotify";
 
   const initialQuery = [title, artist].filter(Boolean).join(" ");
   const [query, setQuery] = useState(initialQuery);
@@ -22,7 +28,6 @@ export default function SongMatch() {
   useEffect(() => {
     let cancelled = false;
     if (!debouncedQuery.trim()) {
-      // Schedule clear asynchronously to avoid synchronous setState in effect body
       queueMicrotask(() => {
         if (!cancelled) setResults(null);
       });
@@ -35,7 +40,7 @@ export default function SongMatch() {
       setSearching(true);
       setSearchError(null);
       apiClient<SearchResponse>(
-        `/api/songs/search?platform=spotify&q=${encodeURIComponent(debouncedQuery)}`
+        `/api/songs/search?platform=${platform}&q=${encodeURIComponent(debouncedQuery)}`
       )
         .then((data) => {
           if (!cancelled) setResults(data);
@@ -52,12 +57,14 @@ export default function SongMatch() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, platform]);
+
+  const platformLabel = PLATFORM_LABELS[platform] ?? platform;
 
   return (
     <div className="max-w-xl space-y-4">
       <div className="flex items-center gap-3">
-        <Link to="/songs" className="text-sm text-blue-600 hover:underline">
+        <Link to={`/songs?platform=${platform}`} className="text-sm text-blue-600 hover:underline">
           ← Back to songs
         </Link>
       </div>
@@ -67,9 +74,13 @@ export default function SongMatch() {
         {artist && <span className="text-base font-normal text-gray-500"> — {artist}</span>}
       </h1>
 
+      <p className="text-sm text-gray-500">
+        Searching <span className="font-medium text-gray-700">{platformLabel}</span>
+      </p>
+
       <div>
         <label htmlFor="search" className="block text-sm font-medium text-gray-700">
-          Search Spotify
+          Search {platformLabel}
         </label>
         <input
           id="search"
@@ -101,6 +112,7 @@ export default function SongMatch() {
                 pcoSongId={pcoSongId ?? ""}
                 pcoSongTitle={title}
                 pcoSongArtist={artist || null}
+                platform={platform}
               />
             ))
           )}
