@@ -68,6 +68,10 @@ export interface SpotifyAuthorizeResponse {
   authorization_url: string;
 }
 
+export interface YouTubeAuthorizeResponse {
+  authorization_url: string;
+}
+
 export interface UnmatchedSong {
   pco_song_id: string;
   title: string;

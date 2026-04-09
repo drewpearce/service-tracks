@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     SPOTIFY_CLIENT_SECRET: str = ""
     SPOTIFY_REDIRECT_URI: str = "http://127.0.0.1:8000/api/streaming/spotify/callback"
 
+    # YouTube OAuth
+    YOUTUBE_CLIENT_ID: str = ""
+    YOUTUBE_CLIENT_SECRET: str = ""
+    YOUTUBE_REDIRECT_URI: str = "http://127.0.0.1:8000/api/streaming/youtube/callback"
+
     # Email (Resend)
     RESEND_API_KEY: str = ""
     RESEND_FROM_EMAIL: str = "noreply@localhost"

@@ -7,6 +7,10 @@ class SpotifyAuthorizeResponse(BaseModel):
     authorization_url: str
 
 
+class YouTubeAuthorizeResponse(BaseModel):
+    authorization_url: str
+
+
 class StreamingConnectionStatus(BaseModel):
     platform: str
     connected: bool

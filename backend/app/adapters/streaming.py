@@ -71,4 +71,8 @@ def get_streaming_adapter(
         from app.adapters.spotify_adapter import SpotifyAdapter
 
         return SpotifyAdapter(connection, db=db)
+    if platform == "youtube":
+        from app.adapters.youtube_adapter import YouTubeAdapter
+
+        return YouTubeAdapter(connection, db=db)
     raise NotImplementedError(f"Unsupported streaming platform: {platform}")
