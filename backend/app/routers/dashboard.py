@@ -128,7 +128,7 @@ async def dashboard(
                     upcoming_plans.append(
                         PlanWithSongs(
                             pco_plan_id=plan.id,
-                            date=plan.sort_date,
+                            date=plan.sort_date[:10],
                             title=plan.title,
                             songs=plan_songs,
                             playlists=plan_playlists,
