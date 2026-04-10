@@ -103,8 +103,9 @@ async def dashboard(
                     unmatched_in_plan = sum(1 for s in plan_songs if not s.matched)
                     unmatched_song_count += unmatched_in_plan
 
-                    # Include both per-plan playlists and shared playlists ("__shared__")
-                    plan_playlist_rows = playlists_by_plan.get(plan.id, []) + playlists_by_plan.get("__shared__", [])
+                    # Look up playlists using the same key the sync engine uses
+                    lookup_key = "__shared__" if church.playlist_mode == "shared" else plan.id
+                    plan_playlist_rows = playlists_by_plan.get(lookup_key, [])
                     plan_playlists = [
                         PlanPlaylist(
                             platform=pl.platform,
