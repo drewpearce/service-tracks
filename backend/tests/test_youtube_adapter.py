@@ -1,7 +1,12 @@
-"""Unit tests for YouTubeAdapter using respx for HTTP mocking."""
+"""Unit tests for YouTubeAdapter.
+
+Search tests mock ytmusicapi.YTMusic.search directly (unauthenticated, no HTTP).
+All other tests use respx to mock the YouTube Data API v3.
+"""
 
 import uuid
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 import pytest
 import pytest_asyncio
@@ -21,32 +26,30 @@ from app.utils.encryption import decrypt, encrypt
 # ---------------------------------------------------------------------------
 
 
-YOUTUBE_SEARCH_RESPONSE = {
-    "items": [
-        {
-            "id": {"kind": "youtube#video", "videoId": "abc123XYZ01"},
-            "snippet": {
-                "title": "How Great Is Our God",
-                "channelTitle": "Chris Tomlin",
-                "thumbnails": {
-                    "default": {"url": "https://i.ytimg.com/vi/abc123XYZ01/default.jpg"},
-                    "medium": {"url": "https://i.ytimg.com/vi/abc123XYZ01/mqdefault.jpg"},
-                    "high": {"url": "https://i.ytimg.com/vi/abc123XYZ01/hqdefault.jpg"},
-                },
-            },
-        },
-        {
-            "id": {"kind": "youtube#video", "videoId": "def456UVW02"},
-            "snippet": {
-                "title": "Amazing Grace",
-                "channelTitle": "Various Artists",
-                "thumbnails": {
-                    "default": {"url": "https://i.ytimg.com/vi/def456UVW02/default.jpg"},
-                },
-            },
-        },
-    ]
-}
+# ytmusicapi-shaped search results (filter='songs')
+FAKE_YTM_RESULTS = [
+    {
+        "videoId": "abc123XYZ01",
+        "title": "How Great Is Our God",
+        "artists": [{"name": "Chris Tomlin", "id": "UC_tomlin"}],
+        "album": {"name": "Arriving", "id": "MPR_arriving"},
+        "thumbnails": [
+            {"url": "https://lh3.googleusercontent.com/thumb_small.jpg", "width": 60, "height": 60},
+            {"url": "https://lh3.googleusercontent.com/thumb_large.jpg", "width": 226, "height": 226},
+        ],
+        "category": "Songs",
+    },
+    {
+        "videoId": "def456UVW02",
+        "title": "Amazing Grace",
+        "artists": [{"name": "Various Artists", "id": "UC_va"}],
+        "album": None,
+        "thumbnails": [
+            {"url": "https://lh3.googleusercontent.com/thumb2.jpg", "width": 60, "height": 60},
+        ],
+        "category": "Songs",
+    },
+]
 
 YOUTUBE_CREATE_PLAYLIST_RESPONSE = {
     "id": "PL_ytplaylist123",
@@ -109,24 +112,20 @@ async def church_id(db: AsyncSession) -> uuid.UUID:
 
 
 @pytest.mark.asyncio
-@respx.mock
 async def test_search_tracks_success_writes_cache(db: AsyncSession, church_id: uuid.UUID):
     conn = await make_streaming_connection(db, church_id)
     adapter = YouTubeAdapter(conn, db)
 
-    respx.get("https://www.googleapis.com/youtube/v3/search").mock(
-        return_value=Response(200, json=YOUTUBE_SEARCH_RESPONSE)
-    )
-
-    results = await adapter.search_tracks("How Great Is Our God")
+    with patch("app.adapters.youtube_adapter.YTMusic.search", return_value=FAKE_YTM_RESULTS):
+        results = await adapter.search_tracks("How Great Is Our God")
 
     assert len(results) == 2
     first = results[0]
     assert first.track_id == "abc123XYZ01"
     assert first.title == "How Great Is Our God"
     assert first.artist == "Chris Tomlin"
-    assert first.album is None
-    assert first.image_url == "https://i.ytimg.com/vi/abc123XYZ01/hqdefault.jpg"
+    assert first.album == "Arriving"
+    assert first.image_url == "https://lh3.googleusercontent.com/thumb_large.jpg"
     assert first.duration_ms is None
 
     # Cache row should exist
@@ -143,13 +142,11 @@ async def test_search_tracks_success_writes_cache(db: AsyncSession, church_id: u
 
 
 @pytest.mark.asyncio
-@respx.mock
 async def test_search_tracks_uses_fresh_cache(db: AsyncSession, church_id: uuid.UUID):
-    """When cache is fresh (<7 days), no API call should be made."""
+    """When cache is fresh (<7 days), ytmusicapi should not be called."""
     conn = await make_streaming_connection(db, church_id)
     adapter = YouTubeAdapter(conn, db)
 
-    # Seed the cache manually
     db.add(
         SearchCache(
             platform="youtube",
@@ -170,51 +167,47 @@ async def test_search_tracks_uses_fresh_cache(db: AsyncSession, church_id: uuid.
     )
     await db.flush()
 
-    search_route = respx.get("https://www.googleapis.com/youtube/v3/search")
+    with patch("app.adapters.youtube_adapter.YTMusic.search") as mock_search:
+        results = await adapter.search_tracks("cached query")
+        mock_search.assert_not_called()
 
-    results = await adapter.search_tracks("cached query")
-
-    assert not search_route.called
     assert len(results) == 1
     assert results[0].track_id == "cached_video_id"
     assert results[0].title == "Cached Title"
 
 
 @pytest.mark.asyncio
-@respx.mock
 async def test_search_tracks_ignores_stale_cache(db: AsyncSession, church_id: uuid.UUID):
-    """When cache is older than 7 days, API should be called again."""
+    """When cache is older than 7 days, ytmusicapi should be called and cache refreshed."""
     conn = await make_streaming_connection(db, church_id)
     adapter = YouTubeAdapter(conn, db)
 
     stale_created_at = datetime.now(timezone.utc) - timedelta(days=8)
-    stale_row = SearchCache(
-        platform="youtube",
-        query="stale query",
-        results={
-            "items": [
-                {
-                    "track_id": "old_video_id",
-                    "title": "Old Title",
-                    "artist": "Old Artist",
-                    "album": None,
-                    "image_url": None,
-                    "duration_ms": None,
-                }
-            ]
-        },
-        created_at=stale_created_at,
+    db.add(
+        SearchCache(
+            platform="youtube",
+            query="stale query",
+            results={
+                "items": [
+                    {
+                        "track_id": "old_video_id",
+                        "title": "Old Title",
+                        "artist": "Old Artist",
+                        "album": None,
+                        "image_url": None,
+                        "duration_ms": None,
+                    }
+                ]
+            },
+            created_at=stale_created_at,
+        )
     )
-    db.add(stale_row)
     await db.flush()
 
-    search_route = respx.get("https://www.googleapis.com/youtube/v3/search").mock(
-        return_value=Response(200, json=YOUTUBE_SEARCH_RESPONSE)
-    )
+    with patch("app.adapters.youtube_adapter.YTMusic.search", return_value=FAKE_YTM_RESULTS) as mock_search:
+        results = await adapter.search_tracks("stale query")
+        mock_search.assert_called_once()
 
-    results = await adapter.search_tracks("stale query")
-
-    assert search_route.called
     # Fresh results returned (not the stale cached ones)
     assert results[0].track_id == "abc123XYZ01"
 
