@@ -14,10 +14,8 @@ export default function SongMappingTable({ mappings, onRefresh }: SongMappingTab
   async function handleRemove(id: string) {
     if (!window.confirm("Remove this song mapping?")) return;
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       await apiClient(`/api/songs/mappings/${id}`, {
         method: "DELETE",
-        headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
       });
       onRefresh();
     } catch (err) {

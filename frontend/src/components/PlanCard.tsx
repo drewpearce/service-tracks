@@ -22,13 +22,9 @@ export default function PlanCard({ plan }: PlanCardProps) {
     setSyncError(null);
     setDisplayPlaylists(null);
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const response = await apiClient<SyncTriggerResponse>(
         `/api/plans/${plan.pco_plan_id}/sync`,
-        {
-          method: "POST",
-          headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
-        }
+        { method: "POST" }
       );
       setSyncStatus(response.sync_status);
       setMatchedCount(response.songs_matched);

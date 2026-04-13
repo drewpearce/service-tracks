@@ -27,7 +27,6 @@ export default function TrackSearchResult({
     setError(null);
     setSelecting(true);
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const body: MatchRequest = {
         pco_song_id: pcoSongId,
         pco_song_title: pcoSongTitle,
@@ -39,7 +38,6 @@ export default function TrackSearchResult({
       };
       await apiClient("/api/songs/match", {
         method: "POST",
-        headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
         body: JSON.stringify(body),
       });
       setDone(true);
