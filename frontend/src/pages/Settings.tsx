@@ -38,10 +38,8 @@ export default function Settings() {
     setSaveError(null);
     setSaveSuccess(false);
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       await apiClient<ChurchSettings>("/api/settings", {
         method: "PATCH",
-        headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
         body: JSON.stringify({
           playlist_mode: playlistMode,
           playlist_name_template: nameTemplate,

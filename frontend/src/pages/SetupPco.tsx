@@ -43,10 +43,8 @@ export default function SetupPco() {
     setConnectError(null);
     setConnecting(true);
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const response = await apiClient<PcoConnectResponse>("/api/pco/connect", {
         method: "POST",
-        headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
         body: JSON.stringify({ application_id: appId, secret }),
       });
       setServiceTypes(response.service_types);
@@ -82,12 +80,10 @@ export default function SetupPco() {
     setSelectError(null);
     setSelecting(true);
     try {
-      const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const response = await apiClient<SelectServiceTypeResponse>(
         "/api/pco/select-service-type",
         {
           method: "POST",
-          headers: { "X-CSRF-Token": decodeURIComponent(csrf) },
           body: JSON.stringify({ service_type_id: selectedServiceTypeId }),
         }
       );
