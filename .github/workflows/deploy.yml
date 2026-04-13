@@ -69,3 +69,10 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Verify TLS certs (informational)
+        run: |
+          flyctl certs show service-tracks.com || echo "::warning::Cert for service-tracks.com not yet confirmed"
+          flyctl certs show www.service-tracks.com || echo "::warning::Cert for www not yet confirmed"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
