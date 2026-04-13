@@ -137,6 +137,7 @@ export interface PlanPlaylist {
   status: string;
   url: string | null;
   last_synced_at: string | null;
+  error_message?: string | null;
 }
 
 export interface Plan {
