@@ -1,10 +1,14 @@
 """YouTube Music implementation of the StreamingAdapter interface.
 
-Uses the YouTube Data API v3. Tracks are represented by bare YouTube video IDs
-(e.g., "dQw4w9WgXcW"). Playlist URLs point to music.youtube.com so the UI sends
-users to YouTube Music rather than regular YouTube.
+Playlist management uses the YouTube Data API v3. Track search uses ytmusicapi
+(unauthenticated) which searches the YouTube Music catalog only — avoiding the
+noise from user-generated content that the Data API v3 search returns.
+
+Tracks are represented by bare YouTube video IDs (e.g., "dQw4w9WgXcW").
+Playlist URLs point to music.youtube.com.
 """
 
+import asyncio
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 
@@ -12,6 +16,7 @@ import httpx
 import structlog
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from ytmusicapi import YTMusic
 
 from app.adapters.streaming import PlaylistInfo, StreamingAdapter, TrackSearchResult
 from app.models.search_cache import SearchCache
@@ -132,34 +137,6 @@ class YouTubeAdapter(StreamingAdapter):
     # search_tracks with 7-day cache
     # ------------------------------------------------------------------
 
-    @staticmethod
-    def _pick_image(thumbnails: dict) -> str | None:
-        for key in ("high", "medium", "default"):
-            if key in thumbnails and thumbnails[key].get("url"):
-                return thumbnails[key]["url"]
-        return None
-
-    def _parse_search_items(self, items: list[dict]) -> list[TrackSearchResult]:
-        results: list[TrackSearchResult] = []
-        for item in items:
-            id_field = item.get("id") or {}
-            video_id = id_field.get("videoId") if isinstance(id_field, dict) else None
-            if not video_id:
-                continue
-            snippet = item.get("snippet") or {}
-            thumbnails = snippet.get("thumbnails") or {}
-            results.append(
-                TrackSearchResult(
-                    track_id=video_id,
-                    title=snippet.get("title", ""),
-                    artist=snippet.get("channelTitle", ""),
-                    album=None,
-                    image_url=self._pick_image(thumbnails),
-                    duration_ms=None,
-                )
-            )
-        return results
-
     async def _load_cache(self, query: str) -> list[TrackSearchResult] | None:
         if self._db is None:
             return None
@@ -214,24 +191,42 @@ class YouTubeAdapter(StreamingAdapter):
         await self._db.flush()
 
     async def search_tracks(self, query: str, limit: int = 10) -> list[TrackSearchResult]:
-        """Search YouTube Music for tracks matching the query, with 7-day cache."""
+        """Search the YouTube Music catalog using ytmusicapi (songs only), with 7-day cache.
+
+        Uses ytmusicapi in unauthenticated mode — no credentials required for search.
+        filter='songs' restricts results to the YouTube Music catalog, eliminating
+        user-uploaded covers and other noise from the general YouTube search index.
+        """
         cached = await self._load_cache(query)
         if cached is not None:
             return cached
 
-        response = await self._request(
-            "GET",
-            "/search",
-            params={
-                "part": "snippet",
-                "type": "video",
-                "videoCategoryId": "10",
-                "q": query,
-                "maxResults": limit,
-            },
-        )
-        items = response.json().get("items", [])
-        results = self._parse_search_items(items)
+        yt = YTMusic()  # unauthenticated — sufficient for search
+        raw = await asyncio.to_thread(lambda: yt.search(query, filter="songs", limit=limit))
+
+        results: list[TrackSearchResult] = []
+        for item in raw:
+            video_id = item.get("videoId")
+            if not video_id:
+                continue
+            artists = item.get("artists") or []
+            artist_str = ", ".join(a["name"] for a in artists if a.get("name"))
+            album_obj = item.get("album")
+            album = album_obj.get("name") if isinstance(album_obj, dict) else None
+            thumbnails = item.get("thumbnails") or []
+            image_url = thumbnails[-1]["url"] if thumbnails else None
+
+            results.append(
+                TrackSearchResult(
+                    track_id=video_id,
+                    title=item.get("title", ""),
+                    artist=artist_str,
+                    album=album,
+                    image_url=image_url,
+                    duration_ms=None,
+                )
+            )
+
         await self._save_cache(query, results)
         return results
 
