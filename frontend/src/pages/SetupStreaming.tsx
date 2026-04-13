@@ -156,15 +156,17 @@ export default function SetupStreaming() {
               </p>
             )}
           </div>
-          {!spotifyConnected && (
-            <button
-              onClick={() => void handleConnectSpotify()}
-              disabled={connectingSpotify}
-              className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-            >
-              {connectingSpotify ? "Redirecting…" : "Connect Spotify"}
-            </button>
-          )}
+          <button
+            onClick={() => void handleConnectSpotify()}
+            disabled={connectingSpotify}
+            className={
+              spotifyConnected
+                ? "rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                : "rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+            }
+          >
+            {connectingSpotify ? "Redirecting…" : spotifyConnected ? "Reconnect" : "Connect Spotify"}
+          </button>
         </div>
       </div>
 
@@ -186,15 +188,17 @@ export default function SetupStreaming() {
               </p>
             )}
           </div>
-          {!youtubeConnected && (
-            <button
-              onClick={() => void handleConnectYouTube()}
-              disabled={connectingYouTube}
-              className="rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-            >
-              {connectingYouTube ? "Redirecting…" : "Connect YouTube Music"}
-            </button>
-          )}
+          <button
+            onClick={() => void handleConnectYouTube()}
+            disabled={connectingYouTube}
+            className={
+              youtubeConnected
+                ? "rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                : "rounded bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+            }
+          >
+            {connectingYouTube ? "Redirecting…" : youtubeConnected ? "Reconnect" : "Connect YouTube Music"}
+          </button>
         </div>
       </div>
 
