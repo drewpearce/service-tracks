@@ -1,12 +1,18 @@
-"""APScheduler integration for background church sync polling."""
+"""APScheduler integration for background church sync polling and cleanup jobs."""
 
 import asyncio
 import uuid
+from datetime import datetime, timedelta, timezone
 
 import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from app.models.search_cache import SearchCache
+from app.models.user_session import UserSession
 
 logger = structlog.get_logger(__name__)
 
@@ -57,6 +63,40 @@ async def sync_church_with_timeout(church_id: str) -> None:
                 await db.rollback()
 
 
+async def cleanup_expired_sessions() -> None:
+    """Delete user sessions where expires_at is in the past."""
+    if _session_factory is None:
+        logger.error("cleanup_no_session_factory")
+        return
+
+    async with _session_factory() as db:
+        try:
+            now = datetime.now(timezone.utc)
+            result = await db.execute(delete(UserSession).where(UserSession.expires_at < now))
+            await db.commit()
+            logger.info("cleanup_expired_sessions", deleted=result.rowcount)
+        except Exception:
+            logger.exception("cleanup_expired_sessions_error")
+            await db.rollback()
+
+
+async def cleanup_stale_search_cache() -> None:
+    """Delete search cache entries older than 7 days."""
+    if _session_factory is None:
+        logger.error("cleanup_no_session_factory")
+        return
+
+    async with _session_factory() as db:
+        try:
+            cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+            result = await db.execute(delete(SearchCache).where(SearchCache.created_at < cutoff))
+            await db.commit()
+            logger.info("cleanup_stale_search_cache", deleted=result.rowcount)
+        except Exception:
+            logger.exception("cleanup_stale_search_cache_error")
+            await db.rollback()
+
+
 async def start_scheduler(session_factory: async_sessionmaker[AsyncSession]) -> None:
     """Query sync-enabled churches and start the scheduler with a job per church.
 
@@ -75,6 +115,22 @@ async def start_scheduler(session_factory: async_sessionmaker[AsyncSession]) -> 
     # for church in churches:
     #     add_church_sync_job(church.id)
     # -------------------------------------------------------------------------
+
+    # Daily cleanup jobs — run at 3:00 AM UTC
+    scheduler.add_job(
+        cleanup_expired_sessions,
+        trigger=CronTrigger(hour=3, minute=0),
+        id="cleanup_expired_sessions",
+        max_instances=1,
+        coalesce=True,
+    )
+    scheduler.add_job(
+        cleanup_stale_search_cache,
+        trigger=CronTrigger(hour=3, minute=0),
+        id="cleanup_stale_search_cache",
+        max_instances=1,
+        coalesce=True,
+    )
 
     scheduler.start()
     logger.info("scheduler_started", job_count=len(scheduler.get_jobs()))
