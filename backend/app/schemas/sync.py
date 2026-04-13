@@ -5,6 +5,7 @@ class PlatformSyncResult(BaseModel):
     platform: str
     sync_status: str  # "synced", "pending", "error"
     playlist_url: str | None = None
+    last_synced_at: str | None = None
     error_message: str | None = None
 
 

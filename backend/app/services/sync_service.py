@@ -242,6 +242,7 @@ async def sync_plan(
                     platform=connection.platform,
                     sync_status=playlist.sync_status,
                     playlist_url=playlist.external_playlist_url,
+                    last_synced_at=(playlist.last_synced_at.isoformat() if playlist.last_synced_at else None),
                 )
             )
 

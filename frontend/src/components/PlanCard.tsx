@@ -20,6 +20,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
   async function handleSync() {
     setSyncing(true);
     setSyncError(null);
+    setDisplayPlaylists(null);
     try {
       const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const response = await apiClient<SyncTriggerResponse>(
@@ -37,7 +38,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
           platform: p.platform,
           status: p.sync_status,
           url: p.playlist_url,
-          last_synced_at: p.sync_status === "synced" ? new Date().toISOString() : null,
+          last_synced_at: p.last_synced_at ?? null,
           error_message: p.error_message ?? null,
         }))
       );

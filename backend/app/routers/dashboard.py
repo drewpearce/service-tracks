@@ -112,6 +112,7 @@ async def dashboard(
                             status=pl.sync_status,
                             url=pl.external_playlist_url,
                             last_synced_at=(pl.last_synced_at.isoformat() if pl.last_synced_at else None),
+                            error_message=pl.error_message,
                         )
                         for pl in plan_playlist_rows
                     ]
