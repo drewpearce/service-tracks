@@ -105,19 +105,26 @@ export default function PlanCard({ plan }: PlanCardProps) {
       {plan.playlists.length > 0 && (
         <div className="mt-3 space-y-1">
           {plan.playlists.map((pl) => (
-            <div key={pl.platform} className="flex items-center gap-2 text-xs">
-              <span className="capitalize text-gray-500">{pl.platform}:</span>
-              {pl.url ? (
-                <a
-                  href={pl.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Open playlist ↗
-                </a>
-              ) : (
-                <span className="text-gray-400">Not yet created</span>
+            <div key={pl.platform} className="text-xs">
+              <div className="flex items-center gap-2">
+                <span className="capitalize text-gray-500">{pl.platform === "youtube" ? "YouTube Music" : pl.platform}:</span>
+                {pl.url ? (
+                  <a
+                    href={pl.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Open playlist ↗
+                  </a>
+                ) : (
+                  <span className="text-gray-400">Not yet created</span>
+                )}
+              </div>
+              {pl.last_synced_at && (
+                <p className="ml-0 text-gray-400">
+                  Last synced {new Date(pl.last_synced_at).toLocaleString()}
+                </p>
               )}
             </div>
           ))}
