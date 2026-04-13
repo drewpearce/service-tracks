@@ -16,6 +16,7 @@ class PlanPlaylist(BaseModel):
     status: str
     url: str | None = None
     last_synced_at: str | None = None
+    error_message: str | None = None
 
 
 class PlanWithSongs(BaseModel):

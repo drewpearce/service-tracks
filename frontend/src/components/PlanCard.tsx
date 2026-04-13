@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { apiClient, ApiClientError } from "../api/client";
-import type { Plan, PlatformSyncResult, SyncTriggerResponse } from "../types/api";
+import type { Plan, PlanPlaylist, SyncTriggerResponse } from "../types/api";
 
 interface PlanCardProps {
   plan: Plan;
@@ -9,7 +9,7 @@ interface PlanCardProps {
 export default function PlanCard({ plan }: PlanCardProps) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [platformResults, setPlatformResults] = useState<PlatformSyncResult[] | null>(null);
+  const [displayPlaylists, setDisplayPlaylists] = useState<PlanPlaylist[] | null>(null);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
   const [matchedCount, setMatchedCount] = useState<number | null>(null);
   const [unmatchedCount, setUnmatchedCount] = useState<number | null>(null);
@@ -20,7 +20,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
   async function handleSync() {
     setSyncing(true);
     setSyncError(null);
-    setPlatformResults(null);
+    setDisplayPlaylists(null);
     try {
       const csrf = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/)?.[1] ?? "";
       const response = await apiClient<SyncTriggerResponse>(
@@ -33,7 +33,15 @@ export default function PlanCard({ plan }: PlanCardProps) {
       setSyncStatus(response.sync_status);
       setMatchedCount(response.songs_matched);
       setUnmatchedCount(response.songs_unmatched);
-      setPlatformResults(response.platforms);
+      setDisplayPlaylists(
+        response.platforms.map((p) => ({
+          platform: p.platform,
+          status: p.sync_status,
+          url: p.playlist_url,
+          last_synced_at: p.last_synced_at ?? null,
+          error_message: p.error_message ?? null,
+        }))
+      );
     } catch (err) {
       if (err instanceof ApiClientError) {
         setSyncError("Sync failed. Please try again.");
@@ -42,6 +50,8 @@ export default function PlanCard({ plan }: PlanCardProps) {
       setSyncing(false);
     }
   }
+
+  const playlists = displayPlaylists ?? plan.playlists;
 
   return (
     <div className="rounded-lg bg-white p-4 shadow">
@@ -102,9 +112,9 @@ export default function PlanCard({ plan }: PlanCardProps) {
       </p>
 
       {/* Playlists */}
-      {plan.playlists.length > 0 && (
+      {playlists.length > 0 && (
         <div className="mt-3 space-y-1">
-          {plan.playlists.map((pl) => (
+          {playlists.map((pl) => (
             <div key={pl.platform} className="text-xs">
               <div className="flex items-center gap-2">
                 <span className="capitalize text-gray-500">{pl.platform === "youtube" ? "YouTube Music" : pl.platform}:</span>
@@ -126,43 +136,8 @@ export default function PlanCard({ plan }: PlanCardProps) {
                   Last synced {new Date(pl.last_synced_at).toLocaleString()}
                 </p>
               )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Per-platform sync results */}
-      {platformResults && (
-        <div className="mt-3 border-t pt-3 space-y-1">
-          {platformResults.map((r) => (
-            <div key={r.platform} className="text-xs">
-              <span className="capitalize font-medium text-gray-700">{r.platform}: </span>
-              <span
-                className={
-                  r.sync_status === "synced"
-                    ? "text-green-600"
-                    : r.sync_status === "error"
-                    ? "text-red-600"
-                    : "text-gray-500"
-                }
-              >
-                {r.sync_status}
-              </span>
-              {r.playlist_url && (
-                <>
-                  {" · "}
-                  <a
-                    href={r.playlist_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View playlist ↗
-                  </a>
-                </>
-              )}
-              {r.error_message && (
-                <span className="ml-1 text-red-500">({r.error_message})</span>
+              {pl.error_message && (
+                <p className="ml-0 text-red-500">{pl.error_message}</p>
               )}
             </div>
           ))}
