@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: { 950: "#070B14", 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 300: "#CBD5E1", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" },
+              teal:  { 50: "#F0FDFA", 100: "#CCFBF1", 400: "#2DD4BF", 500: "#14B8A6", 600: "#0D9488", 700: "#0F766E" },
+              rose:  { 50: "#FFF1F2", 100: "#FFE4E6", 400: "#FB7185", 500: "#F43F5E", 600: "#E11D48", 700: "#BE123C" },
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+            <span class="ml-auto text-[10px] font-semibold bg-rose-500 text-white rounded-full px-1.5 py-0.5">5</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-slate-800 text-white font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-teal-400"></span>
+          </a>
+        </nav>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-slate-800">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-slate-400 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <!-- Compact hero (no metrics, this is a settings page) -->
+        <section class="text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.18) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.14) 0%, transparent 60%),#0F172A;">
+          <div class="relative px-10 pt-10 pb-8 max-w-5xl">
+            <p class="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">Grace Community</p>
+            <h1 class="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">Settings</h1>
+            <p class="mt-3 max-w-xl text-[14px] text-slate-400">
+              How your playlists are named, structured, and maintained across platforms.
+            </p>
+          </div>
+        </section>
+
+        <main class="flex-1 px-10 py-10">
+          <div class="max-w-4xl grid grid-cols-4 gap-10">
+            <!-- Settings side nav -->
+            <aside class="col-span-1">
+              <nav class="space-y-1 text-[13px] sticky top-6">
+                <a href="#playlists" class="block px-3 py-2 rounded-lg bg-slate-100 text-slate-900 font-medium">Playlists</a>
+                <a href="#church" class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Church</a>
+                <a href="#account" class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Account</a>
+                <a href="#danger" class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Advanced</a>
+              </nav>
+            </aside>
+
+            <!-- Settings form -->
+            <div class="col-span-3 space-y-8">
+              <!-- Section: Playlist mode -->
+              <section id="playlists" class="space-y-4">
+                <div>
+                  <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Playlists</p>
+                  <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">How playlists are structured</h2>
+                </div>
+
+                <div class="space-y-3">
+                  <label class="flex gap-4 rounded-2xl bg-white border-2 border-teal-500 p-5 cursor-pointer">
+                    <input type="radio" name="playlist_mode" checked class="mt-1 text-teal-600 border-slate-300 focus:ring-teal-500"/>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2">
+                        <p class="font-semibold text-[15px] text-slate-900">Shared playlist</p>
+                        <span class="inline-flex items-center rounded-full bg-teal-50 border border-teal-200 px-2 py-0.5 text-[10px] font-semibold text-teal-700 uppercase tracking-widest">Recommended</span>
+                      </div>
+                      <p class="mt-1 text-[13px] text-slate-600 leading-relaxed">
+                        One persistent playlist per platform that updates before each service. Your team bookmarks it once and it's always current.
+                      </p>
+                    </div>
+                  </label>
+
+                  <label class="flex gap-4 rounded-2xl bg-white border border-slate-200 p-5 cursor-pointer hover:border-slate-300">
+                    <input type="radio" name="playlist_mode" class="mt-1 text-teal-600 border-slate-300 focus:ring-teal-500"/>
+                    <div class="flex-1">
+                      <p class="font-semibold text-[15px] text-slate-900">Per service</p>
+                      <p class="mt-1 text-[13px] text-slate-600 leading-relaxed">
+                        A separate playlist for each service plan. Creates an archive your team can reference later, but generates more playlists.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </section>
+
+              <!-- Section: Name template -->
+              <section class="space-y-4">
+                <div>
+                  <h3 class="font-display text-lg font-semibold tracking-tight">Playlist name</h3>
+                  <p class="mt-0.5 text-[13px] text-slate-500">Template used when ServiceTracks creates or renames a playlist.</p>
+                </div>
+
+                <div>
+                  <input type="text" value="{church_name} — Sunday {date}"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-[13.5px] font-mono text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-colors"/>
+
+                  <div class="mt-2 flex flex-wrap gap-1.5">
+                    <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{church_name}</span>
+                    <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{date}</span>
+                    <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{date_iso}</span>
+                    <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{title}</span>
+                  </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="rounded-xl bg-slate-900 text-slate-100 p-4">
+                  <p class="text-[10px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-2">Preview</p>
+                  <p class="font-display text-lg font-semibold">Grace Community — Sunday April 19, 2026</p>
+                </div>
+              </section>
+
+              <!-- Section: Description template -->
+              <section class="space-y-4">
+                <div>
+                  <h3 class="font-display text-lg font-semibold tracking-tight">Playlist description</h3>
+                  <p class="mt-0.5 text-[13px] text-slate-500">Appears in the playlist's metadata on Spotify / YouTube Music.</p>
+                </div>
+
+                <textarea rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-[13.5px] font-mono text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-colors resize-none">Set list for {church_name} — {title}. Updated automatically by ServiceTracks.</textarea>
+
+                <div class="rounded-xl bg-slate-900 text-slate-100 p-4">
+                  <p class="text-[10px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-2">Preview</p>
+                  <p class="text-[14px] text-slate-200 leading-relaxed">Set list for Grace Community — Sunday Morning Service. Updated automatically by ServiceTracks.</p>
+                </div>
+              </section>
+
+              <!-- Save bar -->
+              <div class="sticky bottom-4 flex items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 shadow-lg p-4">
+                <div class="flex items-center gap-2 text-[13px] text-slate-500">
+                  <span class="h-1.5 w-1.5 rounded-full bg-teal-500"></span>
+                  <span>Unsaved changes</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-700 px-4 py-2 text-[13px] font-semibold hover:bg-slate-50">Discard</button>
+                  <button class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold hover:bg-slate-800 transition-colors">Save settings</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

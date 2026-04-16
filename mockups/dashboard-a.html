@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Dashboard · Direction A (Warm Editorial)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              canvas: "#FAF6F0",
+              surface: "#FFFFFF",
+              line: "#EADDC9",
+              "line-soft": "#F3EAD9",
+              ink: "#1C1917",
+              "ink-muted": "#78716C",
+              "ink-soft": "#A8A29E",
+              umber: {
+                50: "#FDF8F1",
+                100: "#FAEBD4",
+                500: "#C2763A",
+                600: "#A85A21",
+                700: "#8A4516",
+              },
+              moss: "#4C6B3F",
+              brick: "#B23A2A",
+            },
+            fontFamily: {
+              serif: ['Fraunces', 'Georgia', 'serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-serif { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
+      .sidebar-link-active { background: linear-gradient(90deg, rgba(194,118,58,0.08), transparent); }
+    </style>
+  </head>
+  <body class="bg-canvas text-ink">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-surface border-r border-line">
+        <div class="flex h-20 items-center px-6 border-b border-line-soft">
+          <div class="flex items-center gap-2">
+            <div class="h-7 w-7 rounded-full bg-umber-700 flex items-center justify-center">
+              <span class="font-serif text-sm font-semibold text-canvas">S</span>
+            </div>
+            <span class="font-serif text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-5 space-y-0.5 text-[14px]">
+          <a href="#" class="sidebar-link-active flex items-center gap-3 rounded-md px-3 py-2 font-medium text-umber-700 border-l-2 border-umber-600 pl-[10px]">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-ink-muted hover:text-ink hover:bg-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-ink-muted hover:text-ink hover:bg-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-ink-muted hover:text-ink hover:bg-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4M5.636 5.636l1.414 1.414m9.9 9.9l1.414 1.414"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-ink-muted hover:text-ink hover:bg-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="px-6 py-5 border-t border-line-soft">
+          <p class="text-[11px] uppercase tracking-widest text-ink-soft font-medium">Signed in as</p>
+          <p class="mt-1 text-sm font-medium text-ink">Pastor Jonathan</p>
+          <p class="text-xs text-ink-muted">jonathan@gracechurch.org</p>
+        </div>
+      </aside>
+
+      <!-- Main area -->
+      <div class="flex flex-1 flex-col pl-64">
+        <header class="flex h-20 items-center justify-between border-b border-line bg-canvas px-10">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-ink-soft font-medium">Church</p>
+            <p class="font-serif text-base text-ink">Grace Community Church</p>
+          </div>
+          <button class="rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink-muted hover:text-ink hover:border-umber-600 transition-colors">
+            Log out
+          </button>
+        </header>
+
+        <main class="flex-1 px-10 py-10">
+          <div class="max-w-4xl space-y-10">
+            <!-- Page title -->
+            <div>
+              <p class="text-[11px] uppercase tracking-widest text-umber-600 font-medium">Sunday April 19, 2026</p>
+              <h1 class="mt-2 font-serif text-5xl font-semibold tracking-tight text-ink">Grace Community Church</h1>
+              <p class="mt-3 text-base text-ink-muted italic font-serif">Let everything that has breath praise the Lord.</p>
+            </div>
+
+            <!-- Setup checklist -->
+            <section class="rounded-xl bg-surface border border-line p-8 shadow-[0_1px_0_rgba(234,221,201,0.5)]">
+              <div class="flex items-start justify-between">
+                <div>
+                  <h2 class="font-serif text-2xl font-semibold text-ink">Finish setting up</h2>
+                  <p class="mt-1 text-sm text-ink-muted">Three small steps until your first playlist syncs automatically.</p>
+                </div>
+                <div class="text-right">
+                  <p class="font-serif text-3xl font-semibold text-umber-600">1<span class="text-ink-soft text-xl">/3</span></p>
+                  <p class="text-[11px] uppercase tracking-widest text-ink-soft">complete</p>
+                </div>
+              </div>
+
+              <ul class="mt-6 divide-y divide-line-soft">
+                <li class="flex items-center gap-4 py-4">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-moss text-canvas text-sm">✓</span>
+                  <div class="flex-1">
+                    <p class="text-[15px] font-medium text-ink">Connect Planning Center Online</p>
+                    <p class="text-xs text-ink-muted">Connected as jonathan@gracechurch.org</p>
+                  </div>
+                </li>
+                <li class="flex items-center gap-4 py-4">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-canvas text-ink-soft text-sm">2</span>
+                  <div class="flex-1">
+                    <p class="text-[15px] font-medium text-ink">Select a service type in PCO</p>
+                    <p class="text-xs text-ink-muted">Choose which PCO service to sync — usually Sunday Morning.</p>
+                  </div>
+                  <a href="#" class="rounded-full bg-ink text-canvas px-4 py-2 text-sm font-medium hover:bg-umber-700 transition-colors">Select service type →</a>
+                </li>
+                <li class="flex items-center gap-4 py-4">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-canvas text-ink-soft text-sm">3</span>
+                  <div class="flex-1">
+                    <p class="text-[15px] font-medium text-ink">Connect Spotify</p>
+                    <p class="text-xs text-ink-muted">We'll create and maintain a playlist per service plan.</p>
+                  </div>
+                  <a href="#" class="rounded-full border border-line bg-surface text-ink px-4 py-2 text-sm font-medium hover:border-umber-600 transition-colors">Connect Spotify</a>
+                </li>
+              </ul>
+            </section>
+
+            <!-- Unmatched songs alert -->
+            <section class="rounded-xl bg-umber-50 border border-umber-100 px-6 py-5 flex items-center gap-5">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-umber-100 text-umber-700">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <div class="flex-1">
+                <p class="font-serif text-lg font-semibold text-ink">5 songs still need matching</p>
+                <p class="text-sm text-ink-muted">Match PCO songs to their Spotify tracks so they appear in your synced playlists.</p>
+              </div>
+              <a href="#" class="rounded-full bg-umber-700 text-canvas px-5 py-2.5 text-sm font-medium hover:bg-umber-600 transition-colors">Match songs →</a>
+            </section>
+
+            <!-- Upcoming plans -->
+            <section>
+              <div class="flex items-end justify-between mb-5">
+                <div>
+                  <h2 class="font-serif text-3xl font-semibold text-ink">Upcoming plans</h2>
+                  <p class="mt-1 text-sm text-ink-muted">The next two services on your calendar.</p>
+                </div>
+                <a href="#" class="text-sm text-umber-700 font-medium hover:underline">All plans →</a>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Plan 1 -->
+                <article class="rounded-xl bg-surface border border-line p-7 hover:border-umber-600 transition-colors group">
+                  <div class="flex items-start justify-between gap-6">
+                    <div class="flex items-start gap-5">
+                      <div class="text-center flex-shrink-0 border-r border-line pr-5">
+                        <p class="text-[11px] uppercase tracking-widest text-umber-600 font-medium">Sun</p>
+                        <p class="font-serif text-4xl font-semibold leading-none mt-1">19</p>
+                        <p class="text-xs text-ink-muted mt-1">April</p>
+                      </div>
+                      <div>
+                        <h3 class="font-serif text-xl font-semibold text-ink">Sunday Morning Service</h3>
+                        <p class="mt-1 text-sm text-ink-muted">5 songs · <span class="font-medium text-ink">3 matched</span>, 2 unmatched</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-umber-50 border border-umber-100 px-3 py-1 text-xs font-medium text-umber-700">
+                        <span class="h-1.5 w-1.5 rounded-full bg-umber-600"></span>
+                        Partial sync
+                      </span>
+                      <button class="rounded-full bg-ink text-canvas px-5 py-2 text-sm font-medium hover:bg-umber-700 transition-colors">Update playlist</button>
+                    </div>
+                  </div>
+
+                  <ul class="mt-6 grid grid-cols-2 gap-x-8 gap-y-2">
+                    <li class="flex items-center gap-3 text-[14px]"><span class="h-1.5 w-1.5 rounded-full bg-moss"></span><span class="text-ink">Goodness of God</span></li>
+                    <li class="flex items-center gap-3 text-[14px]"><span class="h-1.5 w-1.5 rounded-full bg-moss"></span><span class="text-ink">Great Are You Lord</span></li>
+                    <li class="flex items-center gap-3 text-[14px]"><span class="h-1.5 w-1.5 rounded-full bg-umber-500"></span><span class="text-ink">Graves Into Gardens</span></li>
+                    <li class="flex items-center gap-3 text-[14px]"><span class="h-1.5 w-1.5 rounded-full bg-moss"></span><span class="text-ink">What A Beautiful Name</span></li>
+                    <li class="flex items-center gap-3 text-[14px]"><span class="h-1.5 w-1.5 rounded-full bg-umber-500"></span><span class="text-ink">Oceans (Where Feet May Fail)</span></li>
+                  </ul>
+
+                  <div class="mt-6 pt-5 border-t border-line-soft flex items-center gap-6 text-xs">
+                    <span class="text-ink-muted">Spotify</span>
+                    <a href="#" class="text-umber-700 font-medium hover:underline">Open playlist ↗</a>
+                    <span class="text-ink-soft">· Last synced 2 hours ago</span>
+                  </div>
+                </article>
+
+                <!-- Plan 2 -->
+                <article class="rounded-xl bg-surface border border-line p-7 hover:border-umber-600 transition-colors group">
+                  <div class="flex items-start justify-between gap-6">
+                    <div class="flex items-start gap-5">
+                      <div class="text-center flex-shrink-0 border-r border-line pr-5">
+                        <p class="text-[11px] uppercase tracking-widest text-umber-600 font-medium">Wed</p>
+                        <p class="font-serif text-4xl font-semibold leading-none mt-1">22</p>
+                        <p class="text-xs text-ink-muted mt-1">April</p>
+                      </div>
+                      <div>
+                        <h3 class="font-serif text-xl font-semibold text-ink">Youth Service</h3>
+                        <p class="mt-1 text-sm text-ink-muted">4 songs · <span class="font-medium text-ink">all matched</span></p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="inline-flex items-center gap-1.5 rounded-full bg-moss/10 border border-moss/20 px-3 py-1 text-xs font-medium text-moss">
+                        <span class="h-1.5 w-1.5 rounded-full bg-moss"></span>
+                        Synced
+                      </span>
+                      <button class="rounded-full bg-ink text-canvas px-5 py-2 text-sm font-medium hover:bg-umber-700 transition-colors">Update playlist</button>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <!-- Recent syncs -->
+            <section class="rounded-xl bg-surface border border-line p-8">
+              <div class="flex items-end justify-between mb-5">
+                <h2 class="font-serif text-2xl font-semibold text-ink">Recent activity</h2>
+                <a href="#" class="text-sm text-umber-700 font-medium hover:underline">View all →</a>
+              </div>
+              <ul class="divide-y divide-line-soft">
+                <li class="flex items-center justify-between py-3">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-moss/10 px-2.5 py-0.5 text-xs font-medium text-moss">Synced</span>
+                    <span class="text-sm text-ink">Scheduled sync · <span class="text-ink-muted">4/4 matched</span></span>
+                  </div>
+                  <span class="text-xs text-ink-soft italic font-serif">2h ago</span>
+                </li>
+                <li class="flex items-center justify-between py-3">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-umber-50 border border-umber-100 px-2.5 py-0.5 text-xs font-medium text-umber-700">Partial</span>
+                    <span class="text-sm text-ink">Manual sync · <span class="text-ink-muted">3/5 matched</span></span>
+                  </div>
+                  <span class="text-xs text-ink-soft italic font-serif">Yesterday</span>
+                </li>
+                <li class="flex items-center justify-between py-3">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-moss/10 px-2.5 py-0.5 text-xs font-medium text-moss">Synced</span>
+                    <span class="text-sm text-ink">Webhook sync · <span class="text-ink-muted">6/6 matched</span></span>
+                  </div>
+                  <span class="text-xs text-ink-soft italic font-serif">3 days ago</span>
+                </li>
+              </ul>
+            </section>
+
+            <div class="pt-8 pb-4 text-center">
+              <p class="font-serif italic text-sm text-ink-soft">"Sing to the Lord a new song, for he has done marvelous things." — Psalm 98:1</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

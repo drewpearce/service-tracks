@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Sunday Morning Service · April 19</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: { 950: "#070B14", 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 300: "#CBD5E1", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" },
+              teal:  { 50: "#F0FDFA", 100: "#CCFBF1", 400: "#2DD4BF", 500: "#14B8A6", 600: "#0D9488", 700: "#0F766E" },
+              rose:  { 50: "#FFF1F2", 100: "#FFE4E6", 400: "#FB7185", 500: "#F43F5E", 600: "#E11D48", 700: "#BE123C" },
+              spotify: "#1DB954",
+              youtube: "#FF0000",
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      /* Cover-art gradients for mock tracks */
+      .cover-1 { background: linear-gradient(135deg, #0D9488 0%, #0F172A 100%); }
+      .cover-2 { background: linear-gradient(135deg, #F43F5E 0%, #0F172A 100%); }
+      .cover-3 { background: linear-gradient(135deg, #14B8A6 0%, #334155 100%); }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-slate-800 text-white font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-teal-400"></span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+            <span class="ml-auto text-[10px] font-semibold bg-rose-500 text-white rounded-full px-1.5 py-0.5">5</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-slate-800">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-slate-400 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <!-- Hero -->
+        <section class="text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.18) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.14) 0%, transparent 60%),#0F172A;">
+          <div class="relative px-10 pt-8 pb-10 max-w-5xl">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-[12px] text-slate-400 mb-8">
+              <a href="#" class="hover:text-white inline-flex items-center gap-1">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Dashboard
+              </a>
+              <span class="text-slate-600">/</span>
+              <span class="text-slate-300">Sunday Morning Service</span>
+            </nav>
+
+            <div class="flex items-start justify-between gap-8">
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-rose-400 uppercase tracking-widest">
+                    <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>Partial sync
+                  </span>
+                  <span class="text-[12px] text-slate-400">·</span>
+                  <span class="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold">Sun · April 19 · 3 days away</span>
+                </div>
+                <h1 class="font-display text-[44px] leading-[1.05] font-semibold tracking-tight">Sunday Morning Service</h1>
+                <p class="mt-3 text-[14px] text-slate-400">Grace Community · Contemporary Worship · 5 songs</p>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button class="rounded-full border border-slate-700 px-4 py-2 text-[13px] font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                  <span class="inline-flex items-center gap-1.5">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Open in PCO
+                  </span>
+                </button>
+                <button class="rounded-full bg-teal-500 text-slate-900 px-5 py-2 text-[13px] font-semibold hover:bg-teal-400 transition-colors flex items-center gap-2">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  Update playlist
+                </button>
+              </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="mt-8 grid grid-cols-4 gap-3 max-w-3xl">
+              <div class="rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700 p-4">
+                <p class="text-[11px] uppercase tracking-widest text-slate-400 font-medium">Matched</p>
+                <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-teal-400">3<span class="text-slate-500 text-lg">/5</span></p>
+              </div>
+              <div class="rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700 p-4">
+                <p class="text-[11px] uppercase tracking-widest text-slate-400 font-medium">Unmatched</p>
+                <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-rose-400">2</p>
+              </div>
+              <div class="rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700 p-4">
+                <p class="text-[11px] uppercase tracking-widest text-slate-400 font-medium">Playlists</p>
+                <p class="mt-1 font-display text-3xl font-semibold tabular-nums">1<span class="text-slate-500 text-lg">/2</span></p>
+              </div>
+              <div class="rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700 p-4">
+                <p class="text-[11px] uppercase tracking-widest text-slate-400 font-medium">Last sync</p>
+                <p class="mt-1 font-display text-3xl font-semibold tabular-nums">2h</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <main class="flex-1 px-10 py-10">
+          <div class="max-w-5xl grid grid-cols-3 gap-6">
+            <!-- Left column: Songs list -->
+            <div class="col-span-2 space-y-6">
+              <section>
+                <div class="flex items-baseline justify-between mb-4">
+                  <div>
+                    <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Set list</p>
+                    <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">5 songs</h2>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button class="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 hover:bg-slate-50">
+                      <span class="inline-flex items-center gap-1.5">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h8m-8 6h16"/></svg>
+                        Filter
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="rounded-2xl bg-white border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+                  <!-- Song 1: matched -->
+                  <article class="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors group">
+                    <span class="w-6 text-center text-[12px] font-mono text-slate-400">01</span>
+                    <div class="flex-1 min-w-0 flex items-center gap-3">
+                      <span class="h-2 w-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+                      <div class="min-w-0">
+                        <p class="text-[14px] font-medium text-slate-900 truncate">Goodness of God</p>
+                        <p class="text-[11px] text-slate-500 truncate">PCO song · added by Jonathan</p>
+                      </div>
+                    </div>
+                    <div class="text-slate-300 text-lg">→</div>
+                    <div class="flex items-center gap-3 min-w-0 w-80">
+                      <div class="h-10 w-10 rounded-md cover-1 flex-shrink-0"></div>
+                      <div class="min-w-0 flex-1">
+                        <p class="text-[13px] font-medium text-slate-900 truncate">Goodness of God (Live)</p>
+                        <p class="text-[11px] text-slate-500 truncate">Bethel Music · 4:18</p>
+                      </div>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 hover:bg-slate-200 text-slate-500" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </article>
+
+                  <!-- Song 2: matched -->
+                  <article class="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors group">
+                    <span class="w-6 text-center text-[12px] font-mono text-slate-400">02</span>
+                    <div class="flex-1 min-w-0 flex items-center gap-3">
+                      <span class="h-2 w-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+                      <div class="min-w-0">
+                        <p class="text-[14px] font-medium text-slate-900 truncate">Great Are You Lord</p>
+                        <p class="text-[11px] text-slate-500 truncate">PCO song · added by Sarah</p>
+                      </div>
+                    </div>
+                    <div class="text-slate-300 text-lg">→</div>
+                    <div class="flex items-center gap-3 min-w-0 w-80">
+                      <div class="h-10 w-10 rounded-md cover-3 flex-shrink-0"></div>
+                      <div class="min-w-0 flex-1">
+                        <p class="text-[13px] font-medium text-slate-900 truncate">Great Are You Lord</p>
+                        <p class="text-[11px] text-slate-500 truncate">All Sons &amp; Daughters · 3:21</p>
+                      </div>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 hover:bg-slate-200 text-slate-500" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </article>
+
+                  <!-- Song 3: unmatched -->
+                  <article class="p-4 flex items-center gap-4 hover:bg-rose-50/40 transition-colors group bg-rose-50/20">
+                    <span class="w-6 text-center text-[12px] font-mono text-rose-400">03</span>
+                    <div class="flex-1 min-w-0 flex items-center gap-3">
+                      <span class="h-2 w-2 rounded-full bg-rose-500 flex-shrink-0"></span>
+                      <div class="min-w-0">
+                        <p class="text-[14px] font-medium text-slate-900 truncate">Graves Into Gardens</p>
+                        <p class="text-[11px] text-rose-600 truncate">No match yet · will be skipped in playlist</p>
+                      </div>
+                    </div>
+                    <div class="text-slate-300 text-lg">→</div>
+                    <div class="w-80 flex items-center gap-2">
+                      <div class="flex-1 h-12 rounded-md border border-dashed border-rose-300 bg-rose-50/50 flex items-center justify-center">
+                        <span class="text-[11px] text-rose-600 font-medium">Not matched</span>
+                      </div>
+                      <a href="#" class="rounded-full bg-rose-500 text-white px-3 py-2 text-[12px] font-semibold hover:bg-rose-600 transition-colors flex items-center gap-1.5 flex-shrink-0">
+                        Find match
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                      </a>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 hover:bg-slate-200 text-slate-500" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </article>
+
+                  <!-- Song 4: matched -->
+                  <article class="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors group">
+                    <span class="w-6 text-center text-[12px] font-mono text-slate-400">04</span>
+                    <div class="flex-1 min-w-0 flex items-center gap-3">
+                      <span class="h-2 w-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+                      <div class="min-w-0">
+                        <p class="text-[14px] font-medium text-slate-900 truncate">What A Beautiful Name</p>
+                        <p class="text-[11px] text-slate-500 truncate">PCO song · added by Jonathan</p>
+                      </div>
+                    </div>
+                    <div class="text-slate-300 text-lg">→</div>
+                    <div class="flex items-center gap-3 min-w-0 w-80">
+                      <div class="h-10 w-10 rounded-md cover-2 flex-shrink-0"></div>
+                      <div class="min-w-0 flex-1">
+                        <p class="text-[13px] font-medium text-slate-900 truncate">What A Beautiful Name</p>
+                        <p class="text-[11px] text-slate-500 truncate">Hillsong Worship · 4:22</p>
+                      </div>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 hover:bg-slate-200 text-slate-500" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </article>
+
+                  <!-- Song 5: unmatched -->
+                  <article class="p-4 flex items-center gap-4 hover:bg-rose-50/40 transition-colors group bg-rose-50/20">
+                    <span class="w-6 text-center text-[12px] font-mono text-rose-400">05</span>
+                    <div class="flex-1 min-w-0 flex items-center gap-3">
+                      <span class="h-2 w-2 rounded-full bg-rose-500 flex-shrink-0"></span>
+                      <div class="min-w-0">
+                        <p class="text-[14px] font-medium text-slate-900 truncate">Oceans (Where Feet May Fail)</p>
+                        <p class="text-[11px] text-rose-600 truncate">No match yet · will be skipped in playlist</p>
+                      </div>
+                    </div>
+                    <div class="text-slate-300 text-lg">→</div>
+                    <div class="w-80 flex items-center gap-2">
+                      <div class="flex-1 h-12 rounded-md border border-dashed border-rose-300 bg-rose-50/50 flex items-center justify-center">
+                        <span class="text-[11px] text-rose-600 font-medium">Not matched</span>
+                      </div>
+                      <a href="#" class="rounded-full bg-rose-500 text-white px-3 py-2 text-[12px] font-semibold hover:bg-rose-600 transition-colors flex items-center gap-1.5 flex-shrink-0">
+                        Find match
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                      </a>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 transition-opacity rounded-md p-1.5 hover:bg-slate-200 text-slate-500" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </article>
+                </div>
+              </section>
+            </div>
+
+            <!-- Right column: Playlists + activity -->
+            <div class="col-span-1 space-y-6">
+              <!-- Playlists -->
+              <section>
+                <div class="mb-4">
+                  <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Playlists</p>
+                  <h2 class="mt-1 font-display text-xl font-semibold tracking-tight">Where it plays</h2>
+                </div>
+
+                <!-- Spotify card -->
+                <div class="rounded-2xl bg-white border border-slate-200 p-5 mb-3">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-xl bg-spotify flex items-center justify-center flex-shrink-0">
+                      <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2z"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-[14px] font-semibold text-slate-900">Spotify</p>
+                      <span class="inline-flex items-center gap-1 text-[11px] text-teal-700 font-medium">
+                        <span class="h-1.5 w-1.5 rounded-full bg-teal-500"></span>
+                        Synced 2h ago
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="text-[12px] text-slate-500 mb-1">Playlist</p>
+                  <p class="text-[13px] font-medium text-slate-900 mb-3">Sunday Morning · Apr 19</p>
+
+                  <div class="flex items-center gap-2">
+                    <a href="#" class="flex-1 rounded-full border border-slate-300 bg-white px-3 py-2 text-[12px] font-semibold text-slate-900 hover:bg-slate-50 text-center">
+                      Open in Spotify ↗
+                    </a>
+                    <button class="rounded-full border border-slate-300 bg-white px-3 py-2 text-slate-500 hover:bg-slate-50" aria-label="More">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- YouTube Music card — not connected state -->
+                <div class="rounded-2xl bg-white border border-dashed border-slate-300 p-5">
+                  <div class="flex items-center gap-3 mb-3 opacity-60">
+                    <div class="h-10 w-10 rounded-xl bg-slate-200 flex items-center justify-center flex-shrink-0">
+                      <svg class="h-5 w-5 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 18a6 6 0 110-12 6 6 0 010 12zm0-10a4 4 0 100 8 4 4 0 000-8zm-1 6V10l4 2-4 2z"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-[14px] font-semibold text-slate-500">YouTube Music</p>
+                      <p class="text-[11px] text-slate-400">Not connected</p>
+                    </div>
+                  </div>
+                  <a href="#" class="block rounded-full border border-slate-300 bg-white px-3 py-2 text-[12px] font-semibold text-slate-900 hover:bg-slate-50 hover:border-teal-600 text-center">
+                    Connect YouTube Music →
+                  </a>
+                </div>
+              </section>
+
+              <!-- Plan activity -->
+              <section>
+                <div class="mb-4">
+                  <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Activity</p>
+                  <h2 class="mt-1 font-display text-xl font-semibold tracking-tight">For this plan</h2>
+                </div>
+                <div class="rounded-2xl bg-white border border-slate-200 p-2">
+                  <ol class="relative">
+                    <li class="pl-8 pr-3 py-2.5 relative">
+                      <span class="absolute left-3 top-4 h-2 w-2 rounded-full bg-rose-500 ring-4 ring-white"></span>
+                      <span class="absolute left-4 top-6 bottom-0 w-px bg-slate-200"></span>
+                      <p class="text-[12.5px] font-medium">Sync completed — <span class="text-rose-600">partial</span></p>
+                      <p class="text-[11px] text-slate-500">Scheduled · 3 of 5 matched · 2h ago</p>
+                    </li>
+                    <li class="pl-8 pr-3 py-2.5 relative">
+                      <span class="absolute left-3 top-4 h-2 w-2 rounded-full bg-slate-300 ring-4 ring-white"></span>
+                      <span class="absolute left-4 top-6 bottom-0 w-px bg-slate-200"></span>
+                      <p class="text-[12.5px] font-medium">Song added</p>
+                      <p class="text-[11px] text-slate-500">"Oceans (Where Feet May Fail)" · Yesterday</p>
+                    </li>
+                    <li class="pl-8 pr-3 py-2.5 relative">
+                      <span class="absolute left-3 top-4 h-2 w-2 rounded-full bg-teal-500 ring-4 ring-white"></span>
+                      <span class="absolute left-4 top-6 bottom-0 w-px bg-slate-200"></span>
+                      <p class="text-[12.5px] font-medium">Plan pulled from PCO</p>
+                      <p class="text-[11px] text-slate-500">Webhook · 2 days ago</p>
+                    </li>
+                    <li class="pl-8 pr-3 py-2.5 relative">
+                      <span class="absolute left-3 top-4 h-2 w-2 rounded-full bg-slate-300 ring-4 ring-white"></span>
+                      <p class="text-[12.5px] font-medium">Plan created in PCO</p>
+                      <p class="text-[11px] text-slate-500">3 days ago</p>
+                    </li>
+                  </ol>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

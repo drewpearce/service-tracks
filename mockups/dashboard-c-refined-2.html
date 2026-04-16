@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Dashboard · Direction C Refined v2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              // Warm-monochromatic: espresso → cream are one continuous warm family
+              espresso: {
+                DEFAULT: "#1F1913",
+                soft:    "#2D2418",
+                tint:    "#3A2F1F",
+              },
+              canvas: "#F5EFE3",         // warm cream
+              "canvas-warm": "#EAE1CD",  // slightly deeper cream for layering
+              surface: "#FFFBF2",        // warmest white (not pure white)
+              line:    "#E0D5BC",
+              "line-soft": "#EFE6D1",
+              ink: "#1F1913",
+              "ink-muted": "#6B5F4D",
+              "ink-soft": "#9C9079",
+              gold: {
+                50:  "#FAF2DE",
+                100: "#F2E2B7",
+                300: "#E0C67A",
+                400: "#C9A84F",
+                500: "#A88A33",
+                600: "#866B22",
+                700: "#645018",
+              },
+              sage: {
+                100: "#E0E8D9",
+                400: "#8FA778",
+                500: "#6D8A56",
+                600: "#557042",
+              },
+              terra: {
+                100: "#F0DBD0",
+                400: "#C9836B",
+                500: "#A85535",
+                600: "#8B4528",
+              },
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      /* Subtle warm noise texture tying espresso + cream together */
+      .warm-grain::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background-image: radial-gradient(rgba(255,235,200,0.02) 1px, transparent 1px);
+        background-size: 3px 3px;
+      }
+    </style>
+  </head>
+  <body class="bg-canvas text-ink">
+    <div class="flex min-h-screen">
+      <!-- Sidebar (warm espresso) -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-espresso text-canvas">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-gold-400 flex items-center justify-center">
+              <svg class="h-4 w-4 text-espresso" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19a3 3 0 11-6 0 3 3 0 016 0zm12-3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-espresso-soft text-canvas font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-gold-400"></span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-canvas/60 hover:bg-espresso-soft hover:text-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+            <span class="ml-auto text-[10px] font-semibold bg-terra-500 text-canvas rounded-full px-1.5 py-0.5">5</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-canvas/60 hover:bg-espresso-soft hover:text-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-canvas/60 hover:bg-espresso-soft hover:text-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-canvas/60 hover:bg-espresso-soft hover:text-canvas">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="p-4 mx-3 mb-3 rounded-xl bg-espresso-soft border border-canvas/10">
+          <p class="text-[11px] uppercase tracking-widest text-gold-300 font-medium">Next sync</p>
+          <p class="mt-1 font-display text-2xl font-semibold">Sun 6:00 AM</p>
+          <p class="text-[11px] text-canvas/60 mt-1">Auto-sync scheduled · 3 days</p>
+        </div>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-canvas/10">
+          <div class="h-8 w-8 rounded-full bg-gold-400 flex items-center justify-center text-espresso text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-canvas/50 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <main class="flex-1">
+          <!-- Hero (espresso, extends sidebar visually) -->
+          <section class="bg-espresso text-canvas relative overflow-hidden warm-grain">
+            <div class="relative px-10 pt-10 pb-14 max-w-5xl">
+              <div class="flex items-center justify-between mb-10">
+                <div class="flex items-center gap-2 text-[12px] text-canvas/60">
+                  <span class="h-1.5 w-1.5 rounded-full bg-sage-400"></span>
+                  <span>All systems operational</span>
+                </div>
+                <button class="rounded-full border border-canvas/20 px-4 py-1.5 text-[13px] text-canvas/80 hover:bg-canvas/10">Log out</button>
+              </div>
+              <p class="text-[12px] uppercase tracking-[0.25em] text-gold-300 font-semibold mb-4">Sunday April 19 · 3 days away</p>
+              <h1 class="font-display text-[48px] leading-[1.05] font-semibold tracking-tight">
+                Good morning,<br/>
+                <span class="text-gold-300">Grace Community.</span>
+              </h1>
+              <p class="mt-5 max-w-xl text-[15px] text-canvas/70 leading-relaxed">
+                Two services on deck, <span class="text-canvas font-semibold">5 songs</span> still need matching, and your last sync ran clean two hours ago.
+              </p>
+
+              <!-- Metrics -->
+              <div class="mt-10 grid grid-cols-4 gap-3 max-w-3xl">
+                <div class="rounded-2xl bg-canvas/5 backdrop-blur border border-canvas/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-canvas/50 font-medium">Upcoming</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums">2</p>
+                </div>
+                <div class="rounded-2xl bg-canvas/5 backdrop-blur border border-canvas/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-canvas/50 font-medium">Matched</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-sage-400">7</p>
+                </div>
+                <div class="rounded-2xl bg-canvas/5 backdrop-blur border border-canvas/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-canvas/50 font-medium">Unmatched</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-terra-400">5</p>
+                </div>
+                <div class="rounded-2xl bg-canvas/5 backdrop-blur border border-canvas/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-canvas/50 font-medium">Last sync</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums">2h</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="px-10 py-10 max-w-5xl space-y-10">
+            <!-- Setup checklist (now LIGHT — warm cream with gold accents) -->
+            <section class="rounded-3xl bg-surface border border-line p-8 relative overflow-hidden">
+              <!-- Soft gold glow, decorative -->
+              <div class="absolute top-0 right-0 w-72 h-72 rounded-full bg-gold-100/50 blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+              <div class="relative flex items-start justify-between gap-8">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gold-400 text-espresso px-2.5 py-0.5 text-[11px] font-semibold">ALMOST THERE</span>
+                    <span class="text-[12px] text-ink-muted tabular-nums">1 of 3 complete</span>
+                  </div>
+                  <h2 class="font-display text-3xl font-semibold tracking-tight">Finish setup</h2>
+                  <p class="mt-2 text-[14px] text-ink-muted">Two steps between you and automated Sunday sync.</p>
+
+                  <ul class="mt-6 space-y-3">
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-sage-500 text-canvas">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      </span>
+                      <span class="flex-1 text-[14px] line-through text-ink-soft">Connect Planning Center Online</span>
+                      <span class="text-[11px] text-ink-soft">Connected</span>
+                    </li>
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-canvas border-2 border-line text-ink-muted font-semibold text-[12px]">2</span>
+                      <span class="flex-1 text-[14px] font-medium text-ink">Select a service type in PCO</span>
+                      <a href="#" class="rounded-full bg-espresso text-canvas px-4 py-1.5 text-[12px] font-semibold hover:bg-espresso-soft transition-colors">Select →</a>
+                    </li>
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-canvas border-2 border-line text-ink-muted font-semibold text-[12px]">3</span>
+                      <span class="flex-1 text-[14px] font-medium text-ink">Connect Spotify</span>
+                      <a href="#" class="rounded-full border border-line px-4 py-1.5 text-[12px] font-semibold text-ink hover:bg-canvas transition-colors">Connect</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="relative flex-shrink-0 w-40 h-40">
+                  <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" stroke="#EFE6D1" stroke-width="8" fill="none"/>
+                    <circle cx="50" cy="50" r="42" stroke="#A88A33" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="176"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <p class="font-display text-4xl font-semibold text-ink">33%</p>
+                    <p class="text-[11px] text-ink-muted uppercase tracking-widest">done</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Unmatched alert -->
+            <section class="rounded-2xl bg-terra-100 border border-terra-400/40 p-5 flex items-center gap-5">
+              <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-terra-500 text-canvas">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <div class="flex-1">
+                <p class="font-display text-xl font-semibold text-terra-600">5 unmatched songs</p>
+                <p class="text-[13px] text-terra-600/80">Match them before Sunday or they'll be skipped in the playlist.</p>
+              </div>
+              <a href="#" class="rounded-full bg-terra-500 text-canvas px-5 py-2.5 text-[13px] font-semibold hover:bg-terra-600 transition-colors">Match now →</a>
+            </section>
+
+            <!-- Upcoming plans -->
+            <section>
+              <div class="flex items-end justify-between mb-6">
+                <div>
+                  <p class="text-[11px] uppercase tracking-[0.25em] text-gold-600 font-semibold">This week</p>
+                  <h2 class="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">Upcoming plans</h2>
+                </div>
+                <a href="#" class="text-[13px] font-medium text-ink-muted hover:text-ink">All plans →</a>
+              </div>
+
+              <div class="grid grid-cols-1 gap-5">
+                <!-- Plan 1: upcoming, needs attention -->
+                <article class="rounded-3xl bg-surface border border-line overflow-hidden hover:shadow-[4px_4px_0_0_rgba(31,25,19,0.9)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all">
+                  <div class="flex">
+                    <!-- Date block (warm cream with gold bar accent) -->
+                    <div class="flex-shrink-0 w-32 bg-canvas-warm flex flex-col items-center justify-center py-8 border-r border-line relative">
+                      <span class="absolute top-0 left-0 right-0 h-1 bg-gold-400"></span>
+                      <p class="text-[11px] uppercase tracking-[0.25em] text-ink-muted font-semibold">Sun</p>
+                      <p class="font-display text-6xl font-semibold leading-none text-ink my-1">19</p>
+                      <p class="text-[11px] text-ink-muted font-semibold uppercase tracking-widest">April</p>
+                    </div>
+                    <!-- Content -->
+                    <div class="flex-1 p-6">
+                      <div class="flex items-start justify-between gap-6">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-terra-100 border border-terra-400/40 px-2 py-0.5 text-[10px] font-semibold text-terra-600 uppercase tracking-widest">Partial</span>
+                          </div>
+                          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink">Sunday Morning Service</h3>
+                          <p class="mt-1 text-[13px] text-ink-muted"><span class="tabular-nums font-medium text-ink">5 songs</span> · 3 matched, 2 unmatched</p>
+                        </div>
+                        <button class="rounded-full bg-espresso text-canvas px-5 py-2.5 text-[13px] font-semibold hover:bg-espresso-soft transition-colors flex-shrink-0">Update playlist ↻</button>
+                      </div>
+
+                      <ul class="mt-5 flex flex-wrap gap-2">
+                        <li class="inline-flex items-center gap-2 rounded-full bg-sage-100 px-3 py-1 text-[12px] font-medium text-ink"><span class="h-1.5 w-1.5 rounded-full bg-sage-500"></span>Goodness of God</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-sage-100 px-3 py-1 text-[12px] font-medium text-ink"><span class="h-1.5 w-1.5 rounded-full bg-sage-500"></span>Great Are You Lord</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-terra-100 px-3 py-1 text-[12px] font-medium text-terra-600"><span class="h-1.5 w-1.5 rounded-full bg-terra-500"></span>Graves Into Gardens</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-sage-100 px-3 py-1 text-[12px] font-medium text-ink"><span class="h-1.5 w-1.5 rounded-full bg-sage-500"></span>What A Beautiful Name</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-terra-100 px-3 py-1 text-[12px] font-medium text-terra-600"><span class="h-1.5 w-1.5 rounded-full bg-terra-500"></span>Oceans (Where Feet May Fail)</li>
+                      </ul>
+
+                      <div class="mt-5 pt-4 border-t border-line-soft flex items-center gap-4 text-[12px] text-ink-muted">
+                        <span class="inline-flex items-center gap-1.5">
+                          <span class="h-4 w-4 rounded-full bg-sage-500 flex items-center justify-center"><span class="h-1 w-1 rounded-full bg-canvas"></span></span>
+                          <a href="#" class="font-medium text-ink hover:underline">Open on Spotify ↗</a>
+                        </span>
+                        <span>Synced 2h ago</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- Plan 2: synced, satisfied state -->
+                <article class="rounded-3xl bg-surface border border-line overflow-hidden hover:shadow-[4px_4px_0_0_rgba(31,25,19,0.9)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all">
+                  <div class="flex">
+                    <div class="flex-shrink-0 w-32 bg-canvas-warm flex flex-col items-center justify-center py-8 border-r border-line relative">
+                      <span class="absolute top-0 left-0 right-0 h-1 bg-sage-500"></span>
+                      <p class="text-[11px] uppercase tracking-[0.25em] text-ink-muted font-semibold">Wed</p>
+                      <p class="font-display text-6xl font-semibold leading-none text-ink my-1">22</p>
+                      <p class="text-[11px] text-ink-muted font-semibold uppercase tracking-widest">April</p>
+                    </div>
+                    <div class="flex-1 p-6">
+                      <div class="flex items-start justify-between gap-6">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-sage-100 border border-sage-400/40 px-2 py-0.5 text-[10px] font-semibold text-sage-600 uppercase tracking-widest">Synced</span>
+                          </div>
+                          <h3 class="font-display text-2xl font-semibold tracking-tight text-ink">Youth Service</h3>
+                          <p class="mt-1 text-[13px] text-ink-muted"><span class="tabular-nums font-medium text-ink">4 songs</span> · all matched</p>
+                        </div>
+                        <button class="rounded-full border border-line bg-canvas px-5 py-2.5 text-[13px] font-semibold text-ink hover:border-espresso hover:bg-espresso hover:text-canvas transition-colors flex-shrink-0">Update playlist ↻</button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <!-- Recent activity -->
+            <section>
+              <div class="flex items-end justify-between mb-6">
+                <h2 class="font-display text-3xl font-semibold tracking-tight text-ink">Recent activity</h2>
+                <a href="#" class="text-[13px] font-medium text-ink-muted hover:text-ink">View all →</a>
+              </div>
+              <div class="rounded-2xl bg-surface border border-line divide-y divide-line-soft">
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-sage-100 border border-sage-400/40 px-2.5 py-0.5 text-[11px] font-semibold text-sage-600 uppercase tracking-widest">Synced</span>
+                    <span class="text-[14px]">Scheduled sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">4/4</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">2 hours ago</span>
+                </div>
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-terra-100 border border-terra-400/40 text-terra-600 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest">Partial</span>
+                    <span class="text-[14px]">Manual sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">3/5</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">Yesterday</span>
+                </div>
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-sage-100 border border-sage-400/40 px-2.5 py-0.5 text-[11px] font-semibold text-sage-600 uppercase tracking-widest">Synced</span>
+                    <span class="text-[14px]">Webhook sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">6/6</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">3 days ago</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
