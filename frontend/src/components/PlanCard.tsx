@@ -6,6 +6,16 @@ interface PlanCardProps {
   plan: Plan;
 }
 
+function formatRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  return `${Math.floor(diffHr / 24)}d ago`;
+}
+
 export default function PlanCard({ plan }: PlanCardProps) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -16,6 +26,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
 
   const displayUnmatched = unmatchedCount ?? plan.unmatched_count;
   const displayMatched = matchedCount ?? plan.songs.filter((s) => s.matched).length;
+  const status = syncStatus ?? (plan.unmatched_count > 0 ? "partial" : plan.playlists.length > 0 ? "synced" : "pending");
 
   async function handleSync() {
     setSyncing(true);
@@ -48,99 +59,131 @@ export default function PlanCard({ plan }: PlanCardProps) {
   }
 
   const playlists = displayPlaylists ?? plan.playlists;
+  const synced = status === "synced";
+
+  // Parse date string "YYYY-MM-DD" in local time
+  const [year, month, day] = plan.date.split("-").map(Number);
+  const dateObj = new Date(year!, month! - 1, day!);
+  const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+  const monthName = dateObj.toLocaleDateString("en-US", { month: "long" });
+  const dayNum = dateObj.getDate();
+
+  const lastSyncedAt = playlists
+    .map((p) => p.last_synced_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
 
   return (
-    <div className="rounded-lg bg-white p-4 shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium text-gray-500">
-            {new Date(plan.date + "T00:00:00").toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+    <article className="rounded-3xl bg-white border border-slate-200 overflow-hidden hover:shadow-[4px_4px_0_0_rgba(15,23,42,0.9)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all">
+      <div className="flex">
+        {/* Date panel */}
+        <div className="flex-shrink-0 w-32 bg-slate-50 flex flex-col items-center justify-center py-8 border-r border-slate-200 relative">
+          <span
+            className={`absolute top-0 left-0 right-0 h-1 ${synced ? "bg-teal-500" : "bg-rose-500"}`}
+          />
+          <p className="text-[11px] uppercase tracking-[0.25em] text-slate-500 font-semibold">
+            {dayName}
           </p>
-          <h3 className="mt-0.5 text-base font-semibold text-gray-900">{plan.title}</h3>
+          <p className="font-display text-6xl font-semibold leading-none text-slate-900 my-1 tabular-nums">
+            {dayNum}
+          </p>
+          <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-widest">
+            {monthName}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          {syncStatus && (
-            <span
-              className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                syncStatus === "synced"
-                  ? "bg-green-100 text-green-700"
-                  : syncStatus === "partial"
-                  ? "bg-amber-100 text-amber-700"
-                  : syncStatus === "error"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-gray-100 text-gray-700"
+
+        {/* Content */}
+        <div className="flex-1 p-6">
+          <div className="flex items-start justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest border ${
+                    synced
+                      ? "bg-teal-50 border-teal-200 text-teal-700"
+                      : status === "pending"
+                      ? "bg-slate-50 border-slate-200 text-slate-600"
+                      : "bg-rose-50 border-rose-200 text-rose-700"
+                  }`}
+                >
+                  {synced ? "Synced" : status === "pending" ? "Not synced" : "Partial"}
+                </span>
+              </div>
+              <h3 className="font-display text-2xl font-semibold tracking-tight text-slate-900">
+                {plan.title}
+              </h3>
+              <p className="mt-1 text-[13px] text-slate-500">
+                <span className="tabular-nums font-medium text-slate-900">{plan.songs.length} songs</span>
+                {" · "}
+                {displayMatched} matched
+                {displayUnmatched > 0 && `, ${displayUnmatched} unmatched`}
+              </p>
+            </div>
+            <button
+              onClick={() => void handleSync()}
+              disabled={syncing}
+              className={`rounded-full px-5 py-2.5 text-[13px] font-semibold transition-colors flex-shrink-0 disabled:opacity-50 ${
+                synced
+                  ? "border border-slate-300 bg-white text-slate-900 hover:border-slate-900 hover:bg-slate-900 hover:text-white"
+                  : "bg-slate-900 text-white hover:bg-slate-800"
               }`}
             >
-              {syncStatus}
-            </span>
+              {syncing ? "Updating…" : "Update playlist ↻"}
+            </button>
+          </div>
+
+          {/* Song chips */}
+          {plan.songs.length > 0 && (
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {plan.songs.map((song) => (
+                <li
+                  key={song.pco_song_id}
+                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[12px] font-medium border ${
+                    song.matched
+                      ? "bg-teal-50 border-teal-100 text-slate-900"
+                      : "bg-rose-50 border-rose-100 text-rose-700"
+                  }`}
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${
+                      song.matched ? "bg-teal-500" : "bg-rose-500"
+                    }`}
+                  />
+                  {song.title}
+                </li>
+              ))}
+            </ul>
           )}
-          <button
-            onClick={() => void handleSync()}
-            disabled={syncing}
-            className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            {syncing ? "Updating…" : "Update Playlist"}
-          </button>
-        </div>
-      </div>
 
-      {/* Song list */}
-      <ul className="mt-3 space-y-1">
-        {plan.songs.map((song) => (
-          <li key={song.pco_song_id} className="flex items-center gap-2 text-sm">
-            <span
-              className={`h-2 w-2 rounded-full ${
-                song.matched ? "bg-green-500" : "bg-amber-400"
-              }`}
-            />
-            <span className="text-gray-700">{song.title}</span>
-          </li>
-        ))}
-      </ul>
-
-      {/* Match count summary */}
-      <p className="mt-2 text-xs text-gray-500">
-        {displayMatched} matched · {displayUnmatched} unmatched
-      </p>
-
-      {/* Playlists */}
-      {playlists.length > 0 && (
-        <div className="mt-3 space-y-1">
-          {playlists.map((pl) => (
-            <div key={pl.platform} className="text-xs">
-              <div className="flex items-center gap-2">
-                <span className="capitalize text-gray-500">{pl.platform === "youtube" ? "YouTube Music" : pl.platform}:</span>
-                {pl.url ? (
+          {/* Footer */}
+          {(playlists.length > 0 || syncError) && (
+            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-4 text-[12px] text-slate-500 flex-wrap">
+              {playlists.map((pl) => pl.url ? (
+                <span key={pl.platform} className="inline-flex items-center gap-1.5">
+                  <span className="h-4 w-4 rounded-full bg-teal-500 flex items-center justify-center">
+                    <span className="h-1 w-1 rounded-full bg-white" />
+                  </span>
                   <a
                     href={pl.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="font-medium text-slate-900 hover:underline"
                   >
-                    Open playlist ↗
+                    Open on {pl.platform === "youtube" ? "YouTube Music" : "Spotify"} ↗
                   </a>
-                ) : (
-                  <span className="text-gray-400">Not yet created</span>
-                )}
-              </div>
-              {pl.last_synced_at && (
-                <p className="ml-0 text-gray-400">
-                  Last synced {new Date(pl.last_synced_at).toLocaleString()}
-                </p>
+                </span>
+              ) : null)}
+              {lastSyncedAt && (
+                <span>Synced {formatRelativeTime(lastSyncedAt)}</span>
               )}
-              {pl.error_message && (
-                <p className="ml-0 text-red-500">{pl.error_message}</p>
+              {syncError && (
+                <span className="text-rose-600">{syncError}</span>
               )}
             </div>
-          ))}
+          )}
         </div>
-      )}
-
-      {syncError && <p className="mt-2 text-xs text-red-600">{syncError}</p>}
-    </div>
+      </div>
+    </article>
   );
 }
