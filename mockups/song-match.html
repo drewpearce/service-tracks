@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Match: Graves Into Gardens</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: { 950: "#070B14", 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 300: "#CBD5E1", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" },
+              teal:  { 50: "#F0FDFA", 100: "#CCFBF1", 400: "#2DD4BF", 500: "#14B8A6", 600: "#0D9488", 700: "#0F766E" },
+              rose:  { 50: "#FFF1F2", 100: "#FFE4E6", 400: "#FB7185", 500: "#F43F5E", 600: "#E11D48", 700: "#BE123C" },
+              spotify: "#1DB954",
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      .cover-a { background: linear-gradient(135deg, #E11D48 0%, #0F172A 100%); }
+      .cover-b { background: linear-gradient(135deg, #0D9488 0%, #0F172A 100%); }
+      .cover-c { background: linear-gradient(135deg, #334155 0%, #0F172A 100%); }
+      .cover-d { background: linear-gradient(135deg, #F43F5E 0%, #14B8A6 100%); }
+      .cover-e { background: linear-gradient(135deg, #14B8A6 0%, #475569 100%); }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-slate-800 text-white font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+            <span class="ml-auto text-[10px] font-semibold bg-rose-500 text-white rounded-full px-1.5 py-0.5">5</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-slate-800">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-slate-400 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <!-- Hero -->
+        <section class="text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.18) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.14) 0%, transparent 60%),#0F172A;">
+          <div class="relative px-10 pt-8 pb-10 max-w-5xl">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-[12px] text-slate-400 mb-6">
+              <a href="#" class="hover:text-white">Songs</a>
+              <span class="text-slate-600">/</span>
+              <a href="#" class="hover:text-white">Unmatched</a>
+              <span class="text-slate-600">/</span>
+              <span class="text-slate-300">Graves Into Gardens</span>
+            </nav>
+
+            <p class="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">Find a match</p>
+            <h1 class="font-display text-[36px] leading-[1.1] font-semibold tracking-tight">
+              Match <span class="text-teal-400">"Graves Into Gardens"</span> to a Spotify track
+            </h1>
+            <p class="mt-3 max-w-2xl text-[14px] text-slate-400">
+              Pick the version your team rehearses with. This song appears in <a href="#" class="text-slate-200 hover:text-white font-medium underline underline-offset-2">Sunday Morning Service · Apr 19</a>.
+            </p>
+
+            <!-- Source + platform -->
+            <div class="mt-8 flex items-center gap-4">
+              <!-- Source: PCO song -->
+              <div class="flex items-center gap-3 rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700 pl-3 pr-5 py-3 flex-1 max-w-md">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-300 uppercase tracking-widest">From PCO</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[14px] font-semibold text-white truncate">Graves Into Gardens</p>
+                  <p class="text-[11px] text-slate-400 truncate">Elevation Worship</p>
+                </div>
+              </div>
+
+              <svg class="h-5 w-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+
+              <!-- Platform tabs -->
+              <div class="flex-shrink-0 inline-flex rounded-full bg-slate-800/60 backdrop-blur border border-slate-700 p-1">
+                <button class="rounded-full bg-spotify px-4 py-1.5 text-[12px] font-semibold text-white flex items-center gap-1.5">
+                  <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.36-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2z"/></svg>
+                  Spotify
+                </button>
+                <button class="rounded-full px-4 py-1.5 text-[12px] font-medium text-slate-400 hover:text-white">YouTube Music</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <main class="flex-1 px-10 py-8">
+          <div class="max-w-4xl">
+            <!-- Search bar -->
+            <div class="relative mb-6">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input type="text" value="Graves Into Gardens" class="w-full rounded-full border border-slate-300 bg-white pl-12 pr-32 py-3.5 text-[15px] text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-colors"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <span class="text-[11px] text-slate-500 tabular-nums">5 results</span>
+                <kbd class="inline-flex items-center px-1.5 h-6 rounded border border-slate-300 bg-slate-50 text-[11px] font-mono text-slate-500">⌘K</kbd>
+              </div>
+            </div>
+
+            <!-- Best match banner -->
+            <div class="mb-4 flex items-center gap-2 text-[12px] text-slate-500">
+              <svg class="h-3.5 w-3.5 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Our best guess is first. <a href="#" class="text-slate-900 font-medium hover:text-teal-600">How matching works</a></span>
+            </div>
+
+            <!-- Results -->
+            <div class="space-y-2">
+              <!-- Result 1: best match -->
+              <article class="rounded-2xl bg-white border-2 border-teal-500 p-4 flex items-center gap-4 relative">
+                <span class="absolute -top-2.5 left-4 inline-flex items-center gap-1 rounded-full bg-teal-500 text-white text-[10px] font-semibold px-2 py-0.5 uppercase tracking-widest">
+                  <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                  Best match · 98%
+                </span>
+                <div class="relative flex-shrink-0 h-16 w-16 rounded-md cover-a flex items-center justify-center overflow-hidden group">
+                  <button class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" aria-label="Preview">
+                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <p class="truncate text-[15px] font-semibold text-slate-900">Graves Into Gardens</p>
+                  </div>
+                  <p class="truncate text-[12.5px] text-slate-600">Elevation Worship · <span class="text-slate-500">Graves Into Gardens (Single)</span></p>
+                  <p class="mt-1 text-[11px] text-slate-400 tabular-nums">2020 · 5:46 · Studio</p>
+                </div>
+                <button class="rounded-full bg-slate-900 text-white px-5 py-2.5 text-[13px] font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2 flex-shrink-0">
+                  Select match
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </article>
+
+              <!-- Result 2 -->
+              <article class="rounded-2xl bg-white border border-slate-200 p-4 flex items-center gap-4 hover:border-slate-300 transition-colors">
+                <div class="relative flex-shrink-0 h-16 w-16 rounded-md cover-b flex items-center justify-center overflow-hidden group">
+                  <button class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" aria-label="Preview">
+                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <p class="truncate text-[15px] font-semibold text-slate-900">Graves Into Gardens</p>
+                    <span class="inline-flex items-center rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">Live</span>
+                  </div>
+                  <p class="truncate text-[12.5px] text-slate-600">Elevation Worship · <span class="text-slate-500">At Midnight (Live)</span></p>
+                  <p class="mt-1 text-[11px] text-slate-400 tabular-nums">2020 · 6:15 · Live recording</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] text-slate-400 tabular-nums font-mono">87%</span>
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-900 px-4 py-2 text-[12px] font-semibold hover:bg-slate-50 hover:border-slate-400 transition-colors flex-shrink-0">Select</button>
+                </div>
+              </article>
+
+              <!-- Result 3 -->
+              <article class="rounded-2xl bg-white border border-slate-200 p-4 flex items-center gap-4 hover:border-slate-300 transition-colors">
+                <div class="relative flex-shrink-0 h-16 w-16 rounded-md cover-c flex items-center justify-center overflow-hidden group">
+                  <button class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" aria-label="Preview">
+                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <p class="truncate text-[15px] font-semibold text-slate-900">Graves Into Gardens</p>
+                    <span class="inline-flex items-center rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">Acoustic</span>
+                  </div>
+                  <p class="truncate text-[12.5px] text-slate-600">Elevation Worship · <span class="text-slate-500">Acoustic Sessions</span></p>
+                  <p class="mt-1 text-[11px] text-slate-400 tabular-nums">2021 · 4:22 · Acoustic</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] text-slate-400 tabular-nums font-mono">74%</span>
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-900 px-4 py-2 text-[12px] font-semibold hover:bg-slate-50 hover:border-slate-400 transition-colors flex-shrink-0">Select</button>
+                </div>
+              </article>
+
+              <!-- Result 4 -->
+              <article class="rounded-2xl bg-white border border-slate-200 p-4 flex items-center gap-4 hover:border-slate-300 transition-colors">
+                <div class="relative flex-shrink-0 h-16 w-16 rounded-md cover-d flex items-center justify-center overflow-hidden group">
+                  <button class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" aria-label="Preview">
+                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="truncate text-[15px] font-semibold text-slate-900">Graves Into Gardens <span class="text-slate-500 font-normal">(feat. Brandon Lake)</span></p>
+                  <p class="truncate text-[12.5px] text-slate-600">Elevation Worship · <span class="text-slate-500">Graves Into Gardens</span></p>
+                  <p class="mt-1 text-[11px] text-slate-400 tabular-nums">2020 · 5:46 · Studio</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] text-slate-400 tabular-nums font-mono">68%</span>
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-900 px-4 py-2 text-[12px] font-semibold hover:bg-slate-50 hover:border-slate-400 transition-colors flex-shrink-0">Select</button>
+                </div>
+              </article>
+
+              <!-- Result 5 -->
+              <article class="rounded-2xl bg-white border border-slate-200 p-4 flex items-center gap-4 hover:border-slate-300 transition-colors">
+                <div class="relative flex-shrink-0 h-16 w-16 rounded-md cover-e flex items-center justify-center overflow-hidden group">
+                  <button class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" aria-label="Preview">
+                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="truncate text-[15px] font-semibold text-slate-900">Graves Into Gardens</p>
+                  <p class="truncate text-[12.5px] text-slate-600">Brandon Lake · <span class="text-slate-500">House of Miracles</span></p>
+                  <p class="mt-1 text-[11px] text-slate-400 tabular-nums">2020 · 5:34 · Studio · <span class="text-slate-500">Different artist</span></p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] text-slate-400 tabular-nums font-mono">52%</span>
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-900 px-4 py-2 text-[12px] font-semibold hover:bg-slate-50 hover:border-slate-400 transition-colors flex-shrink-0">Select</button>
+                </div>
+              </article>
+            </div>
+
+            <!-- Nothing right? -->
+            <div class="mt-8 rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center">
+              <p class="text-[13px] text-slate-600">Nothing quite right?</p>
+              <p class="mt-1 text-[12px] text-slate-500">Try a different search above, or <a href="#" class="text-teal-600 font-medium hover:text-teal-700">skip for now</a> and this song will be left out of the playlist.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

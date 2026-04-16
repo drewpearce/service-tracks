@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — PCO Setup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: { 950: "#070B14", 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 300: "#CBD5E1", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" },
+              teal:  { 50: "#F0FDFA", 100: "#CCFBF1", 400: "#2DD4BF", 500: "#14B8A6", 600: "#0D9488", 700: "#0F766E" },
+              rose:  { 50: "#FFF1F2", 100: "#FFE4E6", 400: "#FB7185", 500: "#F43F5E", 600: "#E11D48", 700: "#BE123C" },
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-slate-800 text-white font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-teal-400"></span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-slate-800">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-slate-400 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <!-- Hero (compact, extends sidebar) -->
+        <section class="text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.18) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.14) 0%, transparent 60%),#0F172A;">
+          <div class="relative px-10 pt-10 pb-10 max-w-5xl">
+            <p class="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">Setup · Step 1 of 3</p>
+            <h1 class="font-display text-[36px] leading-[1.1] font-semibold tracking-tight">Connect Planning Center Online</h1>
+            <p class="mt-3 max-w-xl text-[14px] text-slate-300 leading-relaxed">
+              ServiceTracks reads your upcoming service plans from PCO so it knows which songs to sync. You'll create a Personal Access Token and paste it here — it takes about two minutes.
+            </p>
+
+            <!-- Stepper -->
+            <div class="mt-8 flex items-center gap-2 text-[12px]">
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-500 text-slate-900 font-semibold">
+                <span class="h-4 w-4 rounded-full bg-slate-900 text-teal-400 flex items-center justify-center text-[10px]">1</span>
+                Connect PCO
+              </div>
+              <div class="h-px w-8 bg-slate-700"></div>
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 text-slate-400">
+                <span class="h-4 w-4 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[10px]">2</span>
+                Select service type
+              </div>
+              <div class="h-px w-8 bg-slate-700"></div>
+              <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 text-slate-400">
+                <span class="h-4 w-4 rounded-full bg-slate-700 text-slate-400 flex items-center justify-center text-[10px]">3</span>
+                Connect Spotify
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <main class="flex-1 px-10 py-10">
+          <div class="max-w-3xl grid grid-cols-5 gap-8">
+            <!-- Instructions -->
+            <aside class="col-span-2">
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Get your credentials</p>
+              <h2 class="mt-2 font-display text-xl font-semibold tracking-tight">Create a Personal Access Token</h2>
+              <ol class="mt-5 space-y-4 text-[13.5px] text-slate-600 leading-relaxed">
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0 h-5 w-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-[11px] font-semibold">1</span>
+                  <span>Open your <a href="#" class="font-medium text-teal-600 hover:text-teal-700 underline underline-offset-2">PCO API settings ↗</a></span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0 h-5 w-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-[11px] font-semibold">2</span>
+                  <span>Click <span class="font-mono text-[12px] bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5">New Personal Access Token</span></span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0 h-5 w-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-[11px] font-semibold">3</span>
+                  <span>Give it any description (e.g. "ServiceTracks").</span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0 h-5 w-5 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-[11px] font-semibold">4</span>
+                  <span>Copy the Application ID and Secret into the form.</span>
+                </li>
+              </ol>
+
+              <div class="mt-6 rounded-xl bg-slate-100 border border-slate-200 p-4">
+                <div class="flex gap-3">
+                  <svg class="h-5 w-5 flex-shrink-0 text-teal-600 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <div>
+                    <p class="text-[13px] font-semibold text-slate-900">Your credentials are encrypted.</p>
+                    <p class="mt-1 text-[12.5px] text-slate-600 leading-relaxed">Tokens are stored with Fernet encryption. We only read your service plans and songs.</p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <!-- Form card -->
+            <div class="col-span-3">
+              <div class="rounded-2xl bg-white border border-slate-200 p-8">
+                <h2 class="font-display text-2xl font-semibold tracking-tight">Your PCO credentials</h2>
+                <p class="mt-1 text-[13px] text-slate-500">Paste the Application ID and Secret from your Personal Access Token.</p>
+
+                <form class="mt-6 space-y-4">
+                  <div>
+                    <label for="app-id" class="block text-[13px] font-medium text-slate-700 mb-1.5">Application ID</label>
+                    <input id="app-id" type="text" placeholder="7f3e9c2a1b4d5e6f8c9a0b1c2d3e4f5g"
+                      class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-[13.5px] font-mono text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-colors"/>
+                  </div>
+                  <div>
+                    <label for="secret" class="block text-[13px] font-medium text-slate-700 mb-1.5">Secret</label>
+                    <input id="secret" type="password" placeholder="••••••••••••••••"
+                      class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-[13.5px] font-mono text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-colors"/>
+                  </div>
+
+                  <div class="pt-2 flex items-center justify-between">
+                    <a href="#" class="text-[13px] text-slate-500 hover:text-slate-900">Need help?</a>
+                    <button type="submit" class="rounded-full bg-slate-900 text-white px-6 py-2.5 text-[13px] font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">
+                      Connect PCO
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

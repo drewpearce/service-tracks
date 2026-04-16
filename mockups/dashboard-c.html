@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Dashboard · Direction C (Bold Expressive)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              canvas: "#F5F3EE",
+              surface: "#FFFFFF",
+              midnight: "#13111C",
+              "midnight-soft": "#1E1B2E",
+              line: "#E4E1D9",
+              ink: "#0A0A0F",
+              "ink-muted": "#55525E",
+              "ink-soft": "#8B8794",
+              violet: {
+                100: "#EDE7FF",
+                400: "#A78BFA",
+                500: "#8B5CF6",
+                600: "#7C3AED",
+                700: "#6D28D9",
+              },
+              lime: {
+                300: "#D9F99D",
+                400: "#BEF264",
+                500: "#A3E635",
+              },
+              coral: "#FF6B57",
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      .hero-bg {
+        background:
+          radial-gradient(60% 60% at 0% 0%, rgba(124,58,237,0.12) 0%, transparent 60%),
+          radial-gradient(40% 50% at 100% 0%, rgba(190,242,100,0.15) 0%, transparent 60%),
+          #13111C;
+      }
+      .grain::after {
+        content: "";
+        position: absolute; inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+        background-size: 4px 4px;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body class="bg-canvas text-ink">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-midnight text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-lime-400 flex items-center justify-center">
+              <svg class="h-4 w-4 text-midnight" fill="currentColor" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19a3 3 0 11-6 0 3 3 0 016 0zm12-3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-white/10 text-white font-medium">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v10a1 1 0 001 1h4a1 1 0 001-1V10M9 21h6"/></svg>
+            Dashboard
+            <span class="ml-auto h-1.5 w-1.5 rounded-full bg-lime-400"></span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/60 hover:bg-white/5 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Songs
+            <span class="ml-auto text-[10px] font-semibold bg-coral text-white rounded-full px-1.5 py-0.5">5</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/60 hover:bg-white/5 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            PCO Setup
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/60 hover:bg-white/5 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 18a6 6 0 010-12m0 12a6 6 0 000-12m0 12v2m0-14V4"/></svg>
+            Streaming
+          </a>
+          <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-white/60 hover:bg-white/5 hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Settings
+          </a>
+        </nav>
+        <div class="p-4 mx-3 mb-3 rounded-xl bg-white/5 border border-white/10">
+          <p class="text-[11px] uppercase tracking-widest text-white/50 font-medium">Next sync</p>
+          <p class="mt-1 font-display text-2xl font-semibold">Sun 6:00 AM</p>
+          <p class="text-[11px] text-white/60 mt-1">Auto-sync scheduled · 3 days</p>
+        </div>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-white/10">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-coral flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-white/50 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <main class="flex-1">
+          <!-- Hero header -->
+          <section class="hero-bg relative text-white overflow-hidden">
+            <div class="grain absolute inset-0"></div>
+            <div class="relative px-10 pt-10 pb-16 max-w-5xl">
+              <div class="flex items-center justify-between mb-10">
+                <div class="flex items-center gap-2 text-[12px] text-white/60">
+                  <span class="h-1.5 w-1.5 rounded-full bg-lime-400"></span>
+                  <span>All systems operational</span>
+                </div>
+                <button class="rounded-full border border-white/20 px-4 py-1.5 text-[13px] hover:bg-white/10">Log out</button>
+              </div>
+              <p class="text-[12px] uppercase tracking-[0.25em] text-lime-400 font-semibold mb-4">Sunday April 19 · 3 days away</p>
+              <h1 class="font-display text-[56px] leading-[1.02] font-semibold tracking-tight">
+                Good morning,<br/>
+                <span class="text-lime-400">Grace Community.</span>
+              </h1>
+              <p class="mt-5 max-w-xl text-[15px] text-white/70 leading-relaxed">
+                Two services on deck, <span class="text-white font-semibold">5 songs</span> still need matching, and your last sync ran clean two hours ago.
+              </p>
+
+              <!-- Metrics -->
+              <div class="mt-10 grid grid-cols-4 gap-3 max-w-3xl">
+                <div class="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-white/50 font-medium">Upcoming</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums">2</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-white/50 font-medium">Matched</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-lime-400">7</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-white/50 font-medium">Unmatched</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums text-coral">5</p>
+                </div>
+                <div class="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-4">
+                  <p class="text-[11px] uppercase tracking-widest text-white/50 font-medium">Last sync</p>
+                  <p class="mt-1 font-display text-3xl font-semibold tabular-nums">2h</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="px-10 py-10 max-w-5xl space-y-10">
+            <!-- Setup checklist -->
+            <section class="rounded-2xl bg-midnight text-white p-8 relative overflow-hidden">
+              <div class="absolute top-0 right-0 h-32 w-32 rounded-full bg-violet-600/40 blur-3xl"></div>
+              <div class="relative flex items-start justify-between gap-8">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-400 text-midnight px-2.5 py-0.5 text-[11px] font-semibold">ALMOST THERE</span>
+                    <span class="text-[12px] text-white/60 tabular-nums">1 of 3 complete</span>
+                  </div>
+                  <h2 class="font-display text-3xl font-semibold tracking-tight">Finish setup</h2>
+                  <p class="mt-2 text-[14px] text-white/60">Two steps between you and automated Sunday sync.</p>
+
+                  <ul class="mt-6 space-y-3">
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-lime-400 text-midnight">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      </span>
+                      <span class="flex-1 text-[14px] line-through text-white/50">Connect Planning Center Online</span>
+                      <span class="text-[11px] text-white/40">Connected</span>
+                    </li>
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/10 border-2 border-white/20 text-white/70 font-semibold text-[12px]">2</span>
+                      <span class="flex-1 text-[14px] font-medium">Select a service type in PCO</span>
+                      <a href="#" class="rounded-full bg-white text-midnight px-4 py-1.5 text-[12px] font-semibold hover:bg-lime-400">Select →</a>
+                    </li>
+                    <li class="flex items-center gap-4">
+                      <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/10 border-2 border-white/20 text-white/70 font-semibold text-[12px]">3</span>
+                      <span class="flex-1 text-[14px] font-medium">Connect Spotify</span>
+                      <a href="#" class="rounded-full border border-white/30 px-4 py-1.5 text-[12px] font-semibold hover:bg-white/10">Connect</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="relative flex-shrink-0 w-40 h-40">
+                  <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
+                    <circle cx="50" cy="50" r="42" stroke="#BEF264" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="176"/>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <p class="font-display text-4xl font-semibold">33%</p>
+                    <p class="text-[11px] text-white/50 uppercase tracking-widest">done</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Unmatched alert -->
+            <section class="rounded-2xl bg-coral text-white p-5 flex items-center gap-5">
+              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <div class="flex-1">
+                <p class="font-display text-xl font-semibold">5 unmatched songs</p>
+                <p class="text-[13px] text-white/80">Match them before Sunday or they'll be skipped in the playlist.</p>
+              </div>
+              <a href="#" class="rounded-full bg-white text-coral px-5 py-2.5 text-[13px] font-semibold hover:bg-canvas transition-colors">Match now →</a>
+            </section>
+
+            <!-- Upcoming plans -->
+            <section>
+              <div class="flex items-end justify-between mb-6">
+                <div>
+                  <p class="text-[11px] uppercase tracking-[0.25em] text-violet-600 font-semibold">This week</p>
+                  <h2 class="mt-1 font-display text-4xl font-semibold tracking-tight">Upcoming plans</h2>
+                </div>
+                <a href="#" class="text-[13px] font-medium text-ink-muted hover:text-ink">All plans →</a>
+              </div>
+
+              <div class="grid grid-cols-1 gap-5">
+                <!-- Plan 1 -->
+                <article class="rounded-3xl bg-surface border-2 border-midnight p-0 overflow-hidden hover:shadow-[8px_8px_0_0_#13111C] hover:-translate-x-1 hover:-translate-y-1 transition-all">
+                  <div class="flex">
+                    <!-- Date block -->
+                    <div class="flex-shrink-0 w-32 bg-lime-400 flex flex-col items-center justify-center py-8 border-r-2 border-midnight">
+                      <p class="text-[11px] uppercase tracking-[0.25em] text-midnight font-semibold">Sun</p>
+                      <p class="font-display text-6xl font-semibold leading-none text-midnight my-1">19</p>
+                      <p class="text-[11px] text-midnight font-semibold uppercase tracking-widest">April</p>
+                    </div>
+                    <!-- Content -->
+                    <div class="flex-1 p-6">
+                      <div class="flex items-start justify-between gap-6">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-coral/10 border border-coral/30 px-2 py-0.5 text-[10px] font-semibold text-coral uppercase tracking-widest">Partial</span>
+                          </div>
+                          <h3 class="font-display text-2xl font-semibold tracking-tight">Sunday Morning Service</h3>
+                          <p class="mt-1 text-[13px] text-ink-muted"><span class="tabular-nums font-medium text-ink">5 songs</span> · 3 matched, 2 unmatched</p>
+                        </div>
+                        <button class="rounded-full bg-midnight text-white px-5 py-2.5 text-[13px] font-semibold hover:bg-violet-700 transition-colors flex-shrink-0">Update playlist ↻</button>
+                      </div>
+
+                      <ul class="mt-5 flex flex-wrap gap-2">
+                        <li class="inline-flex items-center gap-2 rounded-full bg-lime-400/30 px-3 py-1 text-[12px] font-medium"><span class="h-1.5 w-1.5 rounded-full bg-lime-500"></span>Goodness of God</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-lime-400/30 px-3 py-1 text-[12px] font-medium"><span class="h-1.5 w-1.5 rounded-full bg-lime-500"></span>Great Are You Lord</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-coral/15 px-3 py-1 text-[12px] font-medium text-coral"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Graves Into Gardens</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-lime-400/30 px-3 py-1 text-[12px] font-medium"><span class="h-1.5 w-1.5 rounded-full bg-lime-500"></span>What A Beautiful Name</li>
+                        <li class="inline-flex items-center gap-2 rounded-full bg-coral/15 px-3 py-1 text-[12px] font-medium text-coral"><span class="h-1.5 w-1.5 rounded-full bg-coral"></span>Oceans (Where Feet May Fail)</li>
+                      </ul>
+
+                      <div class="mt-5 pt-4 border-t border-line flex items-center gap-4 text-[12px] text-ink-muted">
+                        <span class="inline-flex items-center gap-1.5">
+                          <span class="h-4 w-4 rounded-full bg-[#1DB954] flex items-center justify-center"><span class="h-1 w-1 rounded-full bg-white"></span></span>
+                          <a href="#" class="font-medium text-ink hover:underline">Open on Spotify ↗</a>
+                        </span>
+                        <span>Synced 2h ago</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- Plan 2 -->
+                <article class="rounded-3xl bg-surface border-2 border-midnight overflow-hidden hover:shadow-[8px_8px_0_0_#13111C] hover:-translate-x-1 hover:-translate-y-1 transition-all">
+                  <div class="flex">
+                    <div class="flex-shrink-0 w-32 bg-violet-600 flex flex-col items-center justify-center py-8 border-r-2 border-midnight text-white">
+                      <p class="text-[11px] uppercase tracking-[0.25em] font-semibold">Wed</p>
+                      <p class="font-display text-6xl font-semibold leading-none my-1">22</p>
+                      <p class="text-[11px] font-semibold uppercase tracking-widest">April</p>
+                    </div>
+                    <div class="flex-1 p-6">
+                      <div class="flex items-start justify-between gap-6">
+                        <div>
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-semibold text-midnight uppercase tracking-widest">Synced</span>
+                          </div>
+                          <h3 class="font-display text-2xl font-semibold tracking-tight">Youth Service</h3>
+                          <p class="mt-1 text-[13px] text-ink-muted"><span class="tabular-nums font-medium text-ink">4 songs</span> · all matched</p>
+                        </div>
+                        <button class="rounded-full border-2 border-midnight px-5 py-2.5 text-[13px] font-semibold hover:bg-midnight hover:text-white transition-colors flex-shrink-0">Update playlist ↻</button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <!-- Recent activity -->
+            <section>
+              <div class="flex items-end justify-between mb-6">
+                <h2 class="font-display text-3xl font-semibold tracking-tight">Recent activity</h2>
+                <a href="#" class="text-[13px] font-medium text-ink-muted hover:text-ink">View all →</a>
+              </div>
+              <div class="rounded-2xl bg-surface border border-line divide-y divide-line">
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-400 px-2.5 py-0.5 text-[11px] font-semibold text-midnight uppercase tracking-widest">Synced</span>
+                    <span class="text-[14px]">Scheduled sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">4/4</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">2 hours ago</span>
+                </div>
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-coral/15 text-coral px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-widest">Partial</span>
+                    <span class="text-[14px]">Manual sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">3/5</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">Yesterday</span>
+                </div>
+                <div class="flex items-center justify-between px-6 py-4">
+                  <div class="flex items-center gap-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-lime-400 px-2.5 py-0.5 text-[11px] font-semibold text-midnight uppercase tracking-widest">Synced</span>
+                    <span class="text-[14px]">Webhook sync</span>
+                    <span class="font-display text-[14px] font-semibold tabular-nums text-ink-muted">6/6</span>
+                  </div>
+                  <span class="text-[12px] text-ink-muted font-medium">3 days ago</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

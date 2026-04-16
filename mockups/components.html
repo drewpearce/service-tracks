@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ServiceTracks — Component Catalog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              slate: { 950: "#070B14", 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 300: "#CBD5E1", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" },
+              teal:  { 50: "#F0FDFA", 100: "#CCFBF1", 200: "#99F6E4", 400: "#2DD4BF", 500: "#14B8A6", 600: "#0D9488", 700: "#0F766E" },
+              rose:  { 50: "#FFF1F2", 100: "#FFE4E6", 200: "#FECDD3", 400: "#FB7185", 500: "#F43F5E", 600: "#E11D48", 700: "#BE123C" },
+              amber: { 50: "#FFFBEB", 100: "#FEF3C7", 200: "#FDE68A", 400: "#FBBF24", 500: "#F59E0B", 600: "#D97706", 700: "#B45309" },
+            },
+            fontFamily: {
+              display: ['Space Grotesk', 'Inter', 'sans-serif'],
+              sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+      .font-display { font-family: 'Space Grotesk', Inter, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+      .swatch { box-shadow: inset 0 0 0 1px rgba(15,23,42,0.08); }
+      .cover-demo { background: linear-gradient(135deg, #14B8A6 0%, #0F766E 50%, #0F172A 100%); }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="fixed inset-y-0 left-0 flex w-64 flex-col bg-slate-900 text-white">
+        <div class="flex h-16 items-center px-6">
+          <div class="flex items-center gap-2.5">
+            <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+              <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+            </div>
+            <span class="font-display text-lg font-semibold tracking-tight">ServiceTracks</span>
+          </div>
+        </div>
+        <nav class="flex-1 px-3 py-4 space-y-1 text-[14px]">
+          <a href="#colors" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Colors</a>
+          <a href="#typography" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Typography</a>
+          <a href="#buttons" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Buttons</a>
+          <a href="#inputs" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Inputs</a>
+          <a href="#badges" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Badges</a>
+          <a href="#cards" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Cards</a>
+          <a href="#banners" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Banners</a>
+          <a href="#empty" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Empty states</a>
+          <a href="#tabs" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Tabs &amp; nav</a>
+          <a href="#avatars" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-400 hover:bg-slate-800 hover:text-white">Avatars</a>
+        </nav>
+        <div class="flex items-center gap-2.5 px-4 py-3 border-t border-slate-800">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium truncate">Jonathan Park</p>
+            <p class="text-[11px] text-slate-400 truncate">Grace Community</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="flex flex-1 flex-col pl-64">
+        <!-- Hero -->
+        <section class="text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.18) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.14) 0%, transparent 60%),#0F172A;">
+          <div class="relative px-10 pt-10 pb-8 max-w-5xl">
+            <p class="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">Design System</p>
+            <h1 class="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">Component catalog</h1>
+            <p class="mt-3 max-w-xl text-[14px] text-slate-400">Every primitive the app is made of, in isolation. Reference this when building new screens.</p>
+          </div>
+        </section>
+
+        <main class="flex-1 px-10 py-10 space-y-16 max-w-5xl">
+          <!-- Colors -->
+          <section id="colors" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">01</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Colors</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Cool monochromatic foundation with two accents. Slate does the heavy lifting; teal carries action; rose signals problems.</p>
+            </div>
+
+            <!-- Slate ramp -->
+            <div class="space-y-2">
+              <p class="text-[12px] font-semibold text-slate-700">Slate — surface &amp; text</p>
+              <div class="grid grid-cols-11 gap-1 text-[10px]">
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-50"></div><p class="text-slate-500">50</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-100"></div><p class="text-slate-500">100</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-200"></div><p class="text-slate-500">200</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-300"></div><p class="text-slate-500">300</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-400"></div><p class="text-slate-500">400</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-500"></div><p class="text-slate-500">500</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-600"></div><p class="text-slate-500">600</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-700"></div><p class="text-slate-500">700</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-800"></div><p class="text-slate-500">800</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-900"></div><p class="text-slate-500">900</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-slate-950"></div><p class="text-slate-500">950</p></div>
+              </div>
+            </div>
+
+            <!-- Teal ramp -->
+            <div class="space-y-2">
+              <p class="text-[12px] font-semibold text-slate-700">Teal — primary action</p>
+              <div class="grid grid-cols-7 gap-1 text-[10px]">
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-50"></div><p class="text-slate-500">50</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-100"></div><p class="text-slate-500">100</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-200"></div><p class="text-slate-500">200</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-400"></div><p class="text-slate-500">400</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-500"></div><p class="text-slate-500">500</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-600"></div><p class="text-slate-500">600</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-teal-700"></div><p class="text-slate-500">700</p></div>
+              </div>
+            </div>
+
+            <!-- Rose ramp -->
+            <div class="space-y-2">
+              <p class="text-[12px] font-semibold text-slate-700">Rose — warning &amp; errors</p>
+              <div class="grid grid-cols-7 gap-1 text-[10px]">
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-50"></div><p class="text-slate-500">50</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-100"></div><p class="text-slate-500">100</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-200"></div><p class="text-slate-500">200</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-400"></div><p class="text-slate-500">400</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-500"></div><p class="text-slate-500">500</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-600"></div><p class="text-slate-500">600</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-rose-700"></div><p class="text-slate-500">700</p></div>
+              </div>
+            </div>
+
+            <!-- Amber ramp -->
+            <div class="space-y-2">
+              <p class="text-[12px] font-semibold text-slate-700">Amber — caution &amp; pending</p>
+              <div class="grid grid-cols-7 gap-1 text-[10px]">
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-50"></div><p class="text-slate-500">50</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-100"></div><p class="text-slate-500">100</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-200"></div><p class="text-slate-500">200</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-400"></div><p class="text-slate-500">400</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-500"></div><p class="text-slate-500">500</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-600"></div><p class="text-slate-500">600</p></div>
+                <div class="space-y-1"><div class="swatch h-14 rounded-md bg-amber-700"></div><p class="text-slate-500">700</p></div>
+              </div>
+            </div>
+
+            <!-- Semantic usage -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <div class="rounded-xl bg-white border border-slate-200 p-4">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Semantic roles</p>
+                <dl class="space-y-2 text-[13px]">
+                  <div class="flex justify-between"><dt class="text-slate-500">Surface</dt><dd class="font-mono text-slate-900">slate-50 / white</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Surface inverse</dt><dd class="font-mono text-slate-900">slate-900</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Border</dt><dd class="font-mono text-slate-900">slate-200</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Text primary</dt><dd class="font-mono text-slate-900">slate-900</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Text muted</dt><dd class="font-mono text-slate-900">slate-500</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Accent</dt><dd class="font-mono text-slate-900">teal-500 / 600</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Danger</dt><dd class="font-mono text-slate-900">rose-500 / 600</dd></div>
+                  <div class="flex justify-between"><dt class="text-slate-500">Warning</dt><dd class="font-mono text-slate-900">amber-500</dd></div>
+                </dl>
+              </div>
+              <div class="rounded-xl p-4 text-white relative overflow-hidden" style="background:radial-gradient(60% 60% at 0% 0%, rgba(20,184,166,0.22) 0%, transparent 60%),radial-gradient(40% 50% at 100% 0%, rgba(244,63,94,0.18) 0%, transparent 60%),#0F172A;">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-teal-400 font-semibold mb-2">Hero gradient</p>
+                <p class="text-[13px] text-slate-300 leading-relaxed">Teal glow top-left at 0.18 alpha + rose glow top-right at 0.14 alpha, over slate-900. Used only in hero regions — never for ambient decoration.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Typography -->
+          <section id="typography" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">02</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Typography</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Space Grotesk for display, Inter for body, JetBrains Mono for code and credential fields.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 divide-y divide-slate-100">
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">display · 40/1.05</p>
+                <p class="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">Every worship plan</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">h1 · 24/1.2</p>
+                <p class="font-display text-2xl font-semibold tracking-tight">Section heading</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">h2 · 18/1.3</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Subsection heading</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">eyebrow · 11/1</p>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">Above a heading</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">body · 14/1.6</p>
+                <p class="text-[14px] text-slate-700 leading-relaxed max-w-lg">Standard running text for descriptions, helper copy, and paragraphs throughout the app.</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">small · 13/1.5</p>
+                <p class="text-[13px] text-slate-500">Dense UI labels, table cells, card metadata.</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">micro · 11/1</p>
+                <p class="text-[11px] text-slate-500">Timestamps, helper text, footnotes.</p>
+              </div>
+              <div class="flex items-baseline gap-6 px-5 py-4">
+                <p class="w-24 text-[11px] font-mono text-slate-500 shrink-0">mono · 13</p>
+                <p class="font-mono text-[13px] text-slate-900">{church_name} — Sunday {date}</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Buttons -->
+          <section id="buttons" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">03</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Buttons</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Pill-shaped, four variants. Primary is slate-900 (not teal) to keep teal reserved for state, not every CTA.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6 space-y-6">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Variants</p>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold hover:bg-slate-800 transition-colors">Primary</button>
+                  <button class="rounded-full border border-slate-300 bg-white text-slate-700 px-5 py-2 text-[13px] font-semibold hover:bg-slate-50">Secondary</button>
+                  <button class="rounded-full text-slate-600 px-5 py-2 text-[13px] font-semibold hover:bg-slate-100">Ghost</button>
+                  <button class="rounded-full bg-rose-600 text-white px-5 py-2 text-[13px] font-semibold hover:bg-rose-700">Danger</button>
+                  <button class="rounded-full bg-teal-500 text-slate-900 px-5 py-2 text-[13px] font-semibold hover:bg-teal-400">Accent</button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Sizes</p>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button class="rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold">Small</button>
+                  <button class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold">Medium</button>
+                  <button class="rounded-full bg-slate-900 text-white px-6 py-2.5 text-[14px] font-semibold">Large</button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">With icon</p>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button class="inline-flex items-center gap-1.5 rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Add plan
+                  </button>
+                  <button class="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white text-slate-700 px-5 py-2 text-[13px] font-semibold">
+                    Sync now
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M5 9a7 7 0 0112-3l3 3M19 15a7 7 0 01-12 3l-3-3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">States</p>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold">Default</button>
+                  <button class="rounded-full bg-slate-800 text-white px-5 py-2 text-[13px] font-semibold">Hover</button>
+                  <button class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold ring-2 ring-teal-500 ring-offset-2">Focused</button>
+                  <button disabled class="rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold opacity-40 cursor-not-allowed">Disabled</button>
+                  <button class="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold">
+                    <span class="h-3 w-3 rounded-full border-2 border-white/40 border-t-white animate-spin"></span>
+                    Saving…
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Inputs -->
+          <section id="inputs" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">04</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Inputs</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Rounded-lg, 1px slate-300 border, teal focus ring. Credential &amp; template fields use JetBrains Mono.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6 grid grid-cols-2 gap-6">
+              <!-- Text -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Text input</label>
+                <input type="text" placeholder="Grace Community" class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-[13.5px] text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none"/>
+                <p class="mt-1 text-[11px] text-slate-500">Helper text explains the field.</p>
+              </div>
+
+              <!-- Mono -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Credential / template</label>
+                <input type="text" value="{church_name} — Sunday {date}" class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-[13.5px] font-mono text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none"/>
+                <p class="mt-1 text-[11px] text-slate-500">Monospaced when input represents code, keys, or templates.</p>
+              </div>
+
+              <!-- Focused -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Focused</label>
+                <input type="text" value="pastor@grace.church" class="w-full rounded-lg border border-teal-600 bg-white px-3.5 py-2 text-[13.5px] text-slate-900 ring-2 ring-teal-600/20 outline-none"/>
+              </div>
+
+              <!-- Error -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Error</label>
+                <input type="text" value="bad-email" class="w-full rounded-lg border border-rose-500 bg-white px-3.5 py-2 text-[13.5px] text-slate-900 focus:ring-2 focus:ring-rose-500/20 focus:outline-none"/>
+                <p class="mt-1 text-[11px] text-rose-600">Enter a valid email address.</p>
+              </div>
+
+              <!-- Disabled -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-400 mb-1.5">Disabled</label>
+                <input type="text" value="read-only value" disabled class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-[13.5px] text-slate-400 cursor-not-allowed"/>
+              </div>
+
+              <!-- Select -->
+              <div>
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Select</label>
+                <select class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-[13.5px] text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none">
+                  <option>Spotify</option>
+                  <option>YouTube Music</option>
+                </select>
+              </div>
+
+              <!-- Textarea -->
+              <div class="col-span-2">
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Textarea</label>
+                <textarea rows="3" class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-[13.5px] font-mono text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none resize-none">Set list for {church_name} — {title}.</textarea>
+              </div>
+
+              <!-- Search -->
+              <div class="col-span-2">
+                <label class="block text-[13px] font-medium text-slate-700 mb-1.5">Search</label>
+                <div class="relative">
+                  <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                  <input type="text" placeholder="Search songs, artists, plans…" class="w-full rounded-full border border-slate-300 bg-white pl-10 pr-12 py-2.5 text-[13.5px] text-slate-900 placeholder:text-slate-400 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none"/>
+                  <kbd class="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-mono text-slate-500">⌘K</kbd>
+                </div>
+              </div>
+
+              <!-- Checkbox + radio -->
+              <div>
+                <p class="block text-[13px] font-medium text-slate-700 mb-1.5">Checkbox</p>
+                <label class="flex items-center gap-2 text-[13px] text-slate-700">
+                  <input type="checkbox" checked class="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"/>
+                  Include archived songs
+                </label>
+              </div>
+              <div>
+                <p class="block text-[13px] font-medium text-slate-700 mb-1.5">Radio</p>
+                <label class="flex items-center gap-2 text-[13px] text-slate-700">
+                  <input type="radio" name="demo_radio" checked class="h-4 w-4 border-slate-300 text-teal-600 focus:ring-teal-500"/>
+                  Shared playlist
+                </label>
+              </div>
+
+              <!-- Toggle -->
+              <div class="col-span-2">
+                <p class="block text-[13px] font-medium text-slate-700 mb-1.5">Toggle</p>
+                <div class="flex items-center gap-3">
+                  <button class="relative h-6 w-11 rounded-full bg-teal-500 transition-colors">
+                    <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transform translate-x-5 transition-transform"></span>
+                  </button>
+                  <span class="text-[13px] text-slate-700">Enable auto-sync</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Badges -->
+          <section id="badges" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">05</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Badges</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Status, counts, and labels. Text is uppercase + tracked for status; sentence-case for labels.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6 space-y-5">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Status (with dot)</p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-200 px-2 py-0.5 text-[10px] font-semibold text-teal-700 uppercase tracking-widest"><span class="h-1.5 w-1.5 rounded-full bg-teal-500"></span>Synced</span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-semibold text-amber-700 uppercase tracking-widest"><span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Pending</span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 border border-rose-200 px-2 py-0.5 text-[10px] font-semibold text-rose-700 uppercase tracking-widest"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>Unmatched</span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-600 uppercase tracking-widest"><span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Draft</span>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Labels</p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center rounded-full bg-teal-50 border border-teal-200 px-2 py-0.5 text-[10px] font-semibold text-teal-700 uppercase tracking-widest">Recommended</span>
+                  <span class="inline-flex items-center rounded-full bg-slate-900 text-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest">Best match · 98%</span>
+                  <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[11px] text-slate-600">Beta</span>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Counts</p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center justify-center rounded-full bg-rose-500 text-white min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold">5</span>
+                  <span class="inline-flex items-center justify-center rounded-full bg-teal-500 text-slate-900 min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold">23</span>
+                  <span class="inline-flex items-center justify-center rounded-full bg-slate-200 text-slate-700 min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold">128</span>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Mono chips (template variables)</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{church_name}</span>
+                  <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{date}</span>
+                  <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-mono text-slate-700">{title}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Cards -->
+          <section id="cards" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">06</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Cards</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Rounded-2xl for major cards, rounded-xl for dense ones. 1px slate-200 border, no shadow by default.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Basic -->
+              <div class="rounded-2xl bg-white border border-slate-200 p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">Basic card</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Section title</p>
+                <p class="mt-1 text-[13px] text-slate-600">Plain surface for grouping content. Use for most panels.</p>
+              </div>
+
+              <!-- Interactive -->
+              <div class="rounded-2xl bg-white border border-slate-200 p-5 cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)]">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-2">Interactive</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Hover lifts 4px</p>
+                <p class="mt-1 text-[13px] text-slate-600">Use when the whole card is a link or action target.</p>
+              </div>
+
+              <!-- Selected -->
+              <div class="rounded-2xl bg-white border-2 border-teal-500 p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-teal-700 font-semibold mb-2">Selected</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Chosen option</p>
+                <p class="mt-1 text-[13px] text-slate-600">Teal 2px border for radio cards and selected playlist modes.</p>
+              </div>
+
+              <!-- Inverse -->
+              <div class="rounded-2xl bg-slate-900 text-slate-100 p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-teal-400 font-semibold mb-2">Inverse</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Dark surface</p>
+                <p class="mt-1 text-[13px] text-slate-400">Previews, code blocks, playlist preview. Use sparingly.</p>
+              </div>
+
+              <!-- Warning -->
+              <div class="rounded-2xl bg-rose-50 border border-rose-200 p-5">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-rose-700 font-semibold mb-2">Attention</p>
+                <p class="font-display text-lg font-semibold tracking-tight">Unmatched songs</p>
+                <p class="mt-1 text-[13px] text-slate-700">Used for the unmatched alert and error surfaces.</p>
+              </div>
+
+              <!-- Empty placeholder -->
+              <div class="rounded-2xl border-2 border-dashed border-slate-300 p-5 text-center">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-semibold mb-2">Placeholder</p>
+                <p class="font-display text-lg font-semibold tracking-tight text-slate-500">Not connected</p>
+                <p class="mt-1 text-[13px] text-slate-500">Dashed border for empty slots awaiting connection.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Banners -->
+          <section id="banners" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">07</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Banners &amp; alerts</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Left-accent bar + colored background. One line of title, optional body, optional action.</p>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex items-start gap-3 rounded-xl bg-teal-50 border border-teal-200 p-4">
+                <svg class="h-5 w-5 text-teal-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="flex-1">
+                  <p class="text-[13.5px] font-semibold text-teal-900">You can skip this and add it later.</p>
+                  <p class="mt-0.5 text-[12.5px] text-teal-800">Streaming connections live in Settings under Integrations.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 rounded-xl bg-amber-50 border border-amber-200 p-4">
+                <svg class="h-5 w-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5 20h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0l-7.1 13.25A2 2 0 005 20z"/></svg>
+                <div class="flex-1">
+                  <p class="text-[13.5px] font-semibold text-amber-900">Spotify token expires in 3 days.</p>
+                  <p class="mt-0.5 text-[12.5px] text-amber-800">Reconnect to keep playlists syncing automatically.</p>
+                </div>
+                <button class="rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold">Reconnect</button>
+              </div>
+
+              <div class="flex items-start gap-3 rounded-xl bg-rose-50 border border-rose-200 p-4">
+                <svg class="h-5 w-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z"/></svg>
+                <div class="flex-1">
+                  <p class="text-[13.5px] font-semibold text-rose-900">Sync failed — YouTube rate limit hit.</p>
+                  <p class="mt-0.5 text-[12.5px] text-rose-800">We'll retry automatically in 15 minutes.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 rounded-xl bg-slate-900 text-white p-4">
+                <svg class="h-5 w-5 text-teal-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <div class="flex-1">
+                  <p class="text-[13.5px] font-semibold">Settings saved</p>
+                  <p class="mt-0.5 text-[12.5px] text-slate-300">Your next sync will use the new playlist name template.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Empty states -->
+          <section id="empty" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">08</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Empty states</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Centered, icon + title + one-line body + one CTA. Never more than one action.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="rounded-2xl bg-white border border-slate-200 p-10 text-center">
+                <div class="mx-auto h-12 w-12 rounded-full bg-teal-50 flex items-center justify-center mb-4">
+                  <svg class="h-6 w-6 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <p class="font-display text-lg font-semibold tracking-tight">All caught up</p>
+                <p class="mt-1 text-[13px] text-slate-500 max-w-[32ch] mx-auto">Every song in every upcoming plan is matched to a streaming track.</p>
+              </div>
+
+              <div class="rounded-2xl bg-white border border-slate-200 p-10 text-center">
+                <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                  <svg class="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V5l12-2v12M9 17a3 3 0 11-6 0 3 3 0 016 0zm12-2a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <p class="font-display text-lg font-semibold tracking-tight">No plans yet</p>
+                <p class="mt-1 text-[13px] text-slate-500 max-w-[32ch] mx-auto">Connect Planning Center to pull in your upcoming service plans.</p>
+                <button class="mt-4 rounded-full bg-slate-900 text-white px-5 py-2 text-[13px] font-semibold">Connect PCO</button>
+              </div>
+
+              <div class="rounded-2xl bg-white border border-slate-200 p-10 text-center">
+                <div class="mx-auto h-12 w-12 rounded-full bg-rose-50 flex items-center justify-center mb-4">
+                  <svg class="h-6 w-6 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
+                </div>
+                <p class="font-display text-lg font-semibold tracking-tight">No results for "hillsong"</p>
+                <p class="mt-1 text-[13px] text-slate-500 max-w-[32ch] mx-auto">Try a different spelling, or skip matching for now.</p>
+              </div>
+
+              <div class="rounded-2xl bg-white border border-slate-200 p-10 text-center">
+                <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                  <svg class="h-6 w-6 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <p class="font-display text-lg font-semibold tracking-tight">No recent activity</p>
+                <p class="mt-1 text-[13px] text-slate-500 max-w-[32ch] mx-auto">Sync events will appear here as playlists update.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Tabs & nav -->
+          <section id="tabs" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">09</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Tabs &amp; navigation</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Underline tabs for in-page views, pill tabs for platform/segment toggles, side-nav for multi-section forms.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6 space-y-6">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Underline tabs</p>
+                <div class="flex gap-6 border-b border-slate-200">
+                  <button class="pb-3 text-[13.5px] font-semibold text-slate-900 border-b-2 border-teal-500 -mb-px">Unmatched <span class="ml-1 text-slate-400">5</span></button>
+                  <button class="pb-3 text-[13.5px] font-medium text-slate-500 hover:text-slate-900">All mappings <span class="ml-1 text-slate-400">23</span></button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Pill segment</p>
+                <div class="inline-flex rounded-full bg-slate-100 p-1">
+                  <button class="rounded-full bg-white shadow-sm px-4 py-1.5 text-[12.5px] font-semibold text-slate-900">Spotify</button>
+                  <button class="rounded-full px-4 py-1.5 text-[12.5px] font-medium text-slate-500">YouTube Music</button>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Side nav</p>
+                <nav class="w-56 space-y-1 text-[13px]">
+                  <a class="block px-3 py-2 rounded-lg bg-slate-100 text-slate-900 font-medium">Playlists</a>
+                  <a class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Church</a>
+                  <a class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Account</a>
+                  <a class="block px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900">Advanced</a>
+                </nav>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Stepper</p>
+                <div class="flex items-center gap-2 text-[12px]">
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-teal-500 text-slate-900 px-3 py-1 font-semibold">
+                    <span class="h-1.5 w-1.5 rounded-full bg-slate-900"></span> 1. Account
+                  </span>
+                  <span class="h-px w-6 bg-slate-300"></span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-800 text-white px-3 py-1 font-semibold">2. PCO</span>
+                  <span class="h-px w-6 bg-slate-300"></span>
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-800 text-white px-3 py-1 font-semibold">3. Streaming</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Avatars -->
+          <section id="avatars" class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">10</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Avatars &amp; cover art</h2>
+              <p class="mt-1 text-[13px] text-slate-500">User avatars use the brand gradient. Song cover art uses deterministic gradients derived from the title.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6 space-y-6">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">User avatars</p>
+                <div class="flex items-center gap-3">
+                  <div class="h-6 w-6 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold">JP</div>
+                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-xs font-bold">JP</div>
+                  <div class="h-10 w-10 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-sm font-bold">JP</div>
+                  <div class="h-12 w-12 rounded-full bg-gradient-to-br from-teal-400 to-rose-500 flex items-center justify-center text-white text-base font-bold">JP</div>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Cover art (fallback gradients)</p>
+                <div class="flex items-center gap-3">
+                  <div class="h-12 w-12 rounded-lg cover-demo"></div>
+                  <div class="h-12 w-12 rounded-lg" style="background:linear-gradient(135deg,#F43F5E 0%,#BE123C 60%,#0F172A 100%);"></div>
+                  <div class="h-12 w-12 rounded-lg" style="background:linear-gradient(135deg,#2DD4BF 0%,#14B8A6 40%,#1E293B 100%);"></div>
+                  <div class="h-12 w-12 rounded-lg" style="background:linear-gradient(135deg,#FB7185 0%,#F43F5E 40%,#0F172A 100%);"></div>
+                  <div class="h-12 w-12 rounded-lg" style="background:linear-gradient(135deg,#14B8A6 0%,#0F766E 50%,#0F172A 100%);"></div>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold mb-3">Logo mark</p>
+                <div class="flex items-end gap-4">
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="h-6 w-6 rounded-md bg-teal-500 flex items-center justify-center">
+                      <svg class="h-3 w-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+                    </div>
+                    <p class="text-[10px] text-slate-500">24px</p>
+                  </div>
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
+                      <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+                    </div>
+                    <p class="text-[10px] text-slate-500">32px</p>
+                  </div>
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="h-12 w-12 rounded-xl bg-teal-500 flex items-center justify-center">
+                      <svg class="h-6 w-6 text-slate-900" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+                    </div>
+                    <p class="text-[10px] text-slate-500">48px</p>
+                  </div>
+                  <div class="flex flex-col items-center gap-1">
+                    <div class="h-16 w-16 rounded-2xl bg-slate-900 flex items-center justify-center">
+                      <svg class="h-8 w-8 text-teal-400" fill="currentColor" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="2.5" rx="1.25"/><rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/><rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/></svg>
+                    </div>
+                    <p class="text-[10px] text-slate-500">inverse</p>
+                  </div>
+                </div>
+                <p class="mt-3 text-[11px] text-slate-500">Placeholder mark — real logo exploration scheduled as Task #15.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Motion -->
+          <section class="space-y-5">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">11</p>
+              <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight">Motion</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Short, purposeful. Nothing decorative.</p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-slate-200 p-6">
+              <dl class="grid grid-cols-2 gap-y-2 gap-x-6 text-[13px]">
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Hover transitions</dt><dd class="font-mono text-slate-900">150ms · ease-out</dd></div>
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Card lift</dt><dd class="font-mono text-slate-900">translateY(-4px)</dd></div>
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Modal enter</dt><dd class="font-mono text-slate-900">200ms · ease-out</dd></div>
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Toast enter</dt><dd class="font-mono text-slate-900">180ms · ease-out</dd></div>
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Focus ring</dt><dd class="font-mono text-slate-900">instant · no transition</dd></div>
+                <div class="flex justify-between border-b border-slate-100 py-2"><dt class="text-slate-500">Spinner</dt><dd class="font-mono text-slate-900">1s · linear · infinite</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <div class="pt-6 border-t border-slate-200 flex items-center justify-between">
+            <p class="text-[12px] text-slate-500">Every primitive above comes from a screen mockup. Nothing here is theoretical.</p>
+            <a href="index.html" class="text-[12.5px] font-semibold text-slate-900 hover:text-teal-600">← Back to index</a>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
