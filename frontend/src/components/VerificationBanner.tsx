@@ -24,14 +24,15 @@ export default function VerificationBanner({ emailVerified }: VerificationBanner
   }
 
   return (
-    <div className="bg-amber-100 px-4 py-3 text-center text-sm text-amber-800">
-      Please verify your email address.{" "}
+    <div className="bg-rose-50 border-b border-rose-200 px-6 py-2.5 flex items-center justify-center gap-3 text-[13px] text-rose-700">
+      <span className="h-1.5 w-1.5 rounded-full bg-rose-500 flex-shrink-0" />
+      <span>Please verify your email address.</span>
       {message ? (
         <span className="font-medium">{message}</span>
       ) : (
         <button
-          onClick={handleResend}
-          className="font-medium underline hover:text-amber-900"
+          onClick={() => void handleResend()}
+          className="font-medium underline underline-offset-2 hover:text-rose-900"
         >
           Resend verification email
         </button>

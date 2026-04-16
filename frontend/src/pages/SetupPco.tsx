@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { apiClient, ApiClientError } from "../api/client";
+import { Hero, Input, Select } from "../components/ui";
 import type {
   PcoConnectResponse,
   PcoStatusResponse,
@@ -13,14 +14,12 @@ export default function SetupPco() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Connect form
   const [appId, setAppId] = useState("");
   const [secret, setSecret] = useState("");
   const [connectError, setConnectError] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[] | null>(null);
 
-  // Service type selection
   const [selectedServiceTypeId, setSelectedServiceTypeId] = useState("");
   const [selectError, setSelectError] = useState<string | null>(null);
   const [selecting, setSelecting] = useState(false);
@@ -51,14 +50,7 @@ export default function SetupPco() {
       setStatus((prev) =>
         prev
           ? { ...prev, connected: true, status: "active" }
-          : {
-              connected: true,
-              auth_method: "api_key",
-              status: "active",
-              last_successful_call_at: null,
-              service_type_id: null,
-              service_type_name: null,
-            }
+          : { connected: true, auth_method: "api_key", status: "active", last_successful_call_at: null, service_type_id: null, service_type_name: null }
       );
     } catch (err) {
       if (err instanceof ApiClientError) {
@@ -80,20 +72,13 @@ export default function SetupPco() {
     setSelectError(null);
     setSelecting(true);
     try {
-      const response = await apiClient<SelectServiceTypeResponse>(
-        "/api/pco/select-service-type",
-        {
-          method: "POST",
-          body: JSON.stringify({ service_type_id: selectedServiceTypeId }),
-        }
-      );
+      const response = await apiClient<SelectServiceTypeResponse>("/api/pco/select-service-type", {
+        method: "POST",
+        body: JSON.stringify({ service_type_id: selectedServiceTypeId }),
+      });
       setStatus((prev) =>
         prev
-          ? {
-              ...prev,
-              service_type_id: response.service_type_id,
-              service_type_name: response.service_type_name,
-            }
+          ? { ...prev, service_type_id: response.service_type_id, service_type_name: response.service_type_name }
           : prev
       );
       setServiceTypes(null);
@@ -113,156 +98,199 @@ export default function SetupPco() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-500 border-t-transparent" />
       </div>
     );
   }
 
   if (loadError) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow">
-        <p className="text-sm text-red-600">{loadError}</p>
+      <div className="px-10 py-10">
+        <div className="rounded-2xl bg-white border border-slate-200 p-6">
+          <p className="text-[14px] text-rose-600">{loadError}</p>
+        </div>
       </div>
     );
   }
 
-  // Fully connected state
+  // Fully connected
   if (status?.connected && status.service_type_id) {
     return (
-      <div className="max-w-xl space-y-4">
-        <h1 className="text-2xl font-bold text-gray-900">PCO Setup</h1>
-        <div className="rounded-lg bg-white p-6 shadow">
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-green-500" />
-            <span className="text-sm font-medium text-green-700">Connected</span>
-          </div>
-          <p className="mt-2 text-sm text-gray-600">
-            Service type:{" "}
-            <strong>{status.service_type_name ?? status.service_type_id}</strong>
+      <>
+        <Hero>
+          <p className="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">
+            Setup · PCO
           </p>
+          <h1 className="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">
+            Planning Center
+          </h1>
+        </Hero>
+        <div className="px-10 py-10 max-w-3xl">
+          <div className="rounded-2xl bg-white border border-slate-200 p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="h-2 w-2 rounded-full bg-teal-500" />
+              <span className="text-[14px] font-semibold text-teal-700">Connected</span>
+            </div>
+            <p className="text-[14px] text-slate-600">
+              Service type:{" "}
+              <span className="font-semibold text-slate-900">
+                {status.service_type_name ?? status.service_type_id}
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  // Connected but service type not yet selected — show service type picker
+  // Connected, need service type
   if ((status?.connected || serviceTypes) && serviceTypes) {
     return (
-      <div className="max-w-xl space-y-4">
-        <h1 className="text-2xl font-bold text-gray-900">PCO Setup</h1>
-        <div className="rounded-lg bg-white p-6 shadow">
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-green-500" />
-            <span className="text-sm font-medium text-green-700">
-              PCO credentials verified
-            </span>
-          </div>
-          <h2 className="mt-4 text-base font-semibold text-gray-900">
+      <>
+        <Hero>
+          <p className="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">
+            Setup · PCO · Step 2
+          </p>
+          <h1 className="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">
             Select a service type
-          </h2>
-          <form onSubmit={handleSelectServiceType} className="mt-4 space-y-4">
-            <div>
-              <label
-                htmlFor="service-type"
-                className="block text-sm font-medium text-gray-700"
+          </h1>
+          <p className="mt-3 max-w-xl text-[14px] text-slate-300">
+            PCO credentials verified. Choose which service type to sync plans from.
+          </p>
+        </Hero>
+        <div className="px-10 py-10 max-w-3xl">
+          <div className="rounded-2xl bg-white border border-slate-200 p-8">
+            <form onSubmit={handleSelectServiceType} className="space-y-6">
+              <div>
+                <label htmlFor="service-type" className="block text-[13px] font-medium text-slate-700 mb-1.5">
+                  Service type
+                </label>
+                <Select
+                  id="service-type"
+                  required
+                  value={selectedServiceTypeId}
+                  onChange={(e) => setSelectedServiceTypeId(e.target.value)}
+                >
+                  <option value="">— Select —</option>
+                  {serviceTypes.map((st) => (
+                    <option key={st.id} value={st.id}>
+                      {st.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              {selectError && <p className="text-[13px] text-rose-600">{selectError}</p>}
+              <button
+                type="submit"
+                disabled={selecting || !selectedServiceTypeId}
+                className="rounded-full bg-slate-900 text-white px-6 py-2.5 text-[13px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
               >
-                Service type
-              </label>
-              <select
-                id="service-type"
-                required
-                value={selectedServiceTypeId}
-                onChange={(e) => setSelectedServiceTypeId(e.target.value)}
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              >
-                <option value="">— Select —</option>
-                {serviceTypes.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {st.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {selectError && <p className="text-sm text-red-600">{selectError}</p>}
-            <button
-              type="submit"
-              disabled={selecting || !selectedServiceTypeId}
-              className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              {selecting ? "Saving…" : "Save service type"}
-            </button>
-          </form>
+                {selecting ? "Saving…" : "Save service type"}
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  // Not connected state
+  // Not connected
   return (
-    <div className="max-w-xl space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">PCO Setup</h1>
-      <div className="rounded-lg bg-white p-6 shadow">
-        <h2 className="text-base font-semibold text-gray-900">
-          Connect Planning Center Online
-        </h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Create a Personal Access Token in your PCO account, then enter your
-          credentials below.{" "}
-          <a
-            href="https://api.planningcenteronline.com/oauth/applications"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Open PCO API settings ↗
-          </a>
+    <>
+      <Hero>
+        <p className="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">
+          Setup · PCO · Step 1
         </p>
-        <ol className="mt-3 list-inside list-decimal space-y-1 text-sm text-gray-600">
-          <li>Go to PCO API settings linked above.</li>
-          <li>Click "New Personal Access Token".</li>
-          <li>Enter a description and create the token.</li>
-          <li>Copy the Application ID and Secret below.</li>
-        </ol>
-        <form onSubmit={handleConnect} className="mt-4 space-y-4">
-          <div>
-            <label
-              htmlFor="app-id"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Application ID
-            </label>
-            <input
-              id="app-id"
-              type="text"
-              required
-              value={appId}
-              onChange={(e) => setAppId(e.target.value)}
-              className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-            />
+        <h1 className="font-display text-[36px] leading-[1.1] font-semibold tracking-tight">
+          Connect Planning Center Online
+        </h1>
+        <p className="mt-3 max-w-xl text-[14px] text-slate-300 leading-relaxed">
+          Create a Personal Access Token in PCO and paste your credentials below.
+        </p>
+      </Hero>
+
+      <div className="px-10 py-10 max-w-3xl">
+        <div className="grid grid-cols-5 gap-8">
+          {/* Instructions */}
+          <aside className="col-span-2">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">
+              Get your credentials
+            </p>
+            <h2 className="mt-2 font-display text-xl font-semibold tracking-tight text-slate-900">
+              Create a Personal Access Token
+            </h2>
+            <ol className="mt-5 space-y-4 text-[13.5px] text-slate-600 leading-relaxed list-none">
+              {[
+                <>Go to <a href="https://api.planningcenteronline.com/oauth/applications" target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">PCO API settings ↗</a></>,
+                'Click "New Personal Access Token".',
+                "Enter a description and create the token.",
+                "Copy the Application ID and Secret below.",
+              ].map((step, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="flex-shrink-0 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-[11px] font-semibold text-slate-600">
+                    {i + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </aside>
+
+          {/* Form */}
+          <div className="col-span-3">
+            <div className="rounded-2xl bg-white border border-slate-200 p-8">
+              <h2 className="font-display text-2xl font-semibold tracking-tight text-slate-900">
+                Your PCO credentials
+              </h2>
+              <p className="mt-1 text-[13px] text-slate-500">
+                Paste the Application ID and Secret from your Personal Access Token.
+              </p>
+              <form onSubmit={handleConnect} className="mt-6 space-y-5">
+                <div>
+                  <label htmlFor="app-id" className="block text-[13px] font-medium text-slate-700 mb-1.5">
+                    Application ID
+                  </label>
+                  <Input
+                    id="app-id"
+                    type="text"
+                    required
+                    mono
+                    placeholder="abc123…"
+                    value={appId}
+                    onChange={(e) => setAppId(e.target.value)}
+                    error={!!connectError}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="secret" className="block text-[13px] font-medium text-slate-700 mb-1.5">
+                    Secret
+                  </label>
+                  <Input
+                    id="secret"
+                    type="password"
+                    required
+                    mono
+                    placeholder="••••••••••••"
+                    value={secret}
+                    onChange={(e) => setSecret(e.target.value)}
+                    error={!!connectError}
+                  />
+                </div>
+                {connectError && (
+                  <p className="text-[13px] text-rose-600">{connectError}</p>
+                )}
+                <button
+                  type="submit"
+                  disabled={connecting}
+                  className="w-full rounded-full bg-slate-900 text-white py-3 text-[14px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
+                >
+                  {connecting ? "Connecting…" : "Connect PCO"}
+                </button>
+              </form>
+            </div>
           </div>
-          <div>
-            <label htmlFor="secret" className="block text-sm font-medium text-gray-700">
-              Secret
-            </label>
-            <input
-              id="secret"
-              type="password"
-              required
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-              className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-            />
-          </div>
-          {connectError && <p className="text-sm text-red-600">{connectError}</p>}
-          <button
-            type="submit"
-            disabled={connecting}
-            className="w-full rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            {connecting ? "Connecting…" : "Connect PCO"}
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
