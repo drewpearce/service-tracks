@@ -164,7 +164,7 @@ All sizes are in `px` for precision. `leading` is the CSS value.
 
 | Role | Size | Leading | Weight | Tracking | Family | Used for |
 |---|---|---|---|---|---|---|
-| `display` | 40 | 1.05 | 600 | `-0.01em` (`tracking-tight`) | Space Grotesk | Page-level hero titles |
+| `display` | 40 | 1.05 | 600 | `-0.01em` (`tracking-tight`) | Space Grotesk | Page-level hero titles. Hero greeting format: single line — "Good morning, **Church Name.**" with the name in `teal-400`. No line break. |
 | `h1` | 24 | 1.2 | 600 | `-0.01em` | Space Grotesk | Section titles within a page |
 | `h2` | 18 | 1.3 | 600 | `-0.01em` | Space Grotesk | Card titles, subsection headings |
 | `h3` | 15 | 1.4 | 600 | normal | Space Grotesk | Minor titles, key labels |

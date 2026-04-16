@@ -134,10 +134,8 @@ export default function Dashboard() {
         )}
 
         {/* Heading */}
-        <h1 className="font-display text-[52px] leading-[1.05] font-semibold tracking-tight">
-          Good morning,
-          <br />
-          <span className="text-teal-400">{data.church_name}.</span>
+        <h1 className="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">
+          Good morning, <span className="text-teal-400">{data.church_name}.</span>
         </h1>
 
         {/* Subtext */}
@@ -181,7 +179,7 @@ export default function Dashboard() {
         )}
 
         {/* Metrics */}
-        <div className="mt-10 grid grid-cols-4 gap-3 max-w-3xl">
+        <div className="mt-6 grid grid-cols-4 gap-3 max-w-3xl">
           {[
             { label: "Upcoming", value: data.upcoming_plans.length, color: "" },
             { label: "Matched", value: totalMatched, color: "text-teal-400" },
