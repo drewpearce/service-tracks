@@ -1,4 +1,6 @@
 export { default as Badge, MonoChip } from "./Badge";
+export { default as Hero } from "./Hero";
+export { default as LogoMark } from "./LogoMark";
 export { default as Banner } from "./Banner";
 export { default as Button } from "./Button";
 export { default as Card } from "./Card";
