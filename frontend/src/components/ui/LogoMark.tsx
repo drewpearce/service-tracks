@@ -8,26 +8,39 @@ const sizes = {
   lg: "h-12 w-12",
 };
 
-const iconSizes = {
-  sm: "h-3 w-3",
-  md: "h-4 w-4",
-  lg: "h-6 w-6",
-};
-
+/**
+ * ServiceTracks logo mark.
+ *
+ * Dog-eared teal bulletin with a play triangle and two queued track rows.
+ * Reads as "a service plan that's playable" — the bridge between the
+ * church service plan and the streaming playlist.
+ *
+ * Works on both the slate-900 sidebar and the cool off-white canvas: the
+ * teal body comes from `text-teal-500` (via `fill-current`); interior
+ * elements are slate-100 and read correctly against the teal at any size.
+ */
 export default function LogoMark({ size = "md" }: LogoMarkProps) {
   return (
-    <div
-      className={`${sizes[size]} rounded-lg bg-teal-500 flex items-center justify-center flex-shrink-0`}
+    <svg
+      className={`${sizes[size]} text-teal-500 flex-shrink-0`}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="ServiceTracks"
     >
-      <svg
-        className={`${iconSizes[size]} text-slate-900`}
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <rect x="4" y="6" width="16" height="2.5" rx="1.25" />
-        <rect x="4" y="10.75" width="12" height="2.5" rx="1.25" />
-        <rect x="4" y="15.5" width="8" height="2.5" rx="1.25" />
-      </svg>
-    </div>
+      {/* Badge body with dog-eared top-right corner */}
+      <path
+        className="fill-current"
+        d="M15 4H34L44 14V33A11 11 0 0 1 33 44H15A11 11 0 0 1 4 33V15A11 11 0 0 1 15 4Z"
+      />
+      {/* Folded corner (page peel) */}
+      <path className="fill-slate-100/40" d="M34 4L44 14H34Z" />
+      {/* Play triangle (now-playing track) */}
+      <path className="fill-slate-100" d="M12 12L21 17L12 22Z" />
+      {/* Queued track rows */}
+      <rect className="fill-slate-100" x="12" y="26" width="21" height="3" rx="1.5" />
+      <rect className="fill-slate-100" x="12" y="33" width="15" height="3" rx="1.5" />
+    </svg>
   );
 }

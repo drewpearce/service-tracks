@@ -422,23 +422,48 @@ Sizes: 24px (`h-6 w-6 text-[10px]`), 32px (default, `h-8 w-8 text-xs`), 40px (`h
 
 ### 5.9 Logo mark
 
-Custom SVG — three stacked horizontal bars, descending width. Referenced as "tracks."
+Dog-eared teal bulletin with a play triangle and two queued track rows. Reads as "a service plan that's playable" — bridging the church service plan and the streaming playlist. Ships as the `LogoMark` component (`frontend/src/components/ui/LogoMark.tsx`) with a preserved `size` prop API.
 
-```html
-<div class="h-8 w-8 rounded-lg bg-teal-500 flex items-center justify-center">
-  <svg class="h-4 w-4 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
-    <rect x="4" y="6" width="16" height="2.5" rx="1.25"/>
-    <rect x="4" y="10.75" width="12" height="2.5" rx="1.25"/>
-    <rect x="4" y="15.5" width="8" height="2.5" rx="1.25"/>
-  </svg>
-</div>
+```tsx
+import LogoMark from "@/components/ui/LogoMark";
+
+<LogoMark />             // md / 32px (default)
+<LogoMark size="sm" />   // 24px
+<LogoMark size="lg" />   // 48px
 ```
 
-**Chip sizes:** 24px / 32px (default in sidebar) / 48px (login brand panel) / 64px+ (marketing).
+**Sizes:** 24px (`sm`, favicon / compact), 32px (`md`, sidebar / headers), 48px (`lg`, auth pages / hero).
 
-**Inverse variant:** `bg-slate-900` chip with `text-teal-400` bars — for use on light backgrounds when a darker mark reads better.
+**Colors:**
 
-**Status:** placeholder. Real logo exploration scheduled as Task #15.
+| Element | Class / Token | Hex |
+| --- | --- | --- |
+| Badge body | `fill-current` driven by `text-teal-500` | `#14B8A6` |
+| Fold (page peel) | `fill-slate-100/40` | `#F1F5F9` @ 40% |
+| Play triangle, track rows | `fill-slate-100` | `#F1F5F9` |
+
+The mark ships with slate-100 interior on teal — which inverts the bar/chip convention from the placeholder. This was deliberate: the dog-ear silhouette + play glyph + two rows are what carry brand recognition, and slate-100 interior preserves the "bulletin cover" feel at every size down to 16px favicon. No inverse variant is needed — the same mark reads correctly on slate-900 and on the cool off-white canvas.
+
+**Full lockup (mark + wordmark):** use the `Logo` component for auth pages, empty states, and headers where the wordmark belongs.
+
+```tsx
+import Logo from "@/components/ui/Logo";
+
+<Logo size="lg" />
+```
+
+The wordmark uses a Service/Tracks color split — "Service" picks up the ambient foreground, "Tracks" is `text-teal-500` to echo the mark. Uses `font-display` (Space Grotesk) from `@theme`.
+
+**Clear space:** maintain ~25% of the mark's height on all sides.
+
+**Minimum size:** 16px favicon. Below that the play triangle and row detail collapse — no dedicated small-size variant currently exists.
+
+**Favicon assets** (`frontend/public/`):
+
+- `favicon.svg` — primary, modern browsers
+- `favicon-16.png`, `favicon-32.png`, `favicon-48.png` — raster fallbacks
+- `apple-touch-icon.png` (180×180) — iOS home screen
+- `android-chrome-192x192.png`, `android-chrome-512x512.png` — Android / PWA manifest
 
 ### 5.10 Song row (composite, plan detail)
 
