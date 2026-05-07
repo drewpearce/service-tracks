@@ -11,7 +11,25 @@ interface TrackSearchResultProps {
   platform: string;
   isBestMatch?: boolean;
   isPlaying?: boolean;
-  onTogglePreview?: (id: string, url: string) => void;
+  onTogglePreview?: (id: string) => void;
+}
+
+function spotifyTrackId(trackId: string): string | null {
+  // Spotify URIs are "spotify:track:{id}"; legacy cache rows may lack external_url.
+  const parts = trackId.split(":");
+  return parts.length === 3 && parts[0] === "spotify" && parts[1] === "track" ? parts[2] : null;
+}
+
+function externalUrlFor(platform: string, track: TrackSearchResultType): string | null {
+  if (track.external_url) return track.external_url;
+  if (platform === "spotify") {
+    const id = spotifyTrackId(track.track_id);
+    return id ? `https://open.spotify.com/track/${id}` : null;
+  }
+  if (platform === "youtube" && track.track_id) {
+    return `https://music.youtube.com/watch?v=${track.track_id}`;
+  }
+  return null;
 }
 
 function formatDuration(ms: number): string {
@@ -58,9 +76,14 @@ export default function TrackSearchResult({
     }
   }
 
+  const spotifyId = platform === "spotify" ? spotifyTrackId(track.track_id) : null;
+  const externalUrl = externalUrlFor(platform, track);
+  const showInlinePlay = !!spotifyId;
+  const showExternalLink = !showInlinePlay && !!externalUrl;
+
   return (
     <article
-      className={`rounded-2xl bg-white p-4 flex items-center gap-4 relative transition-all ${
+      className={`rounded-2xl bg-white p-4 relative transition-all ${
         isBestMatch
           ? "border-2 border-teal-500"
           : "border border-slate-200 hover:border-slate-300"
@@ -75,90 +98,105 @@ export default function TrackSearchResult({
         </span>
       )}
 
-      <div className="group/art relative h-14 w-14 flex-shrink-0">
-        {track.image_url ? (
-          <img
-            src={track.image_url}
-            alt={track.album ?? "Album art"}
-            className="h-14 w-14 rounded-xl object-cover"
-          />
-        ) : (
-          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-            </svg>
-          </div>
-        )}
-        {track.preview_url ? (
-          <button
-            type="button"
-            onClick={() => onTogglePreview?.(track.track_id, track.preview_url!)}
-            aria-label={isPlaying ? "Pause preview" : "Play preview"}
-            className={`absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white transition-opacity focus:outline-none focus:ring-2 focus:ring-teal-400 ${
-              isPlaying ? "opacity-100" : "opacity-0 group-hover/art:opacity-100 focus:opacity-100"
-            }`}
-          >
-            {isPlaying ? (
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <rect x="6" y="5" width="4" height="14" rx="1" />
-                <rect x="14" y="5" width="4" height="14" rx="1" />
+      <div className="flex items-center gap-4">
+        <div className="group/art relative h-14 w-14 flex-shrink-0">
+          {track.image_url ? (
+            <img
+              src={track.image_url}
+              alt={track.album ?? "Album art"}
+              referrerPolicy="no-referrer"
+              className="h-14 w-14 rounded-xl object-cover"
+            />
+          ) : (
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
               </svg>
-            ) : (
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
+            </div>
+          )}
+          {showInlinePlay ? (
+            <button
+              type="button"
+              onClick={() => onTogglePreview?.(track.track_id)}
+              aria-label={isPlaying ? "Hide preview" : "Play preview"}
+              className={`absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white transition-opacity focus:outline-none focus:ring-2 focus:ring-teal-400 ${
+                isPlaying ? "opacity-100" : "opacity-0 group-hover/art:opacity-100 focus:opacity-100"
+              }`}
+            >
+              {isPlaying ? (
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="6" y="5" width="4" height="14" rx="1" />
+                  <rect x="14" y="5" width="4" height="14" rx="1" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
+            </button>
+          ) : showExternalLink ? (
+            <a
+              href={externalUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open track in new tab"
+              className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white opacity-0 transition-opacity group-hover/art:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-teal-400"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14 4h6v6" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20 4l-7 7" />
               </svg>
-            )}
-          </button>
-        ) : track.external_url ? (
-          <a
-            href={track.external_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open track in new tab"
-            className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white opacity-0 transition-opacity group-hover/art:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-teal-400"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14 4h6v6" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20 4l-7 7" />
-            </svg>
-          </a>
-        ) : null}
-      </div>
+            </a>
+          ) : null}
+        </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-semibold text-slate-900 truncate">{track.title}</p>
-        <p className="text-[12px] text-slate-500 truncate">{track.artist}</p>
-        {track.album && (
-          <p className="text-[11px] text-slate-400 truncate">{track.album}</p>
-        )}
-      </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[14px] font-semibold text-slate-900 truncate">{track.title}</p>
+          <p className="text-[12px] text-slate-500 truncate">{track.artist}</p>
+          {track.album && (
+            <p className="text-[11px] text-slate-400 truncate">{track.album}</p>
+          )}
+        </div>
 
-      {track.duration_ms && (
-        <span className="text-[12px] text-slate-400 tabular-nums flex-shrink-0">
-          {formatDuration(track.duration_ms)}
-        </span>
-      )}
-
-      <div className="flex flex-col items-end gap-1 flex-shrink-0">
-        {done ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-[12px] font-semibold text-teal-700">
-            <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            Matched!
+        {track.duration_ms && (
+          <span className="text-[12px] text-slate-400 tabular-nums flex-shrink-0">
+            {formatDuration(track.duration_ms)}
           </span>
-        ) : (
-          <button
-            onClick={() => void handleSelect()}
-            disabled={selecting}
-            className="rounded-full bg-slate-900 text-white px-4 py-1.5 text-[12px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
-          >
-            {selecting ? "Saving…" : "Select"}
-          </button>
         )}
-        {error && <p className="text-[11px] text-rose-600">{error}</p>}
+
+        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+          {done ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-200 px-3 py-1 text-[12px] font-semibold text-teal-700">
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              Matched!
+            </span>
+          ) : (
+            <button
+              onClick={() => void handleSelect()}
+              disabled={selecting}
+              className="rounded-full bg-slate-900 text-white px-4 py-1.5 text-[12px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
+            >
+              {selecting ? "Saving…" : "Select"}
+            </button>
+          )}
+          {error && <p className="text-[11px] text-rose-600">{error}</p>}
+        </div>
       </div>
+
+      {isPlaying && spotifyId && (
+        <iframe
+          src={`https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator&autoplay=1`}
+          title={`Spotify preview: ${track.title}`}
+          width="100%"
+          height={80}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          className="mt-3 rounded-xl border-0"
+        />
+      )}
     </article>
   );
 }
