@@ -136,6 +136,8 @@ async def search_tracks(
             "album": r.album,
             "image_url": r.image_url,
             "duration_ms": r.duration_ms,
+            "preview_url": r.preview_url,
+            "external_url": r.external_url,
         }
         for r in raw_results
     ]

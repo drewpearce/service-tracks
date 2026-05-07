@@ -10,6 +10,8 @@ interface TrackSearchResultProps {
   pcoSongArtist: string | null;
   platform: string;
   isBestMatch?: boolean;
+  isPlaying?: boolean;
+  onTogglePreview?: (id: string, url: string) => void;
 }
 
 function formatDuration(ms: number): string {
@@ -26,6 +28,8 @@ export default function TrackSearchResult({
   pcoSongArtist,
   platform,
   isBestMatch = false,
+  isPlaying = false,
+  onTogglePreview,
 }: TrackSearchResultProps) {
   const navigate = useNavigate();
   const [selecting, setSelecting] = useState(false);
@@ -71,19 +75,56 @@ export default function TrackSearchResult({
         </span>
       )}
 
-      {track.image_url ? (
-        <img
-          src={track.image_url}
-          alt={track.album ?? "Album art"}
-          className="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
-        />
-      ) : (
-        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
-          </svg>
-        </div>
-      )}
+      <div className="group/art relative h-14 w-14 flex-shrink-0">
+        {track.image_url ? (
+          <img
+            src={track.image_url}
+            alt={track.album ?? "Album art"}
+            className="h-14 w-14 rounded-xl object-cover"
+          />
+        ) : (
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z" />
+            </svg>
+          </div>
+        )}
+        {track.preview_url ? (
+          <button
+            type="button"
+            onClick={() => onTogglePreview?.(track.track_id, track.preview_url!)}
+            aria-label={isPlaying ? "Pause preview" : "Play preview"}
+            className={`absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white transition-opacity focus:outline-none focus:ring-2 focus:ring-teal-400 ${
+              isPlaying ? "opacity-100" : "opacity-0 group-hover/art:opacity-100 focus:opacity-100"
+            }`}
+          >
+            {isPlaying ? (
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <rect x="6" y="5" width="4" height="14" rx="1" />
+                <rect x="14" y="5" width="4" height="14" rx="1" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            )}
+          </button>
+        ) : track.external_url ? (
+          <a
+            href={track.external_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open track in new tab"
+            className="absolute inset-0 flex items-center justify-center rounded-xl bg-slate-900/55 text-white opacity-0 transition-opacity group-hover/art:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-teal-400"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M14 4h6v6" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 4l-7 7" />
+            </svg>
+          </a>
+        ) : null}
+      </div>
 
       <div className="flex-1 min-w-0">
         <p className="text-[14px] font-semibold text-slate-900 truncate">{track.title}</p>

@@ -224,6 +224,8 @@ class YouTubeAdapter(StreamingAdapter):
                     album=album,
                     image_url=image_url,
                     duration_ms=None,
+                    preview_url=None,
+                    external_url=f"https://music.youtube.com/watch?v={video_id}",
                 )
             )
 

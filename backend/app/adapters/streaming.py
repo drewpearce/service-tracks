@@ -16,6 +16,8 @@ class TrackSearchResult:
     album: str | None
     image_url: str | None
     duration_ms: int | None
+    preview_url: str | None = None
+    external_url: str | None = None
 
 
 @dataclass

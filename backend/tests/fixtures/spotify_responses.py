@@ -4,6 +4,7 @@ SPOTIFY_SEARCH_RESPONSE = {
     "tracks": {
         "items": [
             {
+                "id": "4iV5W9uYEdYUVa79Axb7Rh",
                 "uri": "spotify:track:4iV5W9uYEdYUVa79Axb7Rh",
                 "name": "How Great Is Our God",
                 "artists": [{"name": "Chris Tomlin"}],
@@ -15,8 +16,10 @@ SPOTIFY_SEARCH_RESPONSE = {
                     ],
                 },
                 "duration_ms": 253000,
+                "preview_url": "https://p.scdn.co/mp3-preview/abc123",
             },
             {
+                "id": "7ouMYWpwJ422jRcDASZB7P",
                 "uri": "spotify:track:7ouMYWpwJ422jRcDASZB7P",
                 "name": "Amazing Grace",
                 "artists": [{"name": "John Newton"}, {"name": "Various Artists"}],
@@ -27,6 +30,7 @@ SPOTIFY_SEARCH_RESPONSE = {
                     ],
                 },
                 "duration_ms": 210000,
+                "preview_url": None,
             },
         ]
     }

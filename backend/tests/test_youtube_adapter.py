@@ -127,6 +127,8 @@ async def test_search_tracks_success_writes_cache(db: AsyncSession, church_id: u
     assert first.album == "Arriving"
     assert first.image_url == "https://lh3.googleusercontent.com/thumb_large.jpg"
     assert first.duration_ms is None
+    assert first.preview_url is None
+    assert first.external_url == "https://music.youtube.com/watch?v=abc123XYZ01"
 
     # Cache row should exist
     cached_row = (
@@ -174,6 +176,9 @@ async def test_search_tracks_uses_fresh_cache(db: AsyncSession, church_id: uuid.
     assert len(results) == 1
     assert results[0].track_id == "cached_video_id"
     assert results[0].title == "Cached Title"
+    # Legacy cache rows lack preview_url/external_url — should default to None.
+    assert results[0].preview_url is None
+    assert results[0].external_url is None
 
 
 @pytest.mark.asyncio
