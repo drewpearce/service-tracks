@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { apiClient, ApiClientError } from "../api/client";
 import TrackSearchResult from "../components/TrackSearchResult";
 import { Hero } from "../components/ui";
+import { useAudioPreview } from "../hooks/useAudioPreview";
 import { useDebounce } from "../hooks/useDebounce";
 import type { SearchResponse } from "../types/api";
 
@@ -25,9 +26,11 @@ export default function SongMatch() {
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const { playingId, toggle, stop } = useAudioPreview();
 
   useEffect(() => {
     let cancelled = false;
+    stop();
     if (!debouncedQuery.trim()) {
       queueMicrotask(() => { if (!cancelled) setResults(null); });
       return () => { cancelled = true; };
@@ -42,7 +45,7 @@ export default function SongMatch() {
         .finally(() => { if (!cancelled) setSearching(false); });
     });
     return () => { cancelled = true; };
-  }, [debouncedQuery, platform]);
+  }, [debouncedQuery, platform, stop]);
 
   const platformLabel = PLATFORM_LABELS[platform] ?? platform;
 
@@ -143,6 +146,8 @@ export default function SongMatch() {
                   pcoSongArtist={artist || null}
                   platform={platform}
                   isBestMatch={i === 0}
+                  isPlaying={playingId === track.track_id}
+                  onTogglePreview={toggle}
                 />
               ))}
             </div>

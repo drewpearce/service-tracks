@@ -190,6 +190,14 @@ async def test_search_cache_miss_calls_spotify(verified_authenticated_client: As
     body = response.json()
     assert len(body["results"]) == 2
 
+    # New fields propagate end-to-end (preview when Spotify returns one, null otherwise;
+    # external_url always built from the bare track ID).
+    first = body["results"][0]
+    assert first["preview_url"] == "https://p.scdn.co/mp3-preview/abc123"
+    assert first["external_url"] == "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
+    assert body["results"][1]["preview_url"] is None
+    assert body["results"][1]["external_url"] == "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P"
+
     # Verify cache row was created with normalized query
     cache_result = await db.execute(
         select(SearchCache).where(
@@ -200,6 +208,9 @@ async def test_search_cache_miss_calls_spotify(verified_authenticated_client: As
     cached = cache_result.scalar_one_or_none()
     assert cached is not None
     assert len(cached.results) == 2
+    # Cache rows persist the new fields so subsequent hits don't lose them.
+    assert cached.results[0]["preview_url"] == "https://p.scdn.co/mp3-preview/abc123"
+    assert cached.results[0]["external_url"] == "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
 
 
 # ---------------------------------------------------------------------------
@@ -237,6 +248,10 @@ async def test_search_cache_hit_does_not_call_spotify(verified_authenticated_cli
     body = response.json()
     assert len(body["results"]) == 1
     assert body["results"][0]["track_id"] == "spotify:track:cached1"
+    # Legacy cache rows (pre-feature) lack the preview/external fields; schema defaults
+    # surface them as null rather than failing validation.
+    assert body["results"][0]["preview_url"] is None
+    assert body["results"][0]["external_url"] is None
 
 
 # ---------------------------------------------------------------------------

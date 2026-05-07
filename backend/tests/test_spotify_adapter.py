@@ -92,9 +92,13 @@ async def test_search_tracks_success(db: AsyncSession, church_id: uuid.UUID):
     assert first.album == "Arriving"
     assert first.image_url == "https://i.scdn.co/image/abc123"
     assert first.duration_ms == 253000
+    assert first.preview_url == "https://p.scdn.co/mp3-preview/abc123"
+    assert first.external_url == "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
 
     second = results[1]
     assert second.artist == "John Newton, Various Artists"
+    assert second.preview_url is None
+    assert second.external_url == "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P"
 
 
 @pytest.mark.asyncio

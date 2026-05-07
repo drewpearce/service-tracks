@@ -24,6 +24,8 @@ class TrackSearchResultSchema(BaseModel):
     album: str | None = None
     image_url: str | None = None
     duration_ms: int | None = None
+    preview_url: str | None = None
+    external_url: str | None = None
 
 
 class SearchResponse(BaseModel):

@@ -90,6 +90,8 @@ export interface TrackSearchResult {
   album: string | null;
   image_url: string | null;
   duration_ms: number | null;
+  preview_url: string | null;
+  external_url: string | null;
 }
 
 export interface SearchResponse {

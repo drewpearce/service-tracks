@@ -135,6 +135,7 @@ class SpotifyAdapter(StreamingAdapter):
         for item in items:
             images = item["album"].get("images", [])
             image_url = images[0]["url"] if images else None
+            external_url = f"https://open.spotify.com/track/{item['id']}" if item.get("id") else None
             results.append(
                 TrackSearchResult(
                     track_id=item["uri"],
@@ -143,6 +144,8 @@ class SpotifyAdapter(StreamingAdapter):
                     album=item["album"]["name"],
                     image_url=image_url,
                     duration_ms=item["duration_ms"],
+                    preview_url=item.get("preview_url"),
+                    external_url=external_url,
                 )
             )
         return results
