@@ -309,6 +309,8 @@ Three sub-patterns. Always uppercase + tracked for status; sentence-case for lab
 
 **Inverse badge** (for dark surfaces): `bg-slate-900 text-white` — used for "Best match · 98%" overlays.
 
+**Floating status pill** (anchored at top of a card to label its match state): `bg-<color>-500 text-white text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full`. `teal-500` = "Best match" (confident, recommended). `amber-500` = "Suggested" (cross-platform guess; verify before saving).
+
 **Count badge:** circular, `min-w-[18px] h-[18px] px-1.5 text-[10px] font-bold`. `rose-500/white` for problems, `teal-500/slate-900` for positive counts, `slate-200/slate-700` for neutral.
 
 **Mono chip:** for template variables and code:
