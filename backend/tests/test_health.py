@@ -1,18 +1,15 @@
 from unittest.mock import patch
 
-from fastapi.testclient import TestClient
-
-from app.main import app
+from httpx import AsyncClient
 
 
-def test_health_endpoint():
+async def test_health_endpoint(client: AsyncClient):
     """Health endpoint returns scheduler status; mock to isolate from scheduler state."""
-    client = TestClient(app)
     with patch(
         "app.routers.health.get_scheduler_status",
         return_value={"scheduler": "running", "scheduler_jobs": 0},
     ):
-        response = client.get("/api/health")
+        response = await client.get("/api/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "healthy"

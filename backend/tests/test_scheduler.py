@@ -114,7 +114,7 @@ async def test_get_scheduler_status_running():
 # ---------------------------------------------------------------------------
 
 
-def test_get_scheduler_status_stopped():
+async def test_get_scheduler_status_stopped():
     # Scheduler should not be running (cleanup_scheduler fixture ensures this)
     status = get_scheduler_status()
     assert status["scheduler"] == "stopped"
