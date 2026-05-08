@@ -1,24 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiClient, ApiClientError } from "../api/client";
-import SongMappingTable from "../components/SongMappingTable";
+import SongCard from "../components/SongCard";
 import { Hero } from "../components/ui";
 import type { MappingsResponse, StreamingStatusResponse, UnmatchedSongsResponse } from "../types/api";
 
 type Tab = "unmatched" | "mappings";
 
-const PLATFORM_LABELS: Record<string, string> = {
-  spotify: "Spotify",
-  youtube: "YouTube Music",
-};
-
 export default function Songs() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const platform = searchParams.get("platform") ?? "spotify";
-
   const [tab, setTab] = useState<Tab>("unmatched");
-  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([]);
-  const initialPlatform = useRef(platform);
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[] | null>(null);
   const [unmatchedData, setUnmatchedData] = useState<UnmatchedSongsResponse | null>(null);
   const [mappingsData, setMappingsData] = useState<MappingsResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,20 +18,16 @@ export default function Songs() {
   useEffect(() => {
     apiClient<StreamingStatusResponse>("/api/streaming/status")
       .then((s) => {
-        const active = s.connections.filter((c) => c.connected).map((c) => c.platform);
-        setConnectedPlatforms(active);
-        if (active.length > 0 && !active.includes(initialPlatform.current)) {
-          setSearchParams({ platform: active[0] }, { replace: true });
-        }
+        setConnectedPlatforms(s.connections.filter((c) => c.connected).map((c) => c.platform));
       })
-      .catch(() => {});
-  }, [setSearchParams]);
+      .catch(() => setConnectedPlatforms([]));
+  }, []);
 
-  async function loadUnmatched(p: string) {
+  async function loadUnmatched() {
     setLoading(true);
     setError(null);
     try {
-      setUnmatchedData(await apiClient<UnmatchedSongsResponse>(`/api/songs/unmatched?platform=${p}`));
+      setUnmatchedData(await apiClient<UnmatchedSongsResponse>("/api/songs/unmatched"));
     } catch (err) {
       if (err instanceof ApiClientError && err.status === 403) {
         setError("Please verify your email to view and match songs.");
@@ -52,11 +39,11 @@ export default function Songs() {
     }
   }
 
-  async function loadMappings(p: string) {
+  async function loadMappings() {
     setLoading(true);
     setError(null);
     try {
-      setMappingsData(await apiClient<MappingsResponse>(`/api/songs/mappings?platform=${p}`));
+      setMappingsData(await apiClient<MappingsResponse>("/api/songs/mappings"));
     } catch (err) {
       if (err instanceof ApiClientError && err.status === 403) {
         setError("Please verify your email to view song mappings.");
@@ -69,18 +56,19 @@ export default function Songs() {
   }
 
   useEffect(() => {
-    if (tab === "unmatched") void loadUnmatched(platform);
-    else void loadMappings(platform);
-  }, [tab, platform]);
+    if (tab === "unmatched") void loadUnmatched();
+    else void loadMappings();
+  }, [tab]);
 
   const unmatchedCount = unmatchedData?.unmatched_songs.length ?? 0;
-  const mappedCount = mappingsData?.mappings.length ?? 0;
+  const mappedCount = mappingsData?.songs.length ?? 0;
+  const noPlatformsConnected = connectedPlatforms !== null && connectedPlatforms.length === 0;
 
   return (
     <>
       <Hero>
         <p className="text-[12px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-3">
-          Library · {PLATFORM_LABELS[platform] ?? platform}
+          Library
         </p>
         <h1 className="font-display text-[40px] leading-[1.05] font-semibold tracking-tight">
           Songs
@@ -96,7 +84,6 @@ export default function Songs() {
       </Hero>
 
       <div className="px-10 py-8 max-w-5xl">
-        {/* Tab row + platform selector */}
         <div className="flex items-center justify-between mb-6 border-b border-slate-200">
           <div className="flex gap-1">
             {(["unmatched", "mappings"] as Tab[]).map((t) => (
@@ -123,26 +110,6 @@ export default function Songs() {
               </button>
             ))}
           </div>
-
-          {connectedPlatforms.length > 1 && (
-            <div className="flex items-center gap-2 text-[13px]">
-              <span className="text-slate-500">Platform:</span>
-              <select
-                value={platform}
-                onChange={(e) => {
-                  setError(null);
-                  setUnmatchedData(null);
-                  setMappingsData(null);
-                  setSearchParams({ platform: e.target.value });
-                }}
-                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[13px] text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none"
-              >
-                {connectedPlatforms.map((p) => (
-                  <option key={p} value={p}>{PLATFORM_LABELS[p] ?? p}</option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
 
         {error && (
@@ -157,8 +124,20 @@ export default function Songs() {
           </div>
         )}
 
-        {/* Unmatched */}
-        {!loading && !error && tab === "unmatched" && unmatchedData && (
+        {!loading && !error && noPlatformsConnected && (
+          <div className="rounded-2xl bg-white border border-slate-200 px-6 py-10 text-center">
+            <p className="text-[14px] font-medium text-slate-900">No streaming services connected.</p>
+            <p className="mt-1 text-[13px] text-slate-500">Connect Spotify or YouTube Music to start matching songs.</p>
+            <Link
+              to="/settings"
+              className="mt-4 inline-block rounded-full bg-slate-900 text-white px-4 py-1.5 text-[12px] font-semibold hover:bg-slate-800 transition-colors"
+            >
+              Go to Settings →
+            </Link>
+          </div>
+        )}
+
+        {!loading && !error && !noPlatformsConnected && tab === "unmatched" && unmatchedData && (
           unmatchedData.unmatched_songs.length === 0 ? (
             <div className="rounded-2xl bg-white border border-slate-200 px-6 py-10 text-center">
               <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-teal-50">
@@ -166,42 +145,38 @@ export default function Songs() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <p className="text-[14px] font-medium text-slate-900">All songs are matched!</p>
-              <p className="mt-1 text-[13px] text-slate-500">Every song in your upcoming plans has a streaming track.</p>
+              <p className="text-[14px] font-medium text-slate-900">All upcoming songs are fully matched!</p>
+              <p className="mt-1 text-[13px] text-slate-500">Every song in your upcoming plans has a streaming track on every connected platform.</p>
             </div>
           ) : (
-            <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden">
-              <ul className="divide-y divide-slate-100">
-                {unmatchedData.unmatched_songs.map((song) => (
-                  <li key={song.pco_song_id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50 transition-colors">
-                    <span className="h-2 w-2 rounded-full bg-rose-500 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-semibold text-slate-900 truncate">{song.title}</p>
-                      <p className="text-[12px] text-slate-500">
-                        {song.artist && <span>{song.artist}</span>}
-                        {song.artist && song.last_used_date && <span className="mx-1.5 text-slate-300">·</span>}
-                        {song.last_used_date && <span>Last used {song.last_used_date}</span>}
-                      </p>
-                    </div>
-                    <Link
-                      to={`/songs/match/${song.pco_song_id}?title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist ?? "")}&platform=${platform}`}
-                      className="rounded-full bg-slate-900 text-white px-4 py-1.5 text-[12px] font-semibold hover:bg-slate-800 transition-colors flex-shrink-0"
-                    >
-                      Match →
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+            <div className="space-y-3">
+              {unmatchedData.unmatched_songs.map((song) => (
+                <SongCard
+                  key={song.pco_song_id}
+                  song={song}
+                  onAfterRemove={() => void loadUnmatched()}
+                />
+              ))}
             </div>
           )
         )}
 
-        {/* Mappings */}
-        {!loading && !error && tab === "mappings" && mappingsData && (
-          <SongMappingTable
-            mappings={mappingsData.mappings}
-            onRefresh={() => void loadMappings(platform)}
-          />
+        {!loading && !error && !noPlatformsConnected && tab === "mappings" && mappingsData && (
+          mappingsData.songs.length === 0 ? (
+            <div className="rounded-2xl bg-white border border-slate-200 px-6 py-10 text-center">
+              <p className="text-[14px] text-slate-400">No song mappings yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {mappingsData.songs.map((song) => (
+                <SongCard
+                  key={song.pco_song_id}
+                  song={song}
+                  onAfterRemove={() => void loadMappings()}
+                />
+              ))}
+            </div>
+          )
         )}
       </div>
     </>

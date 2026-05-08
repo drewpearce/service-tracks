@@ -1,17 +1,29 @@
 from pydantic import BaseModel, Field
 
-# --- Unmatched songs ---
+# --- Per-platform mapping state ---
 
 
-class UnmatchedSong(BaseModel):
+class PlatformMappingState(BaseModel):
+    matched: bool
+    mapping_id: str | None = None
+    track_id: str | None = None
+    track_title: str | None = None
+    track_artist: str | None = None
+
+
+class SongWithPlatforms(BaseModel):
     pco_song_id: str
     title: str
     artist: str | None = None
-    last_used_date: str  # ISO date string from the plan's sort_date
+    last_used_date: str | None = None
+    platforms: dict[str, PlatformMappingState]
+
+
+# --- Unmatched songs ---
 
 
 class UnmatchedSongsResponse(BaseModel):
-    unmatched_songs: list[UnmatchedSong]
+    unmatched_songs: list[SongWithPlatforms]
 
 
 # --- Search ---
@@ -32,7 +44,7 @@ class SearchResponse(BaseModel):
     results: list[TrackSearchResultSchema]
 
 
-# --- Match (Task 6.2) ---
+# --- Match ---
 
 
 class MatchRequest(BaseModel):
@@ -54,19 +66,8 @@ class MatchResponse(BaseModel):
     platform: str
 
 
-# --- Mappings (Task 6.2) ---
-
-
-class SongMappingSchema(BaseModel):
-    id: str
-    pco_song_id: str
-    pco_song_title: str
-    pco_song_artist: str | None
-    platform: str
-    track_id: str
-    track_title: str
-    track_artist: str | None
+# --- Mappings ---
 
 
 class MappingsResponse(BaseModel):
-    mappings: list[SongMappingSchema]
+    songs: list[SongWithPlatforms]

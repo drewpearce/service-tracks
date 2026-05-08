@@ -72,15 +72,24 @@ export interface YouTubeAuthorizeResponse {
   authorization_url: string;
 }
 
-export interface UnmatchedSong {
+export interface PlatformMappingState {
+  matched: boolean;
+  mapping_id: string | null;
+  track_id: string | null;
+  track_title: string | null;
+  track_artist: string | null;
+}
+
+export interface SongWithPlatforms {
   pco_song_id: string;
   title: string;
   artist: string | null;
   last_used_date: string | null;
+  platforms: Record<string, PlatformMappingState>;
 }
 
 export interface UnmatchedSongsResponse {
-  unmatched_songs: UnmatchedSong[];
+  unmatched_songs: SongWithPlatforms[];
 }
 
 export interface TrackSearchResult {
@@ -112,20 +121,8 @@ export interface MatchResponse {
   message: string;
 }
 
-export interface SongMapping {
-  id: string;
-  pco_song_id: string;
-  pco_song_title: string;
-  pco_song_artist: string | null;
-  platform: string;
-  track_id: string;
-  track_title: string;
-  track_artist: string | null;
-  created_at: string;
-}
-
 export interface MappingsResponse {
-  mappings: SongMapping[];
+  songs: SongWithPlatforms[];
 }
 
 export interface PlanSong {

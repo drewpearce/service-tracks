@@ -5,12 +5,8 @@ import TrackSearchResult from "../components/TrackSearchResult";
 import { Hero } from "../components/ui";
 import { useAudioPreview } from "../hooks/useAudioPreview";
 import { useDebounce } from "../hooks/useDebounce";
+import { platformLabel as resolvePlatformLabel } from "../lib/platforms";
 import type { SearchResponse } from "../types/api";
-
-const PLATFORM_LABELS: Record<string, string> = {
-  spotify: "Spotify",
-  youtube: "YouTube Music",
-};
 
 export default function SongMatch() {
   const { pcoSongId } = useParams<{ pcoSongId: string }>();
@@ -47,18 +43,18 @@ export default function SongMatch() {
     return () => { cancelled = true; };
   }, [debouncedQuery, platform, stop]);
 
-  const platformLabel = PLATFORM_LABELS[platform] ?? platform;
+  const platformLabel = resolvePlatformLabel(platform);
 
   return (
     <>
       <Hero>
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-[12px] text-slate-400 mb-6">
-          <Link to={`/songs?platform=${platform}`} className="hover:text-white transition-colors">
+          <Link to="/songs" className="hover:text-white transition-colors">
             Songs
           </Link>
           <span className="text-slate-600">/</span>
-          <Link to={`/songs?platform=${platform}`} className="hover:text-white transition-colors">
+          <Link to="/songs" className="hover:text-white transition-colors">
             Unmatched
           </Link>
           <span className="text-slate-600">/</span>

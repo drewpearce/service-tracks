@@ -69,7 +69,7 @@ export default function TrackSearchResult({
       };
       await apiClient("/api/songs/match", { method: "POST", body: JSON.stringify(body) });
       setDone(true);
-      setTimeout(() => navigate(`/songs?platform=${platform}`), 800);
+      setTimeout(() => navigate("/songs"), 800);
     } catch (err) {
       if (err instanceof ApiClientError) setError("Failed to save match. Please try again.");
       setSelecting(false);
