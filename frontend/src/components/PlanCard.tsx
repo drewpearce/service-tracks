@@ -16,39 +16,43 @@ function formatRelativeTime(dateString: string): string {
   return `${Math.floor(diffHr / 24)}d ago`;
 }
 
+interface SyncResult {
+  status: string;
+  matched: number;
+  unmatched: number;
+  playlists: PlanPlaylist[];
+}
+
 export default function PlanCard({ plan }: PlanCardProps) {
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
-  const [displayPlaylists, setDisplayPlaylists] = useState<PlanPlaylist[] | null>(null);
-  const [syncStatus, setSyncStatus] = useState<string | null>(null);
-  const [matchedCount, setMatchedCount] = useState<number | null>(null);
-  const [unmatchedCount, setUnmatchedCount] = useState<number | null>(null);
+  const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
 
-  const displayUnmatched = unmatchedCount ?? plan.unmatched_count;
-  const displayMatched = matchedCount ?? plan.songs.filter((s) => s.matched).length;
-  const status = syncStatus ?? (plan.unmatched_count > 0 ? "partial" : plan.playlists.length > 0 ? "synced" : "pending");
+  const displayUnmatched = syncResult?.unmatched ?? plan.unmatched_count;
+  const displayMatched = syncResult?.matched ?? plan.songs.filter((s) => s.matched).length;
+  const status = syncResult?.status ?? (plan.unmatched_count > 0 ? "partial" : plan.playlists.length > 0 ? "synced" : "pending");
 
   async function handleSync() {
     setSyncing(true);
     setSyncError(null);
-    setDisplayPlaylists(null);
+    setSyncResult(null);
     try {
       const response = await apiClient<SyncTriggerResponse>(
         `/api/plans/${plan.pco_plan_id}/sync`,
         { method: "POST" }
       );
-      setSyncStatus(response.sync_status);
-      setMatchedCount(response.songs_matched);
-      setUnmatchedCount(response.songs_unmatched);
-      setDisplayPlaylists(
-        response.platforms.map((p) => ({
+      setSyncResult({
+        status: response.sync_status,
+        matched: response.songs_matched,
+        unmatched: response.songs_unmatched,
+        playlists: response.platforms.map((p) => ({
           platform: p.platform,
           status: p.sync_status,
           url: p.playlist_url,
           last_synced_at: p.last_synced_at ?? null,
           error_message: p.error_message ?? null,
-        }))
-      );
+        })),
+      });
     } catch (err) {
       if (err instanceof ApiClientError) {
         setSyncError("Sync failed. Please try again.");
@@ -58,7 +62,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
     }
   }
 
-  const playlists = displayPlaylists ?? plan.playlists;
+  const playlists = syncResult?.playlists ?? plan.playlists;
   const synced = status === "synced";
 
   // Parse date string "YYYY-MM-DD" in local time

@@ -3,7 +3,7 @@ import structlog
 
 from app.config import settings
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 async def send_email(to: str, subject: str, html_body: str) -> None:
