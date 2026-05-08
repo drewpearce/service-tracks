@@ -231,21 +231,13 @@ export default function Dashboard() {
         {/* Upcoming plans */}
         {data.upcoming_plans.length > 0 && (
           <section>
-            <div className="flex items-end justify-between mb-6">
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.25em] text-teal-600 font-semibold">
-                  This week
-                </p>
-                <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight text-slate-900">
-                  Upcoming plans
-                </h2>
-              </div>
-              <Link
-                to="/plans"
-                className="text-[13px] font-medium text-slate-500 hover:text-slate-900"
-              >
-                All plans →
-              </Link>
+            <div className="mb-6">
+              <p className="text-[11px] uppercase tracking-[0.25em] text-teal-600 font-semibold">
+                This week
+              </p>
+              <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight text-slate-900">
+                Upcoming plans
+              </h2>
             </div>
             <div className="grid grid-cols-1 gap-5">
               {data.upcoming_plans.map((plan) => (
