@@ -59,6 +59,7 @@ async def dashboard(
         )
         for sc in streaming_conns
     ]
+    connected_platforms = [sc.platform for sc in streaming_conns if sc.status == "active"]
 
     # Fetch upcoming plans (only if PCO connected and service type configured)
     upcoming_plans: list[PlanWithSongs] = []
@@ -79,10 +80,14 @@ async def dashboard(
 
                 all_songs = await asyncio.gather(*[fetch_songs(p.id) for p in plans])
 
-                # Song mappings for match checking
+                # Song mappings for match checking — a song is matched only if every
+                # connected platform has a mapping. Mappings for disconnected platforms
+                # are ignored.
                 mappings_result = await db.execute(select(SongMapping).where(SongMapping.church_id == church_id))
-                all_mappings = mappings_result.scalars().all()
-                mapped_song_ids = {m.pco_song_id for m in all_mappings}
+                mappings_by_song: dict[str, set[str]] = {}
+                for m in mappings_result.scalars().all():
+                    if m.platform in connected_platforms:
+                        mappings_by_song.setdefault(m.pco_song_id, set()).add(m.platform)
 
                 # Playlists indexed by plan id
                 playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
@@ -96,7 +101,7 @@ async def dashboard(
                         PlanSongWithMatch(
                             pco_song_id=s.pco_song_id,
                             title=s.title,
-                            matched=s.pco_song_id in mapped_song_ids,
+                            matched=all(p in mappings_by_song.get(s.pco_song_id, set()) for p in connected_platforms),
                         )
                         for s in songs
                     ]
