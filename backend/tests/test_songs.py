@@ -42,8 +42,13 @@ async def get_verified_church_id(db: AsyncSession) -> uuid.UUID:
     return user.church_id
 
 
-async def setup_church_connections(db: AsyncSession, church_id: uuid.UUID) -> None:
-    """Add PCO connection and active Spotify streaming connection for a church."""
+async def setup_church_connections(
+    db: AsyncSession,
+    church_id: uuid.UUID,
+    *,
+    platforms: tuple[str, ...] = ("spotify",),
+) -> None:
+    """Add PCO connection and active streaming connections for the given platforms."""
     pco_conn = PcoConnection(
         church_id=church_id,
         auth_method="api_key",
@@ -57,16 +62,18 @@ async def setup_church_connections(db: AsyncSession, church_id: uuid.UUID) -> No
     church = church_result.scalar_one()
     church.pco_service_type_id = "111"
 
-    streaming_conn = StreamingConnection(
-        church_id=church_id,
-        platform="spotify",
-        access_token_encrypted=encrypt("test_access_token"),
-        refresh_token_encrypted=encrypt("test_refresh_token"),
-        token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
-        external_user_id="spotify_user_123",
-        status="active",
-    )
-    db.add(streaming_conn)
+    for platform in platforms:
+        db.add(
+            StreamingConnection(
+                church_id=church_id,
+                platform=platform,
+                access_token_encrypted=encrypt("test_access_token"),
+                refresh_token_encrypted=encrypt("test_refresh_token"),
+                token_expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
+                external_user_id=f"{platform}_user_123",
+                status="active",
+            )
+        )
     await db.flush()
 
 
@@ -84,16 +91,15 @@ async def test_unmatched_songs_returns_unmatched_only(verified_authenticated_cli
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans").mock(
         return_value=Response(200, json=UPCOMING_PLANS_RESPONSE)
     )
-    # Mock plan songs for plan 1001
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
-    # Mock plan songs for plan 1002 (same songs for simplicity)
     respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1002/items").mock(
         return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
     )
 
-    # Pre-insert a mapping for song-1 ("How Great Is Our God")
+    # Pre-insert a mapping for song-1 ("How Great Is Our God") — fully matched on the
+    # only connected platform (spotify), so song-1 should drop out of unmatched.
     mapping = SongMapping(
         church_id=church_id,
         pco_song_id="song-1",
@@ -107,13 +113,24 @@ async def test_unmatched_songs_returns_unmatched_only(verified_authenticated_cli
     db.add(mapping)
     await db.flush()
 
-    response = await verified_authenticated_client.get("/api/songs/unmatched?platform=spotify")
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
 
     assert response.status_code == 200
     body = response.json()
     song_ids = [s["pco_song_id"] for s in body["unmatched_songs"]]
     assert "song-2" in song_ids
     assert "song-1" not in song_ids
+    # song-2 row carries per-platform state for every connected platform.
+    song2 = next(s for s in body["unmatched_songs"] if s["pco_song_id"] == "song-2")
+    assert song2["platforms"] == {
+        "spotify": {
+            "matched": False,
+            "mapping_id": None,
+            "track_id": None,
+            "track_title": None,
+            "track_artist": None,
+        }
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -154,7 +171,7 @@ async def test_unmatched_songs_empty_when_all_matched(verified_authenticated_cli
         )
     await db.flush()
 
-    response = await verified_authenticated_client.get("/api/songs/unmatched?platform=spotify")
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
 
     assert response.status_code == 200
     assert response.json()["unmatched_songs"] == []
@@ -166,10 +183,121 @@ async def test_unmatched_songs_empty_when_all_matched(verified_authenticated_cli
 
 
 async def test_unmatched_songs_no_pco_connection(verified_authenticated_client: AsyncClient):
-    response = await verified_authenticated_client.get("/api/songs/unmatched?platform=spotify")
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
 
     assert response.status_code == 400
     assert response.json()["detail"] == "pco_not_connected"
+
+
+# ---------------------------------------------------------------------------
+# Test 3b: GET /api/songs/unmatched — partial match across platforms
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+async def test_unmatched_songs_partial_match_across_platforms(
+    verified_authenticated_client: AsyncClient, db: AsyncSession
+):
+    """A song matched on Spotify but not YouTube still appears in Unmatched, with mixed state."""
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify", "youtube"))
+
+    single_plan_response = {"data": [UPCOMING_PLANS_RESPONSE["data"][0]]}
+    respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans").mock(
+        return_value=Response(200, json=single_plan_response)
+    )
+    respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
+        return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
+    )
+
+    # song-1 matched on Spotify only.
+    db.add(
+        SongMapping(
+            church_id=church_id,
+            pco_song_id="song-1",
+            pco_song_title="How Great Is Our God",
+            pco_song_artist="Chris Tomlin",
+            platform="spotify",
+            track_id="spotify:track:abc",
+            track_title="How Great Is Our God",
+            track_artist="Chris Tomlin",
+        )
+    )
+    await db.flush()
+
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
+
+    assert response.status_code == 200
+    body = response.json()
+    songs_by_id = {s["pco_song_id"]: s for s in body["unmatched_songs"]}
+    # song-1 is only partially matched, so it stays in the unmatched list.
+    assert "song-1" in songs_by_id
+    song1_platforms = songs_by_id["song-1"]["platforms"]
+    assert song1_platforms["spotify"]["matched"] is True
+    assert song1_platforms["spotify"]["track_id"] == "spotify:track:abc"
+    assert song1_platforms["spotify"]["mapping_id"] is not None
+    assert song1_platforms["youtube"]["matched"] is False
+    # song-2 has no mappings at all — both platforms unmatched.
+    assert songs_by_id["song-2"]["platforms"]["spotify"]["matched"] is False
+    assert songs_by_id["song-2"]["platforms"]["youtube"]["matched"] is False
+
+
+# ---------------------------------------------------------------------------
+# Test 3c: GET /api/songs/unmatched — fully matched on every connected platform drops out
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+async def test_unmatched_songs_fully_matched_on_all_platforms(
+    verified_authenticated_client: AsyncClient, db: AsyncSession
+):
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify", "youtube"))
+
+    single_plan_response = {"data": [UPCOMING_PLANS_RESPONSE["data"][0]]}
+    respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans").mock(
+        return_value=Response(200, json=single_plan_response)
+    )
+    respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
+        return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
+    )
+
+    for platform in ("spotify", "youtube"):
+        db.add(
+            SongMapping(
+                church_id=church_id,
+                pco_song_id="song-1",
+                pco_song_title="How Great Is Our God",
+                pco_song_artist="Chris Tomlin",
+                platform=platform,
+                track_id=f"{platform}:track:abc",
+                track_title="How Great Is Our God",
+                track_artist="Chris Tomlin",
+            )
+        )
+    await db.flush()
+
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
+
+    assert response.status_code == 200
+    song_ids = [s["pco_song_id"] for s in response.json()["unmatched_songs"]]
+    assert "song-1" not in song_ids
+    assert "song-2" in song_ids
+
+
+# ---------------------------------------------------------------------------
+# Test 3d: GET /api/songs/unmatched — zero connected platforms returns empty
+# ---------------------------------------------------------------------------
+
+
+async def test_unmatched_songs_no_connected_platforms(verified_authenticated_client: AsyncClient, db: AsyncSession):
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=())
+
+    response = await verified_authenticated_client.get("/api/songs/unmatched")
+
+    assert response.status_code == 200
+    assert response.json()["unmatched_songs"] == []
 
 
 # ---------------------------------------------------------------------------
@@ -417,6 +545,7 @@ async def test_match_upsert_updates_existing(verified_authenticated_client: Asyn
 
 async def test_list_mappings(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id)
 
     for song_id, title in [("song-1", "Song One"), ("song-2", "Song Two")]:
         db.add(
@@ -435,16 +564,20 @@ async def test_list_mappings(verified_authenticated_client: AsyncClient, db: Asy
 
     assert response.status_code == 200
     body = response.json()
-    assert len(body["mappings"]) == 2
+    assert len(body["songs"]) == 2
+    for song in body["songs"]:
+        assert song["platforms"]["spotify"]["matched"] is True
 
 
 # ---------------------------------------------------------------------------
-# Test 11: GET /api/songs/mappings — filtered by platform
+# Test 11: GET /api/songs/mappings — groups platforms per PCO song
 # ---------------------------------------------------------------------------
 
 
-async def test_list_mappings_filtered_by_platform(verified_authenticated_client: AsyncClient, db: AsyncSession):
+async def test_list_mappings_groups_per_song(verified_authenticated_client: AsyncClient, db: AsyncSession):
+    """A song with mappings on both Spotify and YouTube collapses into a single row."""
     church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify", "youtube"))
 
     db.add(
         SongMapping(
@@ -453,7 +586,17 @@ async def test_list_mappings_filtered_by_platform(verified_authenticated_client:
             pco_song_title="Song One",
             platform="spotify",
             track_id="spotify:track:song1",
-            track_title="Song One",
+            track_title="Song One (Spotify)",
+        )
+    )
+    db.add(
+        SongMapping(
+            church_id=church_id,
+            pco_song_id="song-1",
+            pco_song_title="Song One",
+            platform="youtube",
+            track_id="youtube:video:song1",
+            track_title="Song One (YouTube)",
         )
     )
     db.add(
@@ -461,19 +604,27 @@ async def test_list_mappings_filtered_by_platform(verified_authenticated_client:
             church_id=church_id,
             pco_song_id="song-2",
             pco_song_title="Song Two",
-            platform="youtube",
-            track_id="youtube:video:song2",
+            platform="spotify",
+            track_id="spotify:track:song2",
             track_title="Song Two",
         )
     )
     await db.flush()
 
-    response = await verified_authenticated_client.get("/api/songs/mappings?platform=spotify")
+    response = await verified_authenticated_client.get("/api/songs/mappings")
 
     assert response.status_code == 200
     body = response.json()
-    assert len(body["mappings"]) == 1
-    assert body["mappings"][0]["platform"] == "spotify"
+    songs_by_id = {s["pco_song_id"]: s for s in body["songs"]}
+
+    assert len(body["songs"]) == 2
+    assert songs_by_id["song-1"]["platforms"]["spotify"]["matched"] is True
+    assert songs_by_id["song-1"]["platforms"]["spotify"]["track_title"] == "Song One (Spotify)"
+    assert songs_by_id["song-1"]["platforms"]["youtube"]["matched"] is True
+    assert songs_by_id["song-1"]["platforms"]["youtube"]["track_title"] == "Song One (YouTube)"
+    # song-2 only has a Spotify mapping; YouTube row is unmatched.
+    assert songs_by_id["song-2"]["platforms"]["spotify"]["matched"] is True
+    assert songs_by_id["song-2"]["platforms"]["youtube"]["matched"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -568,6 +719,7 @@ async def test_delete_mapping_tenant_isolation(verified_authenticated_client: As
 
 async def test_list_mappings_tenant_isolation(verified_authenticated_client: AsyncClient, db: AsyncSession):
     church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id)
 
     # Church A mapping
     db.add(
@@ -602,8 +754,8 @@ async def test_list_mappings_tenant_isolation(verified_authenticated_client: Asy
 
     assert response.status_code == 200
     body = response.json()
-    assert len(body["mappings"]) == 1
-    assert body["mappings"][0]["pco_song_id"] == "song-a"
+    assert len(body["songs"]) == 1
+    assert body["songs"][0]["pco_song_id"] == "song-a"
 
 
 # ---------------------------------------------------------------------------
@@ -612,7 +764,7 @@ async def test_list_mappings_tenant_isolation(verified_authenticated_client: Asy
 
 
 async def test_endpoints_require_verified_email(authenticated_client: AsyncClient):
-    response = await authenticated_client.get("/api/songs/unmatched?platform=spotify")
+    response = await authenticated_client.get("/api/songs/unmatched")
 
     assert response.status_code == 403
     assert response.json()["detail"] == "email_not_verified"
@@ -627,6 +779,6 @@ async def test_endpoints_require_authentication(client: AsyncClient):
     # GET /api/health to obtain a CSRF cookie
     await client.get("/api/health")
 
-    response = await client.get("/api/songs/unmatched?platform=spotify")
+    response = await client.get("/api/songs/unmatched")
 
     assert response.status_code == 401

@@ -14,73 +14,111 @@ from app.models.song_mapping import SongMapping
 from app.models.streaming_connection import StreamingConnection
 from app.schemas.songs import (
     MatchRequest,
+    PlatformMappingState,
+    SongWithPlatforms,
     TrackSearchResultSchema,
-    UnmatchedSong,
 )
 from app.services import pco_service
 
 logger = structlog.get_logger(__name__)
 
 
+async def _get_connected_platforms(db: AsyncSession, church_id: uuid.UUID) -> list[str]:
+    """Return the list of streaming platforms with an active connection for the church."""
+    result = await db.execute(
+        select(StreamingConnection.platform).where(
+            StreamingConnection.church_id == church_id,
+            StreamingConnection.status == "active",
+        )
+    )
+    return [row[0] for row in result.all()]
+
+
+def _build_platform_state(
+    connected_platforms: list[str],
+    mappings_by_platform: dict[str, SongMapping],
+) -> dict[str, PlatformMappingState]:
+    """Build a per-platform mapping state map for one PCO song."""
+    out: dict[str, PlatformMappingState] = {}
+    for platform in connected_platforms:
+        mapping = mappings_by_platform.get(platform)
+        if mapping is not None:
+            out[platform] = PlatformMappingState(
+                matched=True,
+                mapping_id=str(mapping.id),
+                track_id=mapping.track_id,
+                track_title=mapping.track_title,
+                track_artist=mapping.track_artist,
+            )
+        else:
+            out[platform] = PlatformMappingState(matched=False)
+    return out
+
+
 async def get_unmatched_songs(
     db: AsyncSession,
     church_id: uuid.UUID,
-    platform: str,
-) -> list[UnmatchedSong]:
-    """Return songs from upcoming plans that don't have a mapping for the given platform.
+) -> list[SongWithPlatforms]:
+    """Return upcoming-plan songs missing a match on at least one connected platform.
+
+    Each returned song carries a per-platform state map keyed by every connected platform.
 
     Raises:
         ValueError: "pco_not_connected" if no PCO connection exists.
         PcoApiError subclasses if the PCO API call fails.
     """
-    # Check PCO connection exists before attempting to fetch plans
     conn_result = await db.execute(select(PcoConnection).where(PcoConnection.church_id == church_id))
     if conn_result.scalar_one_or_none() is None:
         raise ValueError("pco_not_connected")
+
+    connected_platforms = await _get_connected_platforms(db, church_id)
+    if not connected_platforms:
+        return []
 
     plans = await pco_service.get_upcoming_plans_for_church(db, church_id)
     if not plans:
         return []
 
-    # Collect songs across all plans, keyed by pco_song_id.
-    # Store earliest sort_date as last_used_date.
-    songs_by_id: dict[str, UnmatchedSong] = {}
+    upcoming_songs: dict[str, dict[str, str | None]] = {}
 
     for plan in plans:
         plan_songs = await pco_service.get_plan_songs_for_church(db, church_id, plan.id)
         for song in plan_songs:
-            if song.pco_song_id not in songs_by_id:
-                songs_by_id[song.pco_song_id] = UnmatchedSong(
-                    pco_song_id=song.pco_song_id,
-                    title=song.title,
-                    artist=song.artist,
-                    last_used_date=plan.sort_date,
-                )
-            else:
-                # Keep the earliest date (plans are returned in date order, but be defensive)
-                existing = songs_by_id[song.pco_song_id]
-                if plan.sort_date < existing.last_used_date:
-                    songs_by_id[song.pco_song_id] = UnmatchedSong(
-                        pco_song_id=song.pco_song_id,
-                        title=song.title,
-                        artist=song.artist,
-                        last_used_date=plan.sort_date,
-                    )
+            existing = upcoming_songs.get(song.pco_song_id)
+            if existing is None or plan.sort_date < existing["last_used_date"]:
+                upcoming_songs[song.pco_song_id] = {
+                    "title": song.title,
+                    "artist": song.artist,
+                    "last_used_date": plan.sort_date,
+                }
 
-    if not songs_by_id:
+    if not upcoming_songs:
         return []
 
-    # Query existing mappings for this church + platform
     mapping_result = await db.execute(
-        select(SongMapping.pco_song_id).where(
+        select(SongMapping).where(
             SongMapping.church_id == church_id,
-            SongMapping.platform == platform,
+            SongMapping.pco_song_id.in_(upcoming_songs.keys()),
         )
     )
-    mapped_song_ids = {row[0] for row in mapping_result.all()}
+    mappings_by_song: dict[str, dict[str, SongMapping]] = {}
+    for mapping in mapping_result.scalars().all():
+        mappings_by_song.setdefault(mapping.pco_song_id, {})[mapping.platform] = mapping
 
-    # Filter out songs that already have a mapping
-    return [song for song in songs_by_id.values() if song.pco_song_id not in mapped_song_ids]
+    out: list[SongWithPlatforms] = []
+    for pco_song_id, info in upcoming_songs.items():
+        platform_state = _build_platform_state(connected_platforms, mappings_by_song.get(pco_song_id, {}))
+        if any(not state.matched for state in platform_state.values()):
+            out.append(
+                SongWithPlatforms(
+                    pco_song_id=pco_song_id,
+                    title=info["title"],
+                    artist=info["artist"],
+                    last_used_date=info["last_used_date"],
+                    platforms=platform_state,
+                )
+            )
+    return out
 
 
 async def search_tracks(
@@ -212,19 +250,49 @@ async def create_or_update_mapping(
     return mapping
 
 
-async def list_mappings(
+async def list_songs_with_mappings(
     db: AsyncSession,
     church_id: uuid.UUID,
-    platform: str | None,
-) -> list[SongMapping]:
-    """Return all song mappings for the given church, optionally filtered by platform."""
-    query = select(SongMapping).where(SongMapping.church_id == church_id)
-    if platform is not None:
-        query = query.where(SongMapping.platform == platform)
-    query = query.order_by(SongMapping.created_at.desc())
+) -> list[SongWithPlatforms]:
+    """Return one row per PCO song that has at least one mapping on a connected platform.
 
-    result = await db.execute(query)
-    return list(result.scalars().all())
+    Mappings on platforms the church no longer has connected are ignored — a song that
+    only has mappings on disconnected platforms will not appear here.
+    """
+    connected_platforms = await _get_connected_platforms(db, church_id)
+    if not connected_platforms:
+        return []
+
+    result = await db.execute(
+        select(SongMapping)
+        .where(
+            SongMapping.church_id == church_id,
+            SongMapping.platform.in_(connected_platforms),
+        )
+        .order_by(SongMapping.created_at.desc())
+    )
+    mappings = list(result.scalars().all())
+
+    by_song: dict[str, dict[str, SongMapping]] = {}
+    song_meta: dict[str, tuple[str, str | None]] = {}
+    for mapping in mappings:
+        by_song.setdefault(mapping.pco_song_id, {})[mapping.platform] = mapping
+        if mapping.pco_song_id not in song_meta:
+            song_meta[mapping.pco_song_id] = (mapping.pco_song_title, mapping.pco_song_artist)
+
+    out: list[SongWithPlatforms] = []
+    for pco_song_id, mappings_by_platform in by_song.items():
+        title, artist = song_meta[pco_song_id]
+        out.append(
+            SongWithPlatforms(
+                pco_song_id=pco_song_id,
+                title=title,
+                artist=artist,
+                last_used_date=None,
+                platforms=_build_platform_state(connected_platforms, mappings_by_platform),
+            )
+        )
+    return out
 
 
 async def delete_mapping(

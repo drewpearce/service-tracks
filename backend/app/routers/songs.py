@@ -17,7 +17,6 @@ from app.schemas.songs import (
     MatchRequest,
     MatchResponse,
     SearchResponse,
-    SongMappingSchema,
     UnmatchedSongsResponse,
 )
 from app.services import song_service
@@ -35,18 +34,14 @@ SUPPORTED_PLATFORMS = {"spotify", "youtube"}
 @router.get("/unmatched")
 async def unmatched_songs(
     request: Request,
-    platform: str,
     db: AsyncSession = Depends(get_db),
     _verified: None = Depends(require_verified_email),
 ) -> UnmatchedSongsResponse:
-    """Return songs from upcoming plans that don't have a mapping for the given platform."""
-    if platform not in SUPPORTED_PLATFORMS:
-        raise HTTPException(status_code=400, detail="unsupported_platform")
-
+    """Return upcoming-plan songs missing a match on at least one connected platform."""
     church_id = request.state.church_id
 
     try:
-        unmatched = await song_service.get_unmatched_songs(db, church_id, platform)
+        unmatched = await song_service.get_unmatched_songs(db, church_id)
     except ValueError as e:
         if str(e) == "pco_not_connected":
             raise HTTPException(status_code=400, detail="pco_not_connected") from e
@@ -147,30 +142,15 @@ async def match_song(
 @router.get("/mappings")
 async def get_mappings(
     request: Request,
-    platform: str | None = None,
     db: AsyncSession = Depends(get_db),
     _verified: None = Depends(require_verified_email),
 ) -> MappingsResponse:
-    """Return all song mappings for the authenticated church, optionally filtered by platform."""
+    """Return PCO songs with one or more mappings, grouped by song with per-platform state."""
     church_id = request.state.church_id
 
-    mappings = await song_service.list_mappings(db, church_id, platform)
+    songs = await song_service.list_songs_with_mappings(db, church_id)
 
-    return MappingsResponse(
-        mappings=[
-            SongMappingSchema(
-                id=str(m.id),
-                pco_song_id=m.pco_song_id,
-                pco_song_title=m.pco_song_title,
-                pco_song_artist=m.pco_song_artist,
-                platform=m.platform,
-                track_id=m.track_id,
-                track_title=m.track_title,
-                track_artist=m.track_artist,
-            )
-            for m in mappings
-        ]
-    )
+    return MappingsResponse(songs=songs)
 
 
 # ---------------------------------------------------------------------------
