@@ -759,7 +759,114 @@ async def test_list_mappings_tenant_isolation(verified_authenticated_client: Asy
 
 
 # ---------------------------------------------------------------------------
-# Test 16: Endpoints require verified email
+# Test 16: GET /api/songs/{pco_song_id}/mappings — single-song mapping lookup
+# ---------------------------------------------------------------------------
+
+
+async def test_song_mappings_returns_state_per_connected_platform(
+    verified_authenticated_client: AsyncClient, db: AsyncSession
+):
+    """A song matched on Spotify but not YouTube returns matched=True for Spotify, False for YouTube."""
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify", "youtube"))
+
+    db.add(
+        SongMapping(
+            church_id=church_id,
+            pco_song_id="song-1",
+            pco_song_title="Hallelujah",
+            pco_song_artist="Leonard Cohen",
+            platform="spotify",
+            track_id="spotify:track:abc",
+            track_title="Hallelujah",
+            track_artist="Leonard Cohen",
+        )
+    )
+    await db.flush()
+
+    response = await verified_authenticated_client.get("/api/songs/song-1/mappings")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["pco_song_id"] == "song-1"
+    assert body["platforms"]["spotify"]["matched"] is True
+    assert body["platforms"]["spotify"]["track_title"] == "Hallelujah"
+    assert body["platforms"]["spotify"]["track_artist"] == "Leonard Cohen"
+    assert body["platforms"]["youtube"]["matched"] is False
+
+
+async def test_song_mappings_all_unmatched_when_no_rows(verified_authenticated_client: AsyncClient, db: AsyncSession):
+    """A song with no mappings still returns the connected-platform shape, all unmatched."""
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify", "youtube"))
+
+    response = await verified_authenticated_client.get("/api/songs/unknown-song/mappings")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["pco_song_id"] == "unknown-song"
+    assert body["platforms"]["spotify"]["matched"] is False
+    assert body["platforms"]["youtube"]["matched"] is False
+
+
+async def test_song_mappings_excludes_disconnected_platforms(
+    verified_authenticated_client: AsyncClient, db: AsyncSession
+):
+    """Mappings on platforms the church no longer has connected are not returned."""
+    church_id = await get_verified_church_id(db)
+    # Only Spotify is connected.
+    await setup_church_connections(db, church_id, platforms=("spotify",))
+
+    db.add(
+        SongMapping(
+            church_id=church_id,
+            pco_song_id="song-1",
+            pco_song_title="Song One",
+            platform="youtube",
+            track_id="youtube:video:xyz",
+            track_title="Song One",
+        )
+    )
+    await db.flush()
+
+    response = await verified_authenticated_client.get("/api/songs/song-1/mappings")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "youtube" not in body["platforms"]
+    assert body["platforms"]["spotify"]["matched"] is False
+
+
+async def test_song_mappings_tenant_isolation(verified_authenticated_client: AsyncClient, db: AsyncSession):
+    """A mapping on another church for the same pco_song_id is not returned."""
+    church_id = await get_verified_church_id(db)
+    await setup_church_connections(db, church_id, platforms=("spotify",))
+
+    other_church = Church(name="Other Church", slug="other-church-iso")
+    db.add(other_church)
+    await db.flush()
+
+    db.add(
+        SongMapping(
+            church_id=other_church.id,
+            pco_song_id="song-1",
+            pco_song_title="Other Church Song",
+            platform="spotify",
+            track_id="spotify:track:other",
+            track_title="Other Church Song",
+        )
+    )
+    await db.flush()
+
+    response = await verified_authenticated_client.get("/api/songs/song-1/mappings")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["platforms"]["spotify"]["matched"] is False
+
+
+# ---------------------------------------------------------------------------
+# Test 17: Endpoints require verified email
 # ---------------------------------------------------------------------------
 
 

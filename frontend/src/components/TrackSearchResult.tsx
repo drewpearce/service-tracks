@@ -10,6 +10,7 @@ interface TrackSearchResultProps {
   pcoSongArtist: string | null;
   platform: string;
   isBestMatch?: boolean;
+  isSuggested?: boolean;
   isPlaying?: boolean;
   onTogglePreview?: (id: string) => void;
 }
@@ -46,6 +47,7 @@ export default function TrackSearchResult({
   pcoSongArtist,
   platform,
   isBestMatch = false,
+  isSuggested = false,
   isPlaying = false,
   onTogglePreview,
 }: TrackSearchResultProps) {
@@ -84,19 +86,28 @@ export default function TrackSearchResult({
   return (
     <article
       className={`rounded-2xl bg-white p-4 relative transition-all ${
-        isBestMatch
-          ? "border-2 border-teal-500"
-          : "border border-slate-200 hover:border-slate-300"
+        isSuggested
+          ? "border-2 border-indigo-500"
+          : isBestMatch
+            ? "border-2 border-teal-500"
+            : "border border-slate-200 hover:border-slate-300"
       }`}
     >
-      {isBestMatch && (
+      {isSuggested ? (
+        <span className="absolute -top-2.5 left-4 inline-flex items-center gap-1 rounded-full bg-indigo-500 text-white text-[10px] font-semibold px-2 py-0.5 uppercase tracking-widest">
+          <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          Suggested
+        </span>
+      ) : isBestMatch ? (
         <span className="absolute -top-2.5 left-4 inline-flex items-center gap-1 rounded-full bg-teal-500 text-white text-[10px] font-semibold px-2 py-0.5 uppercase tracking-widest">
           <svg className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           Best match
         </span>
-      )}
+      ) : null}
 
       <div className="flex items-center gap-4">
         <div className="group/art relative h-14 w-14 flex-shrink-0">

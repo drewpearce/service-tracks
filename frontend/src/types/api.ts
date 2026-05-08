@@ -125,6 +125,11 @@ export interface MappingsResponse {
   songs: SongWithPlatforms[];
 }
 
+export interface SongMappingsResponse {
+  pco_song_id: string;
+  platforms: Record<string, PlatformMappingState>;
+}
+
 export interface PlanSong {
   pco_song_id: string;
   title: string;

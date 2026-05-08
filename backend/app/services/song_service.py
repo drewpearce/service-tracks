@@ -295,6 +295,32 @@ async def list_songs_with_mappings(
     return out
 
 
+async def get_song_mappings(
+    db: AsyncSession,
+    church_id: uuid.UUID,
+    pco_song_id: str,
+) -> dict[str, PlatformMappingState]:
+    """Return the per-platform mapping state for a single PCO song.
+
+    The result is keyed by every connected streaming platform; platforms with no
+    mapping are returned with `matched=False`. Mappings on disconnected platforms
+    are ignored — same convention as `list_songs_with_mappings`.
+    """
+    connected_platforms = await _get_connected_platforms(db, church_id)
+    if not connected_platforms:
+        return {}
+
+    result = await db.execute(
+        select(SongMapping).where(
+            SongMapping.church_id == church_id,
+            SongMapping.pco_song_id == pco_song_id,
+            SongMapping.platform.in_(connected_platforms),
+        )
+    )
+    mappings_by_platform = {m.platform: m for m in result.scalars().all()}
+    return _build_platform_state(connected_platforms, mappings_by_platform)
+
+
 async def delete_mapping(
     db: AsyncSession,
     church_id: uuid.UUID,
