@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { apiClient, ApiClientError } from "../api/client";
+import { apiClient } from "../api/client";
 import { LogoMark } from "../components/ui";
 
 type Status = "loading" | "success" | "error";
@@ -34,9 +34,7 @@ export default function VerifyEmail() {
       body: JSON.stringify({ token }),
     })
       .then(() => setStatus("success"))
-      .catch((err) => {
-        if (err instanceof ApiClientError) setStatus("error");
-      });
+      .catch(() => setStatus("error"));
   }, [searchParams]);
 
   if (status === "loading") {

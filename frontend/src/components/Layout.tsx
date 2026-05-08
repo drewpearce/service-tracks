@@ -120,7 +120,7 @@ export default function Layout() {
               <p className="text-[11px] text-slate-400 truncate">{church?.name}</p>
             </div>
             <button
-              onClick={() => void logout()}
+              onClick={() => logout()}
               className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors flex-shrink-0 px-1"
               title="Log out"
               aria-label="Log out"
