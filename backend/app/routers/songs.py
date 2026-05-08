@@ -17,6 +17,7 @@ from app.schemas.songs import (
     MatchRequest,
     MatchResponse,
     SearchResponse,
+    SongMappingsResponse,
     UnmatchedSongsResponse,
 )
 from app.services import song_service
@@ -151,6 +152,26 @@ async def get_mappings(
     songs = await song_service.list_songs_with_mappings(db, church_id)
 
     return MappingsResponse(songs=songs)
+
+
+# ---------------------------------------------------------------------------
+# GET /{pco_song_id}/mappings
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{pco_song_id}/mappings")
+async def get_song_mappings_endpoint(
+    pco_song_id: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    _verified: None = Depends(require_verified_email),
+) -> SongMappingsResponse:
+    """Return the per-platform mapping state for a single PCO song."""
+    church_id = request.state.church_id
+
+    platforms = await song_service.get_song_mappings(db, church_id, pco_song_id)
+
+    return SongMappingsResponse(pco_song_id=pco_song_id, platforms=platforms)
 
 
 # ---------------------------------------------------------------------------

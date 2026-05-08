@@ -71,3 +71,8 @@ class MatchResponse(BaseModel):
 
 class MappingsResponse(BaseModel):
     songs: list[SongWithPlatforms]
+
+
+class SongMappingsResponse(BaseModel):
+    pco_song_id: str
+    platforms: dict[str, PlatformMappingState]
