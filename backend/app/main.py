@@ -16,7 +16,6 @@ from app.database import async_session_factory
 from app.middleware.auth import AuthMiddleware
 from app.rate_limit import limiter
 from app.routers import auth, dashboard, health, pco, plans, songs, streaming, webhooks
-from app.routers import settings as settings_router
 from app.scheduler import start_scheduler, stop_scheduler
 from app.utils.logging import setup_logging
 
@@ -96,7 +95,6 @@ def create_app() -> FastAPI:
     app.include_router(plans.router)
     app.include_router(dashboard.router)
     app.include_router(webhooks.router)
-    app.include_router(settings_router.router)
 
     # Rate limiting
     app.state.limiter = limiter

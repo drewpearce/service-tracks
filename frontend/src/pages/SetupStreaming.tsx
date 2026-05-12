@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiClient, ApiClientError } from "../api/client";
-import { Hero } from "../components/ui";
+import { Button, Hero } from "../components/ui";
 import type {
   SpotifyAuthorizeResponse,
   StreamingStatusResponse,
@@ -23,13 +23,73 @@ function YouTubeIcon({ className }: { className?: string }) {
   );
 }
 
+type Platform = "spotify" | "youtube";
+type ConfirmKind = "reset" | "disconnect";
+
+interface ConfirmState {
+  platform: Platform;
+  kind: ConfirmKind;
+}
+
+const PLATFORM_LABEL: Record<Platform, string> = {
+  spotify: "Spotify",
+  youtube: "YouTube Music",
+};
+
+function ConfirmDialog({
+  state,
+  onCancel,
+  onConfirm,
+  busy,
+}: {
+  state: ConfirmState;
+  onCancel: () => void;
+  onConfirm: () => void;
+  busy: boolean;
+}) {
+  const label = PLATFORM_LABEL[state.platform];
+  const isDisconnect = state.kind === "disconnect";
+  const title = isDisconnect ? `Disconnect ${label}?` : `Reset ${label}?`;
+  const body = isDisconnect
+    ? `We'll forget the tokens and playlist IDs for ${label}. Existing playlists on ${label} will stay — you can delete them there if you want. You'll need to reconnect to sync again.`
+    : `We'll forget all stored playlist IDs for ${label} and reset its playlist mode, name, and description to the defaults. The connection itself stays. The next sync will create fresh playlists on ${label}.`;
+  const confirmLabel = isDisconnect ? "Disconnect" : "Reset";
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+    >
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-6">
+        <h3 id="confirm-dialog-title" className="font-display text-xl font-semibold tracking-tight text-slate-900">
+          {title}
+        </h3>
+        <p className="mt-3 text-[14px] text-slate-600 leading-relaxed">{body}</p>
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <Button variant="secondary" onClick={onCancel} disabled={busy}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={onConfirm} loading={busy}>
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SetupStreaming() {
   const [statusData, setStatusData] = useState<StreamingStatusResponse | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [connectingSpotify, setConnectingSpotify] = useState(false);
   const [connectingYouTube, setConnectingYouTube] = useState(false);
-  const [connectError, setConnectError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionInfo, setActionInfo] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmState | null>(null);
+  const [confirmBusy, setConfirmBusy] = useState(false);
 
   const [oauthBanner] = useState<
     { kind: "success"; message: string } | { kind: "error"; message: string } | null
@@ -52,48 +112,77 @@ export default function SetupStreaming() {
     }
   }, []);
 
+  async function loadStatus() {
+    try {
+      const s = await apiClient<StreamingStatusResponse>("/api/streaming/status");
+      setStatusData(s);
+      setLoadError(null);
+    } catch (err) {
+      if (err instanceof ApiClientError && err.status === 403) {
+        setLoadError("Please verify your email before connecting streaming services.");
+      } else {
+        setLoadError("Failed to load streaming status.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    apiClient<StreamingStatusResponse>("/api/streaming/status")
-      .then((s) => setStatusData(s))
-      .catch((err) => {
-        if (err instanceof ApiClientError && err.status === 403) {
-          setLoadError("Please verify your email before connecting streaming services.");
-        } else {
-          setLoadError("Failed to load streaming status.");
-        }
-      })
-      .finally(() => setLoading(false));
+    void loadStatus();
   }, []);
 
   async function handleConnectSpotify() {
-    setConnectError(null);
+    setActionError(null);
     setConnectingSpotify(true);
     try {
       const response = await apiClient<SpotifyAuthorizeResponse>("/api/streaming/spotify/authorize");
       window.location.href = response.authorization_url;
     } catch (err) {
       if (err instanceof ApiClientError && err.status === 403) {
-        setConnectError("Please verify your email before connecting Spotify.");
+        setActionError("Please verify your email before connecting Spotify.");
       } else {
-        setConnectError("Failed to start Spotify authorization. Please try again.");
+        setActionError("Failed to start Spotify authorization. Please try again.");
       }
       setConnectingSpotify(false);
     }
   }
 
   async function handleConnectYouTube() {
-    setConnectError(null);
+    setActionError(null);
     setConnectingYouTube(true);
     try {
       const response = await apiClient<YouTubeAuthorizeResponse>("/api/streaming/youtube/authorize");
       window.location.href = response.authorization_url;
     } catch (err) {
       if (err instanceof ApiClientError && err.status === 403) {
-        setConnectError("Please verify your email before connecting YouTube Music.");
+        setActionError("Please verify your email before connecting YouTube Music.");
       } else {
-        setConnectError("Failed to start YouTube Music authorization. Please try again.");
+        setActionError("Failed to start YouTube Music authorization. Please try again.");
       }
       setConnectingYouTube(false);
+    }
+  }
+
+  async function handleConfirm() {
+    if (!confirm) return;
+    setConfirmBusy(true);
+    setActionError(null);
+    setActionInfo(null);
+    try {
+      if (confirm.kind === "disconnect") {
+        await apiClient(`/api/streaming/${confirm.platform}`, { method: "DELETE" });
+        setActionInfo(`${PLATFORM_LABEL[confirm.platform]} disconnected.`);
+      } else {
+        await apiClient(`/api/streaming/${confirm.platform}/reset`, { method: "POST" });
+        setActionInfo(`${PLATFORM_LABEL[confirm.platform]} reset to defaults.`);
+      }
+      setConfirm(null);
+      await loadStatus();
+    } catch {
+      setActionError(`Failed to ${confirm.kind} ${PLATFORM_LABEL[confirm.platform]}. Please try again.`);
+    } finally {
+      setConfirmBusy(false);
     }
   }
 
@@ -146,6 +235,16 @@ export default function SetupStreaming() {
             {oauthBanner.message}
           </div>
         )}
+        {actionInfo && (
+          <div className="rounded-2xl p-4 text-[13px] border bg-teal-50 border-teal-200 text-teal-700">
+            {actionInfo}
+          </div>
+        )}
+        {actionError && (
+          <div className="rounded-2xl p-4 text-[13px] border bg-rose-50 border-rose-200 text-rose-700">
+            {actionError}
+          </div>
+        )}
 
         {/* Spotify */}
         <article className="rounded-2xl bg-white border border-slate-200 p-6">
@@ -184,6 +283,23 @@ export default function SetupStreaming() {
                   {connectingSpotify ? "Redirecting…" : spotifyConnected ? "Reconnect" : "Connect Spotify"}
                 </button>
               </div>
+              {spotifyConnected && (
+                <div className="mt-4 flex items-center gap-3">
+                  <button
+                    onClick={() => setConfirm({ platform: "spotify", kind: "reset" })}
+                    className="text-[12px] font-medium text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                  >
+                    Reset settings
+                  </button>
+                  <span className="text-slate-300">·</span>
+                  <button
+                    onClick={() => setConfirm({ platform: "spotify", kind: "disconnect" })}
+                    className="text-[12px] font-medium text-rose-600 hover:text-rose-700 underline-offset-2 hover:underline"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </article>
@@ -225,14 +341,36 @@ export default function SetupStreaming() {
                   {connectingYouTube ? "Redirecting…" : youtubeConnected ? "Reconnect" : "Connect YouTube Music"}
                 </button>
               </div>
+              {youtubeConnected && (
+                <div className="mt-4 flex items-center gap-3">
+                  <button
+                    onClick={() => setConfirm({ platform: "youtube", kind: "reset" })}
+                    className="text-[12px] font-medium text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                  >
+                    Reset settings
+                  </button>
+                  <span className="text-slate-300">·</span>
+                  <button
+                    onClick={() => setConfirm({ platform: "youtube", kind: "disconnect" })}
+                    className="text-[12px] font-medium text-rose-600 hover:text-rose-700 underline-offset-2 hover:underline"
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </article>
-
-        {connectError && (
-          <p className="text-[13px] text-rose-600">{connectError}</p>
-        )}
       </div>
+
+      {confirm && (
+        <ConfirmDialog
+          state={confirm}
+          onCancel={() => (confirmBusy ? null : setConfirm(null))}
+          onConfirm={() => void handleConfirm()}
+          busy={confirmBusy}
+        />
+      )}
     </>
   );
 }

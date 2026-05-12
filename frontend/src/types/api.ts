@@ -194,7 +194,8 @@ export interface DashboardResponse {
   recent_syncs: SyncLogEntry[];
 }
 
-export interface ChurchSettings {
+export interface StreamingPlatformSettings {
+  platform: string;
   playlist_mode: "shared" | "per_plan";
   playlist_name_template: string;
   playlist_description_template: string;

@@ -551,10 +551,11 @@ async def test_sync_plan_per_plan_mode_uses_real_plan_id(db: AsyncSession, verif
     await setup_full_church(db, church_id)
     await add_song_mapping(db, church_id, "song-1", "How Great Is Our God", "spotify:track:track1")
 
-    # Set church to per_plan mode
-    church_result = await db.execute(select(Church).where(Church.id == church_id))
-    church = church_result.scalar_one()
-    church.playlist_mode = "per_plan"
+    # Set Spotify to per_plan mode via the per-platform settings
+    from app.services.streaming_service import get_or_create_settings
+
+    spotify_settings = await get_or_create_settings(db, church_id, "spotify")
+    spotify_settings.playlist_mode = "per_plan"
     await db.flush()
 
     # Sync plan 1001
