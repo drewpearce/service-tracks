@@ -19,6 +19,7 @@ from app.models.streaming_connection import StreamingConnection
 from app.models.sync_log import SyncLog
 from app.schemas.sync import PlatformSyncResult, SyncResult
 from app.services import pco_service
+from app.services.streaming_service import get_or_create_settings
 from app.utils.playlist_templates import render_template
 
 logger = structlog.get_logger(__name__)
@@ -163,18 +164,19 @@ async def sync_plan(
         try:
             adapter = get_streaming_adapter(connection.platform, connection, db=db)
 
-            # a. Determine playlist mode and lookup key
-            playlist_mode = church.playlist_mode  # "shared" or "per_plan"
+            # a. Determine playlist mode and lookup key (per platform)
+            platform_settings = await get_or_create_settings(db, church_id, platform)
+            playlist_mode = platform_settings.playlist_mode  # "shared" or "per_plan"
             lookup_plan_id = "__shared__" if playlist_mode == "shared" else pco_plan_id
 
             rendered_name = render_template(
-                church.playlist_name_template,
+                platform_settings.playlist_name_template,
                 plan_date=plan_date,
                 plan_title=plan_title,
                 church_name=church.name,
             )
             rendered_description = render_template(
-                church.playlist_description_template,
+                platform_settings.playlist_description_template,
                 plan_date=plan_date,
                 plan_title=plan_title,
                 church_name=church.name,

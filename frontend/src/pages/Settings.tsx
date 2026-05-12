@@ -3,61 +3,124 @@ import type { FormEvent } from "react";
 import { apiClient, ApiClientError } from "../api/client";
 import { Hero, Input, MonoChip, Textarea } from "../components/ui";
 import { useAuth } from "../hooks/authContext";
-import type { ChurchSettings } from "../types/api";
+import type { StreamingPlatformSettings, StreamingStatusResponse } from "../types/api";
 
 const VARIABLES = ["{church_name}", "{date}", "{date_iso}", "{title}"];
+
+type Platform = "spotify" | "youtube";
+const PLATFORM_LABEL: Record<Platform, string> = {
+  spotify: "Spotify",
+  youtube: "YouTube Music",
+};
+
+interface PlatformForm {
+  playlist_mode: "shared" | "per_plan";
+  playlist_name_template: string;
+  playlist_description_template: string;
+}
+
+interface PlatformFormState {
+  form: PlatformForm;
+  saving: boolean;
+  saveError: string | null;
+  saveSuccess: boolean;
+}
+
+const EMPTY_FORM_STATE: PlatformFormState = {
+  form: { playlist_mode: "shared", playlist_name_template: "", playlist_description_template: "" },
+  saving: false,
+  saveError: null,
+  saveSuccess: false,
+};
 
 export default function Settings() {
   const { church } = useAuth();
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const [playlistMode, setPlaylistMode] = useState<"shared" | "per_plan">("shared");
-  const [nameTemplate, setNameTemplate] = useState("");
-  const [descriptionTemplate, setDescriptionTemplate] = useState("");
-
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [connectedPlatforms, setConnectedPlatforms] = useState<Platform[]>([]);
+  const [platformState, setPlatformState] = useState<Record<Platform, PlatformFormState>>({
+    spotify: EMPTY_FORM_STATE,
+    youtube: EMPTY_FORM_STATE,
+  });
 
   useEffect(() => {
-    apiClient<ChurchSettings>("/api/settings")
-      .then((s) => {
-        setPlaylistMode(s.playlist_mode);
-        setNameTemplate(s.playlist_name_template);
-        setDescriptionTemplate(s.playlist_description_template);
-      })
-      .catch((err) => {
+    async function load() {
+      try {
+        const status = await apiClient<StreamingStatusResponse>("/api/streaming/status");
+        const connected = status.connections
+          .filter((c) => c.connected && (c.platform === "spotify" || c.platform === "youtube"))
+          .map((c) => c.platform as Platform);
+        setConnectedPlatforms(connected);
+
+        const results = await Promise.all(
+          connected.map((p) => apiClient<StreamingPlatformSettings>(`/api/streaming/${p}/settings`)),
+        );
+        setPlatformState((prev) => {
+          const next = { ...prev };
+          results.forEach((r) => {
+            const p = r.platform as Platform;
+            next[p] = {
+              form: {
+                playlist_mode: r.playlist_mode,
+                playlist_name_template: r.playlist_name_template,
+                playlist_description_template: r.playlist_description_template,
+              },
+              saving: false,
+              saveError: null,
+              saveSuccess: false,
+            };
+          });
+          return next;
+        });
+      } catch (err) {
         if (err instanceof ApiClientError && err.status === 403) {
           setLoadError("Please verify your email to access settings.");
         } else {
           setLoadError("Failed to load settings.");
         }
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    }
+    void load();
   }, []);
 
-  async function handleSubmit(e: FormEvent) {
+  function updateForm(platform: Platform, patch: Partial<PlatformForm>) {
+    setPlatformState((prev) => ({
+      ...prev,
+      [platform]: {
+        ...prev[platform],
+        form: { ...prev[platform].form, ...patch },
+        saveSuccess: false,
+      },
+    }));
+  }
+
+  async function handleSubmit(platform: Platform, e: FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setSaveError(null);
-    setSaveSuccess(false);
+    setPlatformState((prev) => ({
+      ...prev,
+      [platform]: { ...prev[platform], saving: true, saveError: null, saveSuccess: false },
+    }));
+    const { form } = platformState[platform];
     try {
-      await apiClient<ChurchSettings>("/api/settings", {
+      await apiClient<StreamingPlatformSettings>(`/api/streaming/${platform}/settings`, {
         method: "PATCH",
-        body: JSON.stringify({
-          playlist_mode: playlistMode,
-          playlist_name_template: nameTemplate,
-          playlist_description_template: descriptionTemplate,
-        }),
+        body: JSON.stringify(form),
       });
-      setSaveSuccess(true);
-    } catch (err) {
-      if (err instanceof ApiClientError) {
-        setSaveError("Failed to save settings. Please try again.");
-      }
-    } finally {
-      setSaving(false);
+      setPlatformState((prev) => ({
+        ...prev,
+        [platform]: { ...prev[platform], saving: false, saveSuccess: true },
+      }));
+    } catch {
+      setPlatformState((prev) => ({
+        ...prev,
+        [platform]: {
+          ...prev[platform],
+          saving: false,
+          saveError: "Failed to save settings. Please try again.",
+        },
+      }));
     }
   }
 
@@ -89,146 +152,155 @@ export default function Settings() {
           Settings
         </h1>
         <p className="mt-3 max-w-xl text-[14px] text-slate-400">
-          Control how ServiceTracks names and structures your playlists.
+          Control how ServiceTracks names and structures your playlists, per streaming service.
         </p>
       </Hero>
 
-      <div className="px-10 py-10">
-        <div className="max-w-4xl grid grid-cols-4 gap-10">
-          {/* Side nav */}
-          <aside className="col-span-1">
-            <nav className="space-y-1 text-[13px] sticky top-6">
-              <a
-                href="#playlists"
-                className="block px-3 py-2 rounded-lg bg-slate-100 text-slate-900 font-medium"
-              >
-                Playlists
-              </a>
-            </nav>
-          </aside>
-
-          {/* Form */}
-          <div className="col-span-3">
-            <form onSubmit={handleSubmit} className="space-y-10">
-              {/* Playlist mode */}
-              <section id="playlists" className="space-y-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">
-                    Playlists
-                  </p>
-                  <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-slate-900">
-                    How playlists are structured
-                  </h2>
-                </div>
-                <div className="rounded-2xl bg-white border border-slate-200 divide-y divide-slate-100">
-                  <label className="flex items-start gap-4 p-5 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="playlist_mode"
-                      value="shared"
-                      checked={playlistMode === "shared"}
-                      onChange={() => setPlaylistMode("shared")}
-                      className="mt-0.5 accent-teal-600"
-                    />
-                    <div>
-                      <p className="text-[14px] font-medium text-slate-900">Shared</p>
-                      <p className="text-[13px] text-slate-500">
-                        One persistent playlist per platform, updated on each sync.
-                      </p>
-                    </div>
-                  </label>
-                  <label className="flex items-start gap-4 p-5 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="playlist_mode"
-                      value="per_plan"
-                      checked={playlistMode === "per_plan"}
-                      onChange={() => setPlaylistMode("per_plan")}
-                      className="mt-0.5 accent-teal-600"
-                    />
-                    <div>
-                      <p className="text-[14px] font-medium text-slate-900">Per service</p>
-                      <p className="text-[13px] text-slate-500">
-                        A separate playlist created for each service plan.
-                      </p>
-                    </div>
-                  </label>
-                </div>
-              </section>
-
-              {/* Name template */}
-              <section className="space-y-4">
-                <div>
-                  <h3 className="font-display text-xl font-semibold tracking-tight text-slate-900">
-                    Playlist name
-                  </h3>
-                  <p className="mt-0.5 text-[13px] text-slate-500">
-                    Template used when ServiceTracks creates or renames a playlist.
-                  </p>
-                </div>
-                <Input
-                  type="text"
-                  required
-                  value={nameTemplate}
-                  onChange={(e) => setNameTemplate(e.target.value)}
-                  mono
-                />
-                <div className="flex flex-wrap gap-1.5">
-                  {VARIABLES.map((v) => (
-                    <MonoChip key={v}>{v}</MonoChip>
-                  ))}
-                </div>
-                {nameTemplate && (
-                  <div className="rounded-xl bg-slate-900 text-slate-100 p-4">
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-teal-400 font-semibold mb-2">
-                      Preview
-                    </p>
-                    <p className="font-display text-lg font-semibold">{nameTemplate}</p>
-                  </div>
-                )}
-              </section>
-
-              {/* Description template */}
-              <section className="space-y-4">
-                <div>
-                  <h3 className="font-display text-xl font-semibold tracking-tight text-slate-900">
-                    Playlist description
-                  </h3>
-                  <p className="mt-0.5 text-[13px] text-slate-500">
-                    Appears in the playlist's metadata on Spotify / YouTube Music.
-                  </p>
-                </div>
-                <Textarea
-                  rows={3}
-                  value={descriptionTemplate}
-                  onChange={(e) => setDescriptionTemplate(e.target.value)}
-                  mono
-                />
-                <div className="flex flex-wrap gap-1.5">
-                  {VARIABLES.map((v) => (
-                    <MonoChip key={v}>{v}</MonoChip>
-                  ))}
-                </div>
-              </section>
-
-              {/* Save bar */}
-              <div className="sticky bottom-4 flex items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 shadow-lg p-4">
-                <div className="text-[13px]">
-                  {saveSuccess && <span className="text-teal-600 font-medium">Settings saved.</span>}
-                  {saveError && <span className="text-rose-600">{saveError}</span>}
-                </div>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="rounded-full bg-slate-900 text-white px-6 py-2.5 text-[13px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
-                >
-                  {saving ? "Saving…" : "Save settings"}
-                </button>
-              </div>
-            </form>
+      <div className="px-10 py-10 max-w-4xl space-y-10">
+        {connectedPlatforms.length === 0 && (
+          <div className="rounded-2xl bg-white border border-slate-200 p-6">
+            <p className="text-[14px] text-slate-700">
+              No streaming services connected yet.{" "}
+              <a href="/setup/streaming" className="text-teal-600 hover:text-teal-700 underline-offset-2 underline">
+                Connect a service
+              </a>{" "}
+              to configure its playlist settings.
+            </p>
           </div>
-        </div>
+        )}
+
+        {connectedPlatforms.map((platform) => {
+          const state = platformState[platform];
+          return (
+            <PlatformSettingsCard
+              key={platform}
+              platform={platform}
+              state={state}
+              onChange={(patch) => updateForm(platform, patch)}
+              onSubmit={(e) => void handleSubmit(platform, e)}
+            />
+          );
+        })}
       </div>
     </>
+  );
+}
+
+function PlatformSettingsCard({
+  platform,
+  state,
+  onChange,
+  onSubmit,
+}: {
+  platform: Platform;
+  state: PlatformFormState;
+  onChange: (patch: Partial<PlatformForm>) => void;
+  onSubmit: (e: FormEvent) => void;
+}) {
+  const { form, saving, saveError, saveSuccess } = state;
+  const label = PLATFORM_LABEL[platform];
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-6 rounded-2xl bg-white border border-slate-200 p-6">
+      <header>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500 font-semibold">{label}</p>
+        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight text-slate-900">
+          Playlist settings
+        </h2>
+      </header>
+
+      <section className="space-y-3">
+        <h3 className="text-[14px] font-medium text-slate-900">How playlists are structured</h3>
+        <div className="rounded-2xl border border-slate-200 divide-y divide-slate-100">
+          <label className="flex items-start gap-4 p-5 cursor-pointer">
+            <input
+              type="radio"
+              name={`playlist_mode_${platform}`}
+              value="shared"
+              checked={form.playlist_mode === "shared"}
+              onChange={() => onChange({ playlist_mode: "shared" })}
+              className="mt-0.5 accent-teal-600"
+            />
+            <div>
+              <p className="text-[14px] font-medium text-slate-900">Shared</p>
+              <p className="text-[13px] text-slate-500">
+                One persistent playlist on {label}, updated on each sync.
+              </p>
+            </div>
+          </label>
+          <label className="flex items-start gap-4 p-5 cursor-pointer">
+            <input
+              type="radio"
+              name={`playlist_mode_${platform}`}
+              value="per_plan"
+              checked={form.playlist_mode === "per_plan"}
+              onChange={() => onChange({ playlist_mode: "per_plan" })}
+              className="mt-0.5 accent-teal-600"
+            />
+            <div>
+              <p className="text-[14px] font-medium text-slate-900">Per service</p>
+              <p className="text-[13px] text-slate-500">
+                A separate playlist created on {label} for each service plan.
+              </p>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <div>
+          <h3 className="text-[14px] font-medium text-slate-900">Playlist name</h3>
+          <p className="mt-0.5 text-[13px] text-slate-500">
+            Template used when ServiceTracks creates or renames a playlist on {label}.
+          </p>
+        </div>
+        <Input
+          type="text"
+          required
+          value={form.playlist_name_template}
+          onChange={(e) => onChange({ playlist_name_template: e.target.value })}
+          mono
+        />
+        <div className="flex flex-wrap gap-1.5">
+          {VARIABLES.map((v) => (
+            <MonoChip key={v}>{v}</MonoChip>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <div>
+          <h3 className="text-[14px] font-medium text-slate-900">Playlist description</h3>
+          <p className="mt-0.5 text-[13px] text-slate-500">
+            Appears in the playlist's metadata on {label}.
+          </p>
+        </div>
+        <Textarea
+          rows={3}
+          value={form.playlist_description_template}
+          onChange={(e) => onChange({ playlist_description_template: e.target.value })}
+          mono
+        />
+        <div className="flex flex-wrap gap-1.5">
+          {VARIABLES.map((v) => (
+            <MonoChip key={v}>{v}</MonoChip>
+          ))}
+        </div>
+      </section>
+
+      <div className="flex items-center justify-between gap-4 pt-2">
+        <div className="text-[13px]">
+          {saveSuccess && <span className="text-teal-600 font-medium">Saved.</span>}
+          {saveError && <span className="text-rose-600">{saveError}</span>}
+        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-full bg-slate-900 text-white px-6 py-2.5 text-[13px] font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50"
+        >
+          {saving ? "Saving…" : `Save ${label} settings`}
+        </button>
+      </div>
+    </form>
   );
 }

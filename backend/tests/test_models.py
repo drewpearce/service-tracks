@@ -10,6 +10,7 @@ from app.models import (
     SearchCache,
     SongMapping,
     StreamingConnection,
+    StreamingSettings,
     SyncLog,
     UserSession,
     YouTubeQuotaUsage,
@@ -20,6 +21,7 @@ EXPECTED_TABLES = {
     "church_user",
     "pco_connection",
     "streaming_connection",
+    "streaming_settings",
     "song_mapping",
     "playlist",
     "sync_log",
@@ -30,7 +32,7 @@ EXPECTED_TABLES = {
 
 
 def test_all_tables_registered():
-    """All 10 expected tables are registered in Base.metadata."""
+    """All expected tables are registered in Base.metadata."""
     registered = set(Base.metadata.tables.keys())
     assert EXPECTED_TABLES == registered, (
         f"Missing tables: {EXPECTED_TABLES - registered}; Unexpected tables: {registered - EXPECTED_TABLES}"
@@ -44,6 +46,7 @@ def test_model_tablenames():
         (ChurchUser, "church_user"),
         (PcoConnection, "pco_connection"),
         (StreamingConnection, "streaming_connection"),
+        (StreamingSettings, "streaming_settings"),
         (SongMapping, "song_mapping"),
         (Playlist, "playlist"),
         (SyncLog, "sync_log"),

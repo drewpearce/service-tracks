@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 
 import httpx
 import structlog
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,10 +18,19 @@ from app.models.streaming_connection import StreamingConnection
 from app.schemas.streaming import (
     SpotifyAuthorizeResponse,
     StreamingConnectionStatus,
+    StreamingSettingsResponse,
+    StreamingSettingsUpdate,
     StreamingStatusResponse,
     YouTubeAuthorizeResponse,
 )
+from app.services.streaming_service import (
+    disconnect_platform,
+    get_or_create_settings,
+    reset_platform,
+)
 from app.utils.encryption import decrypt, encrypt
+
+SUPPORTED_PLATFORMS = {"spotify", "youtube"}
 
 logger = structlog.get_logger(__name__)
 
@@ -448,4 +457,116 @@ async def streaming_status(
             )
             for conn in connections
         ]
+    )
+
+
+# ---------------------------------------------------------------------------
+# DELETE /{platform} — disconnect
+# ---------------------------------------------------------------------------
+
+
+@router.delete("/{platform}", status_code=204)
+async def disconnect_streaming(
+    platform: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    _verified: None = Depends(require_verified_email),
+) -> None:
+    """Disconnect a streaming platform.
+
+    Revokes the OAuth token at the provider where supported (Google for YouTube;
+    Spotify has no public revocation endpoint), then deletes the local
+    StreamingConnection, Playlist rows, and StreamingSettings row.
+    """
+    if platform not in SUPPORTED_PLATFORMS:
+        raise HTTPException(status_code=404, detail="Unknown platform")
+
+    church_id = request.state.church_id
+    found = await disconnect_platform(db, church_id, platform)
+    if not found:
+        raise HTTPException(status_code=404, detail="Platform not connected")
+
+    logger.info("streaming_disconnected", church_id=str(church_id), platform=platform)
+
+
+# ---------------------------------------------------------------------------
+# POST /{platform}/reset — forget playlists + reset per-platform settings
+# ---------------------------------------------------------------------------
+
+
+@router.post("/{platform}/reset", status_code=204)
+async def reset_streaming(
+    platform: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    _verified: None = Depends(require_verified_email),
+) -> None:
+    """Forget all local Playlist state for a platform and reset its template settings.
+
+    Leaves the StreamingConnection intact. On next sync, fresh playlists are created.
+    """
+    if platform not in SUPPORTED_PLATFORMS:
+        raise HTTPException(status_code=404, detail="Unknown platform")
+
+    church_id = request.state.church_id
+    await reset_platform(db, church_id, platform)
+
+    logger.info("streaming_reset", church_id=str(church_id), platform=platform)
+
+
+# ---------------------------------------------------------------------------
+# GET/PATCH /{platform}/settings — per-platform playlist templates
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{platform}/settings")
+async def get_platform_settings(
+    platform: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    _verified: None = Depends(require_verified_email),
+) -> StreamingSettingsResponse:
+    """Return the playlist template settings for a streaming platform."""
+    if platform not in SUPPORTED_PLATFORMS:
+        raise HTTPException(status_code=404, detail="Unknown platform")
+
+    church_id = request.state.church_id
+    row = await get_or_create_settings(db, church_id, platform)
+    return StreamingSettingsResponse(
+        platform=row.platform,
+        playlist_mode=row.playlist_mode,
+        playlist_name_template=row.playlist_name_template,
+        playlist_description_template=row.playlist_description_template,
+    )
+
+
+@router.patch("/{platform}/settings")
+async def update_platform_settings(
+    platform: str,
+    body: StreamingSettingsUpdate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    _verified: None = Depends(require_verified_email),
+) -> StreamingSettingsResponse:
+    """Update the playlist template settings for a streaming platform."""
+    if platform not in SUPPORTED_PLATFORMS:
+        raise HTTPException(status_code=404, detail="Unknown platform")
+
+    church_id = request.state.church_id
+    row = await get_or_create_settings(db, church_id, platform)
+
+    if body.playlist_mode is not None:
+        row.playlist_mode = body.playlist_mode
+    if body.playlist_name_template is not None:
+        row.playlist_name_template = body.playlist_name_template
+    if body.playlist_description_template is not None:
+        row.playlist_description_template = body.playlist_description_template
+
+    await db.flush()
+
+    return StreamingSettingsResponse(
+        platform=row.platform,
+        playlist_mode=row.playlist_mode,
+        playlist_name_template=row.playlist_name_template,
+        playlist_description_template=row.playlist_description_template,
     )

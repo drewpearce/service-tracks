@@ -14,6 +14,7 @@ from app.models.pco_connection import PcoConnection
 from app.models.playlist import Playlist
 from app.models.song_mapping import SongMapping
 from app.models.streaming_connection import StreamingConnection
+from app.models.streaming_settings import StreamingSettings
 from app.models.sync_log import SyncLog
 from app.schemas.dashboard import (
     DashboardResponse,
@@ -89,12 +90,20 @@ async def dashboard(
                     if m.platform in connected_platforms:
                         mappings_by_song.setdefault(m.pco_song_id, set()).add(m.platform)
 
-                # Playlists indexed by plan id
+                # Per-platform playlist mode, used to compute each platform's lookup key
+                settings_result = await db.execute(
+                    select(StreamingSettings).where(StreamingSettings.church_id == church_id)
+                )
+                modes_by_platform: dict[str, str] = {
+                    s.platform: s.playlist_mode for s in settings_result.scalars().all()
+                }
+
+                # Playlists indexed by (plan_id, platform)
                 playlists_result = await db.execute(select(Playlist).where(Playlist.church_id == church_id))
                 all_playlists = playlists_result.scalars().all()
-                playlists_by_plan: dict[str, list[Playlist]] = {}
-                for pl in all_playlists:
-                    playlists_by_plan.setdefault(pl.pco_plan_id, []).append(pl)
+                playlists_by_key: dict[tuple[str, str], Playlist] = {
+                    (pl.pco_plan_id, pl.platform): pl for pl in all_playlists
+                }
 
                 for plan, songs in zip(plans, all_songs):
                     plan_songs = [
@@ -108,19 +117,23 @@ async def dashboard(
                     unmatched_in_plan = sum(1 for s in plan_songs if not s.matched)
                     unmatched_song_count += unmatched_in_plan
 
-                    # Look up playlists using the same key the sync engine uses
-                    lookup_key = "__shared__" if church.playlist_mode == "shared" else plan.id
-                    plan_playlist_rows = playlists_by_plan.get(lookup_key, [])
-                    plan_playlists = [
-                        PlanPlaylist(
-                            platform=pl.platform,
-                            status=pl.sync_status,
-                            url=pl.external_playlist_url,
-                            last_synced_at=(pl.last_synced_at.isoformat() if pl.last_synced_at else None),
-                            error_message=pl.error_message,
+                    # Look up playlists using each platform's own mode
+                    plan_playlists: list[PlanPlaylist] = []
+                    for platform in connected_platforms:
+                        mode = modes_by_platform.get(platform, "shared")
+                        lookup_key = "__shared__" if mode == "shared" else plan.id
+                        pl = playlists_by_key.get((lookup_key, platform))
+                        if pl is None:
+                            continue
+                        plan_playlists.append(
+                            PlanPlaylist(
+                                platform=pl.platform,
+                                status=pl.sync_status,
+                                url=pl.external_playlist_url,
+                                last_synced_at=(pl.last_synced_at.isoformat() if pl.last_synced_at else None),
+                                error_message=pl.error_message,
+                            )
                         )
-                        for pl in plan_playlist_rows
-                    ]
 
                     upcoming_plans.append(
                         PlanWithSongs(

@@ -5,6 +5,7 @@ from app.models.playlist import Playlist
 from app.models.search_cache import SearchCache
 from app.models.song_mapping import SongMapping
 from app.models.streaming_connection import StreamingConnection
+from app.models.streaming_settings import StreamingSettings
 from app.models.sync_log import SyncLog
 from app.models.user_session import UserSession
 from app.models.youtube_quota import YouTubeQuotaUsage
@@ -14,6 +15,7 @@ __all__ = [
     "ChurchUser",
     "PcoConnection",
     "StreamingConnection",
+    "StreamingSettings",
     "SongMapping",
     "Playlist",
     "SyncLog",
