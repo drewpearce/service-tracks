@@ -232,7 +232,21 @@ async def refresh_youtube_token(
         )
 
     if response.status_code != 200:
-        logger.error("youtube_token_refresh_failed", status_code=response.status_code)
+        error_code: str | None = None
+        error_description: str | None = None
+        try:
+            error_body = response.json()
+            error_code = error_body.get("error")
+            error_description = error_body.get("error_description")
+        except ValueError:
+            pass
+        logger.error(
+            "youtube_token_refresh_failed",
+            status_code=response.status_code,
+            error=error_code,
+            error_description=error_description,
+            church_id=str(connection.church_id),
+        )
         connection.status = "error"
         await db.flush()
         raise YouTubeTokenError("Token refresh failed")
