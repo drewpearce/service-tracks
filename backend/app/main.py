@@ -15,7 +15,7 @@ from app.config import settings
 from app.database import async_session_factory
 from app.middleware.auth import AuthMiddleware
 from app.rate_limit import limiter
-from app.routers import auth, dashboard, health, pco, plans, songs, streaming, webhooks
+from app.routers import auth, dashboard, health, pco, plans, songs, streaming, webhooks, well_known
 from app.scheduler import start_scheduler, stop_scheduler
 from app.utils.logging import setup_logging
 
@@ -95,6 +95,9 @@ def create_app() -> FastAPI:
     app.include_router(plans.router)
     app.include_router(dashboard.router)
     app.include_router(webhooks.router)
+    # Public well-known URIs (security.txt). Registered before the SPA catch-all
+    # so it isn't swallowed by the index.html fallback.
+    app.include_router(well_known.router)
 
     # Rate limiting
     app.state.limiter = limiter
