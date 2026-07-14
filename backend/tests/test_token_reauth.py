@@ -1,7 +1,9 @@
 """Tests for expired-refresh-token (invalid_grant) handling.
 
-Covers refresh_spotify_token / refresh_youtube_token branching on 400
-invalid_grant vs. other transient failures (Task 1, 2).
+Covers:
+ - refresh_spotify_token / refresh_youtube_token branching on 400 invalid_grant
+   vs. other transient failures (Task 1, 2).
+ - GET /api/streaming/status passthrough of status="needs_reauth" (Task 4).
 
 Outbound Spotify/Google HTTP calls are mocked via respx. asyncio_mode = "auto"
 (set in pyproject.toml) runs all async test functions automatically.
@@ -14,9 +16,12 @@ import httpx
 import pytest
 import pytest_asyncio
 import respx
+from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.church import Church
+from app.models.church_user import ChurchUser
 from app.models.streaming_connection import StreamingConnection
 from app.services.streaming_service import (
     SpotifyTokenError,
@@ -30,6 +35,12 @@ from app.utils.encryption import decrypt, encrypt
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
 # ---------------------------------------------------------------------------
+
+
+async def get_verified_user_church_id(db: AsyncSession) -> uuid.UUID:
+    """Return the church_id of the verified test user (see verified_authenticated_client)."""
+    result = await db.execute(select(ChurchUser).where(ChurchUser.email == "verified@example.com"))
+    return result.scalar_one().church_id
 
 
 @pytest_asyncio.fixture
@@ -136,3 +147,30 @@ async def test_youtube_refresh_transient_error_sets_error(db: AsyncSession, yout
     with pytest.raises(YouTubeTokenError):
         await refresh_youtube_token(db, youtube_connection)
     assert youtube_connection.status == "error"
+
+
+# ---------------------------------------------------------------------------
+# GET /api/streaming/status passthrough
+# ---------------------------------------------------------------------------
+
+
+async def test_streaming_status_exposes_needs_reauth(verified_authenticated_client: AsyncClient, db: AsyncSession):
+    church_id = await get_verified_user_church_id(db)
+    conn = StreamingConnection(
+        church_id=church_id,
+        platform="spotify",
+        access_token_encrypted=encrypt("a"),
+        refresh_token_encrypted=encrypt("r"),
+        token_expires_at=datetime.now(timezone.utc) - timedelta(minutes=1),
+        external_user_id="spotify_user_needs_reauth",
+        status="needs_reauth",
+    )
+    db.add(conn)
+    await db.flush()
+
+    resp = await verified_authenticated_client.get("/api/streaming/status")
+    assert resp.status_code == 200
+    conns = resp.json()["connections"]
+    spotify = next(c for c in conns if c["platform"] == "spotify")
+    assert spotify["status"] == "needs_reauth"
+    assert spotify["connected"] is False  # connected semantics unchanged
