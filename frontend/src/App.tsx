@@ -7,6 +7,7 @@ import { AuthProvider } from "./hooks/useAuth";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const Login = lazy(() => import("./pages/Login"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 const Register = lazy(() => import("./pages/Register"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -14,6 +15,7 @@ const SetupPco = lazy(() => import("./pages/SetupPco"));
 const SetupStreaming = lazy(() => import("./pages/SetupStreaming"));
 const SongMatch = lazy(() => import("./pages/SongMatch"));
 const Songs = lazy(() => import("./pages/Songs"));
+const Terms = lazy(() => import("./pages/Terms"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 
 function RouteFallback() {
@@ -36,6 +38,8 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             {/* Protected routes within Layout */}
             <Route element={<ProtectedRoute />}>
