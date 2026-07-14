@@ -235,7 +235,10 @@ async def test_sync_plan_skips_connection_needing_reauth(db: AsyncSession, verif
     # Reconnection is a distinct, actionable outcome — not a generic transient error.
     assert platform_result.sync_status == "skipped"
     assert platform_result.error_message == "reconnection_required"
-    assert result.sync_status != "error"
+    # Aggregate currently resolves to "pending" for an all-skipped sync (no
+    # dedicated bucket yet — tracked as a follow-up). Assert the exact value so
+    # this stays a real regression guard rather than a vacuous check.
+    assert result.sync_status == "pending"
 
     conn_result = await db.execute(select(StreamingConnection).where(StreamingConnection.id == streaming_conn.id))
     conn = conn_result.scalar_one()
