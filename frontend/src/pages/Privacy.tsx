@@ -57,8 +57,20 @@ export default function Privacy() {
         </li>
         <li>
           <strong>Spotify</strong> and <strong>Google / YouTube Music</strong> — the streaming
-          platforms where your playlists are created and updated. Your use of those platforms is also
-          governed by their own terms and privacy policies.
+          platforms where your playlists are created and updated. ServiceTracks uses YouTube API
+          Services. By connecting YouTube Music you agree to the{" "}
+          <a href="https://www.youtube.com/t/terms" target="_blank" rel="noreferrer">
+            YouTube Terms of Service
+          </a>
+          . Your use of these platforms is also governed by their own privacy policies, including the{" "}
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+            Google Privacy Policy
+          </a>{" "}
+          and the{" "}
+          <a href="https://www.spotify.com/legal/privacy-policy/" target="_blank" rel="noreferrer">
+            Spotify Privacy Policy
+          </a>
+          .
         </li>
         <li>
           <strong>Resend</strong> — delivery of transactional email.
@@ -87,8 +99,12 @@ export default function Privacy() {
       <p>
         We keep your information for as long as your account is active. You may disconnect a streaming
         or Planning Center connection at any time from within the app, which removes the stored tokens
-        for that connection. To delete your account and associated data, contact us at the address
-        below.
+        for that connection. You can also revoke ServiceTracks' access to your Google account at any
+        time from your{" "}
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">
+          Google account permissions page
+        </a>
+        . To delete your account and associated data, contact us at the address below.
       </p>
 
       <h2>Your rights</h2>

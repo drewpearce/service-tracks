@@ -45,6 +45,13 @@ export default function Terms() {
         with their terms. Access provided by those platforms may be changed or revoked at any time.
       </p>
 
+      <h2>Non-affiliation</h2>
+      <p>
+        ServiceTracks is an independent tool and is not affiliated with, endorsed by, or sponsored by
+        Spotify, Google, YouTube, or Planning Center Online. All product names, logos, and trademarks
+        are the property of their respective owners.
+      </p>
+
       <h2>Intellectual property</h2>
       <p>
         ServiceTracks and its software, design, and content are owned by us and protected by
