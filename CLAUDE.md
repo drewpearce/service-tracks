@@ -60,7 +60,7 @@ routers/  →  services/  →  adapters/
 
 ## Dev Commands
 
-Prerequisites: Docker (for Postgres), uv, Node 20+
+Prerequisites: Docker (for Postgres), uv, Python 3.12+, Node 20+
 
 ```bash
 make dev-db        # start Postgres in Docker

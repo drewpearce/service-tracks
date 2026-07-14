@@ -32,5 +32,11 @@ htmlcov/
 
 secrets
 fly-pgsql.txt
-.claude/
+# Claude Code: ignore personal config, but share team automations
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+!.claude/agents/
+!.claude/skills/
+.claude/settings.local.json
 .vscode/
