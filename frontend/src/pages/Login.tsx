@@ -199,13 +199,13 @@ export default function Login() {
 
             <p className="mt-6 text-center text-[12px] text-slate-400">
               By signing in, you agree to our{" "}
-              <a href="https://service-tracks.com/terms" className="hover:text-slate-600 underline underline-offset-2">
+              <Link to="/terms" className="hover:text-slate-600 underline underline-offset-2">
                 Terms
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a href="https://service-tracks.com/privacy" className="hover:text-slate-600 underline underline-offset-2">
+              <Link to="/privacy" className="hover:text-slate-600 underline underline-offset-2">
                 Privacy Policy
-              </a>
+              </Link>
               .
             </p>
           </div>
