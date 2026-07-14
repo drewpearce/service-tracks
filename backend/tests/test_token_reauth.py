@@ -10,18 +10,19 @@ Outbound Spotify/Google HTTP calls are mocked via respx. asyncio_mode = "auto"
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import httpx
 import pytest
 import pytest_asyncio
 import respx
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.church import Church
 from app.models.church_user import ChurchUser
+from app.models.pco_connection import PcoConnection
 from app.models.streaming_connection import StreamingConnection
 from app.services.streaming_service import (
     SpotifyTokenError,
@@ -30,7 +31,11 @@ from app.services.streaming_service import (
     refresh_spotify_token,
     refresh_youtube_token,
 )
+from app.services.sync_service import sync_plan
 from app.utils.encryption import decrypt, encrypt
+from tests.fixtures.pco_responses import PLAN_ITEMS_WITH_SONGS_RESPONSE
+
+PCO_BASE = "https://api.planningcenteronline.com"
 
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
@@ -174,3 +179,64 @@ async def test_streaming_status_exposes_needs_reauth(verified_authenticated_clie
     spotify = next(c for c in conns if c["platform"] == "spotify")
     assert spotify["status"] == "needs_reauth"
     assert spotify["connected"] is False  # connected semantics unchanged
+
+
+# ---------------------------------------------------------------------------
+# sync_plan — token dies mid-sync (Task 3)
+# ---------------------------------------------------------------------------
+
+
+@respx.mock
+async def test_sync_plan_skips_connection_needing_reauth(db: AsyncSession, verified_authenticated_client: AsyncClient):
+    """A token that expires mid-sync must not surface as a generic sync error."""
+    church_id = await get_verified_user_church_id(db)
+
+    pco_conn = PcoConnection(
+        church_id=church_id,
+        auth_method="api_key",
+        app_id_encrypted=encrypt("test_app_id"),
+        secret_encrypted=encrypt("test_secret"),
+        status="active",
+    )
+    db.add(pco_conn)
+
+    church_result = await db.execute(select(Church).where(Church.id == church_id))
+    church = church_result.scalar_one()
+    church.pco_service_type_id = "111"
+
+    # Active connection whose token is already expired — the adapter will try
+    # to refresh it on first use, mid-sync, and the refresh will fail with
+    # invalid_grant.
+    streaming_conn = StreamingConnection(
+        church_id=church_id,
+        platform="spotify",
+        access_token_encrypted=encrypt("test_access_token"),
+        refresh_token_encrypted=encrypt("test_refresh_token"),
+        token_expires_at=datetime.now(timezone.utc) - timedelta(minutes=1),
+        external_user_id="spotify_user_123",
+        status="active",
+    )
+    db.add(streaming_conn)
+    await db.flush()
+
+    respx.get(f"{PCO_BASE}/services/v2/service_types/111/plans/1001/items").mock(
+        return_value=Response(200, json=PLAN_ITEMS_WITH_SONGS_RESPONSE)
+    )
+    respx.post("https://accounts.spotify.com/api/token").mock(
+        return_value=httpx.Response(400, json={"error": "invalid_grant"})
+    )
+
+    result = await sync_plan(db, church_id, "1001", "manual", plan_date=date(2026, 3, 22), plan_title="Sunday Service")
+
+    # sync_plan must return normally — no unhandled TokenReauthRequiredError.
+    assert len(result.platforms) == 1
+    platform_result = result.platforms[0]
+    assert platform_result.platform == "spotify"
+    # Reconnection is a distinct, actionable outcome — not a generic transient error.
+    assert platform_result.sync_status == "skipped"
+    assert platform_result.error_message == "reconnection_required"
+    assert result.sync_status != "error"
+
+    conn_result = await db.execute(select(StreamingConnection).where(StreamingConnection.id == streaming_conn.id))
+    conn = conn_result.scalar_one()
+    assert conn.status == "needs_reauth"

@@ -19,7 +19,7 @@ from app.models.streaming_connection import StreamingConnection
 from app.models.sync_log import SyncLog
 from app.schemas.sync import PlatformSyncResult, SyncResult
 from app.services import pco_service
-from app.services.streaming_service import get_or_create_settings
+from app.services.streaming_service import TokenReauthRequiredError, get_or_create_settings
 from app.utils.playlist_templates import render_template
 
 logger = structlog.get_logger(__name__)
@@ -245,6 +245,30 @@ async def sync_plan(
                     sync_status=playlist.sync_status,
                     playlist_url=playlist.external_playlist_url,
                     last_synced_at=(playlist.last_synced_at.isoformat() if playlist.last_synced_at else None),
+                )
+            )
+
+        except TokenReauthRequiredError:
+            # Token died mid-sync (invalid_grant on refresh). This is terminal and
+            # actionable — not a generic transient failure — so it gets its own
+            # outcome instead of falling into the broad handler below. The
+            # connection's status is already "needs_reauth" (set by the refresh
+            # function); don't retry, just move on to the next connection.
+            logger.warning(
+                "sync_connection_needs_reauth",
+                church_id=str(church_id),
+                platform=connection.platform,
+            )
+            if playlist:
+                playlist.sync_status = "skipped"
+                playlist.error_message = "reconnection_required"
+                await db.flush()
+
+            platform_results.append(
+                PlatformSyncResult(
+                    platform=connection.platform,
+                    sync_status="skipped",
+                    error_message="reconnection_required",
                 )
             )
 
