@@ -14,6 +14,7 @@ from starlette_csrf import CSRFMiddleware
 from app.config import settings
 from app.database import async_session_factory
 from app.middleware.auth import AuthMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.rate_limit import limiter
 from app.routers import auth, dashboard, health, pco, plans, songs, streaming, webhooks, well_known
 from app.scheduler import start_scheduler, stop_scheduler
@@ -39,10 +40,19 @@ def create_app() -> FastAPI:
             traces_sample_rate=0.1,
         )
 
+    # Disable interactive docs/schema endpoints in production.
+    is_prod = settings.ENVIRONMENT == "production"
+    docs_url = None if is_prod else "/docs"
+    redoc_url = None if is_prod else "/redoc"
+    openapi_url = None if is_prod else "/openapi.json"
+
     app = FastAPI(
         title="ServiceTracks",
         version="0.1.0",
         lifespan=lifespan,
+        docs_url=docs_url,
+        redoc_url=redoc_url,
+        openapi_url=openapi_url,
     )
 
     # Store session factory on app.state so auth middleware can access it without
@@ -50,8 +60,8 @@ def create_app() -> FastAPI:
     app.state.session_factory = async_session_factory
 
     # Middleware — Starlette uses LIFO ordering: last add_middleware call becomes outermost.
-    # Desired execution order: CSRF (outermost) → CORS → Auth (innermost) → handler.
-    # So registration order must be: Auth first, then CORS, then CSRF last.
+    # Desired execution order: SecurityHeaders (outermost) → CSRF → CORS → Auth (innermost) → handler.
+    # So registration order must be: Auth first, then CORS, then CSRF, then SecurityHeaders last.
 
     # AuthMiddleware (innermost — registered FIRST)
     app.add_middleware(AuthMiddleware)
@@ -65,7 +75,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # CSRF middleware (outermost — registered LAST)
+    # CSRF middleware
     # Explicitly set cookie_name and header_name to match the frontend client.
     # starlette-csrf v3 defaults to "csrftoken" / "x-csrftoken", but we use
     # "csrf_token" / "x-csrf-token" to match the architecture doc convention.
@@ -85,6 +95,11 @@ def create_app() -> FastAPI:
             re.compile(r"^/api/webhooks"),
         ],
     )
+
+    # SecurityHeadersMiddleware (outermost — registered LAST). It wraps every
+    # response (including those short-circuited by inner middleware) to set
+    # security headers such as CSP, X-Frame-Options, and HSTS.
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # Routers
     app.include_router(health.router)
