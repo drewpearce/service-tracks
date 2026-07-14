@@ -34,6 +34,16 @@ class YouTubeTokenError(Exception):
     pass
 
 
+class TokenReauthRequiredError(Exception):
+    """Raised when a refresh token is expired/revoked (invalid_grant).
+
+    Terminal: the caller must NOT retry; the user has to reconnect. The
+    connection's status is set to ``needs_reauth`` before this is raised.
+    """
+
+    pass
+
+
 async def refresh_spotify_token(
     db: AsyncSession,
     connection: StreamingConnection,
@@ -57,7 +67,25 @@ async def refresh_spotify_token(
         )
 
     if response.status_code != 200:
-        logger.error("spotify_token_refresh_failed", status_code=response.status_code)
+        error_code: str | None = None
+        try:
+            error_code = response.json().get("error")
+        except ValueError:
+            pass
+        if response.status_code == 400 and error_code == "invalid_grant":
+            logger.warning(
+                "spotify_refresh_token_expired",
+                church_id=str(connection.church_id),
+            )
+            connection.status = "needs_reauth"
+            await db.flush()
+            raise TokenReauthRequiredError("Spotify refresh token expired; reconnection required")
+        logger.error(
+            "spotify_token_refresh_failed",
+            status_code=response.status_code,
+            error=error_code,
+            church_id=str(connection.church_id),
+        )
         connection.status = "error"
         await db.flush()
         raise SpotifyTokenError("Token refresh failed")
