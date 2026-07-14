@@ -268,6 +268,14 @@ async def refresh_youtube_token(
             error_description = error_body.get("error_description")
         except ValueError:
             pass
+        if response.status_code == 400 and error_code == "invalid_grant":
+            logger.warning(
+                "youtube_refresh_token_expired",
+                church_id=str(connection.church_id),
+            )
+            connection.status = "needs_reauth"
+            await db.flush()
+            raise TokenReauthRequiredError("YouTube refresh token expired; reconnection required")
         logger.error(
             "youtube_token_refresh_failed",
             status_code=response.status_code,
