@@ -6,6 +6,7 @@ import SetupChecklist from "../components/SetupChecklist";
 import SyncLogList from "../components/SyncLogList";
 import { Hero } from "../components/ui";
 import { useAuth } from "../hooks/authContext";
+import { platformLabel } from "../lib/platforms";
 import type { DashboardResponse } from "../types/api";
 
 function formatRelativeTime(dateString: string): string {
@@ -93,6 +94,9 @@ export default function Dashboard() {
   const spotifyConnected = data.streaming_connections.some(
     (c) => c.platform === "spotify" && c.connected
   );
+  const reauthPlatforms = data.streaming_connections
+    .filter((c) => c.status === "needs_reauth")
+    .map((c) => c.platform);
   const totalMatched = data.upcoming_plans.reduce(
     (sum, p) => sum + p.songs.filter((s) => s.matched).length,
     0
@@ -196,6 +200,17 @@ export default function Dashboard() {
 
       {/* Content */}
       <div className="px-10 py-10 max-w-5xl space-y-10">
+        {/* Reauth banner */}
+        {reauthPlatforms.length > 0 && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-[13px] text-amber-800">
+            Syncing is paused for {reauthPlatforms.map((p) => platformLabel(p)).join(" and ")} — the
+            sign-in expired.{" "}
+            <Link to="/setup/streaming" className="underline font-medium">
+              Reconnect now
+            </Link>
+          </div>
+        )}
+
         {/* Setup checklist */}
         <SetupChecklist
           pco_connected={data.pco_connected}

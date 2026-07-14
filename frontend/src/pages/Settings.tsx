@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { apiClient, ApiClientError } from "../api/client";
 import { Hero, Input, MonoChip, Textarea } from "../components/ui";
 import { useAuth } from "../hooks/authContext";
@@ -38,6 +39,7 @@ export default function Settings() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [connectedPlatforms, setConnectedPlatforms] = useState<Platform[]>([]);
+  const [reauthPlatforms, setReauthPlatforms] = useState<Platform[]>([]);
   const [platformState, setPlatformState] = useState<Record<Platform, PlatformFormState>>({
     spotify: EMPTY_FORM_STATE,
     youtube: EMPTY_FORM_STATE,
@@ -51,6 +53,11 @@ export default function Settings() {
           .filter((c) => c.connected && (c.platform === "spotify" || c.platform === "youtube"))
           .map((c) => c.platform as Platform);
         setConnectedPlatforms(connected);
+
+        const needsReauth = status.connections
+          .filter((c) => c.status === "needs_reauth" && (c.platform === "spotify" || c.platform === "youtube"))
+          .map((c) => c.platform as Platform);
+        setReauthPlatforms(needsReauth);
 
         const results = await Promise.all(
           connected.map((p) => apiClient<StreamingPlatformSettings>(`/api/streaming/${p}/settings`)),
@@ -157,6 +164,22 @@ export default function Settings() {
       </Hero>
 
       <div className="px-10 py-10 max-w-4xl space-y-10">
+        {reauthPlatforms.length > 0 && (
+          <div className="space-y-3">
+            {reauthPlatforms.map((p) => (
+              <div
+                key={p}
+                className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[13px] text-amber-800"
+              >
+                {PLATFORM_LABEL[p]} needs to be reconnected — sign-in expired.{" "}
+                <Link to="/setup/streaming" className="underline font-medium">
+                  Reconnect
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+
         {connectedPlatforms.length === 0 && (
           <div className="rounded-2xl bg-white border border-slate-200 p-6">
             <p className="text-[14px] text-slate-700">

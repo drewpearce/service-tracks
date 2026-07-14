@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.adapters.youtube_adapter import YouTubeAdapter
 from app.models.search_cache import SearchCache
 from app.models.streaming_connection import StreamingConnection
-from app.services.streaming_service import YouTubeTokenError, refresh_youtube_token
+from app.services.streaming_service import TokenReauthRequiredError, refresh_youtube_token
 from app.utils.encryption import decrypt, encrypt
 
 # ---------------------------------------------------------------------------
@@ -392,7 +392,7 @@ async def test_refresh_youtube_token_updates_connection(db: AsyncSession, church
 
 @pytest.mark.asyncio
 @respx.mock
-async def test_refresh_youtube_token_invalid_grant_marks_error_and_logs(db: AsyncSession, church_id: uuid.UUID):
+async def test_refresh_youtube_token_invalid_grant_marks_needs_reauth_and_logs(db: AsyncSession, church_id: uuid.UUID):
     conn = await make_streaming_connection(db, church_id)
 
     respx.post("https://oauth2.googleapis.com/token").mock(
@@ -403,11 +403,9 @@ async def test_refresh_youtube_token_invalid_grant_marks_error_and_logs(db: Asyn
     )
 
     with structlog.testing.capture_logs() as logs:
-        with pytest.raises(YouTubeTokenError):
+        with pytest.raises(TokenReauthRequiredError):
             await refresh_youtube_token(db, conn)
 
-    assert conn.status == "error"
-    failure_log = next(log for log in logs if log.get("event") == "youtube_token_refresh_failed")
-    assert failure_log["status_code"] == 400
-    assert failure_log["error"] == "invalid_grant"
-    assert failure_log["error_description"] == "Token has been expired or revoked."
+    assert conn.status == "needs_reauth"
+    failure_log = next(log for log in logs if log.get("event") == "youtube_refresh_token_expired")
+    assert failure_log["church_id"] == str(conn.church_id)

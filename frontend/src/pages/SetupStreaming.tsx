@@ -206,8 +206,14 @@ export default function SetupStreaming() {
 
   const spotifyConnection = statusData?.connections.find((c) => c.platform === "spotify");
   const spotifyConnected = spotifyConnection?.connected ?? false;
+  const spotifyPresent = spotifyConnection != null;
+  const spotifyNeedsReauth = spotifyConnection?.status === "needs_reauth";
+  const spotifyHasError = spotifyConnection?.status === "error";
   const youtubeConnection = statusData?.connections.find((c) => c.platform === "youtube");
   const youtubeConnected = youtubeConnection?.connected ?? false;
+  const youtubePresent = youtubeConnection != null;
+  const youtubeNeedsReauth = youtubeConnection?.status === "needs_reauth";
+  const youtubeHasError = youtubeConnection?.status === "error";
 
   return (
     <>
@@ -265,7 +271,7 @@ export default function SetupStreaming() {
                         Connected as {spotifyConnection.external_user_id}
                       </span>
                     </div>
-                  ) : (
+                  ) : spotifyPresent ? null : (
                     <p className="mt-1 text-[13px] text-slate-500">
                       Connect Spotify to sync playlists automatically.
                     </p>
@@ -275,15 +281,25 @@ export default function SetupStreaming() {
                   onClick={() => void handleConnectSpotify()}
                   disabled={connectingSpotify}
                   className={`rounded-full px-5 py-2.5 text-[13px] font-semibold transition-colors flex-shrink-0 disabled:opacity-50 ${
-                    spotifyConnected
+                    spotifyPresent
                       ? "border border-slate-300 text-slate-700 hover:border-slate-900 hover:bg-slate-900 hover:text-white"
                       : "bg-slate-900 text-white hover:bg-slate-800"
                   }`}
                 >
-                  {connectingSpotify ? "Redirecting…" : spotifyConnected ? "Reconnect" : "Connect Spotify"}
+                  {connectingSpotify ? "Redirecting…" : spotifyPresent ? "Reconnect" : "Connect Spotify"}
                 </button>
               </div>
-              {spotifyConnected && (
+              {spotifyNeedsReauth && (
+                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[13px] text-amber-800">
+                  Reconnection required — your Spotify sign-in expired. Reconnect to resume syncing.
+                </div>
+              )}
+              {spotifyHasError && (
+                <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-[13px] text-slate-600">
+                  Temporary problem refreshing your Spotify connection — syncing will retry automatically.
+                </div>
+              )}
+              {spotifyPresent && (
                 <div className="mt-4 flex items-center gap-3">
                   <button
                     onClick={() => setConfirm({ platform: "spotify", kind: "reset" })}
@@ -323,7 +339,7 @@ export default function SetupStreaming() {
                         Connected · channel {youtubeConnection.external_user_id}
                       </span>
                     </div>
-                  ) : (
+                  ) : youtubePresent ? null : (
                     <p className="mt-1 text-[13px] text-slate-500">
                       Connect YouTube Music to sync playlists automatically.
                     </p>
@@ -333,15 +349,25 @@ export default function SetupStreaming() {
                   onClick={() => void handleConnectYouTube()}
                   disabled={connectingYouTube}
                   className={`rounded-full px-5 py-2.5 text-[13px] font-semibold transition-colors flex-shrink-0 disabled:opacity-50 ${
-                    youtubeConnected
+                    youtubePresent
                       ? "border border-slate-300 text-slate-700 hover:border-slate-900 hover:bg-slate-900 hover:text-white"
                       : "bg-slate-900 text-white hover:bg-slate-800"
                   }`}
                 >
-                  {connectingYouTube ? "Redirecting…" : youtubeConnected ? "Reconnect" : "Connect YouTube Music"}
+                  {connectingYouTube ? "Redirecting…" : youtubePresent ? "Reconnect" : "Connect YouTube Music"}
                 </button>
               </div>
-              {youtubeConnected && (
+              {youtubeNeedsReauth && (
+                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-[13px] text-amber-800">
+                  Reconnection required — your YouTube Music sign-in expired. Reconnect to resume syncing.
+                </div>
+              )}
+              {youtubeHasError && (
+                <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-[13px] text-slate-600">
+                  Temporary problem refreshing your YouTube Music connection — syncing will retry automatically.
+                </div>
+              )}
+              {youtubePresent && (
                 <div className="mt-4 flex items-center gap-3">
                   <button
                     onClick={() => setConfirm({ platform: "youtube", kind: "reset" })}
